@@ -1,21 +1,37 @@
 extends Area2D
 
-# Prędkość z jaką wróg płynie w pikselach na sekundę
 var speed = 150.0
-
-# Zmienna, w której zapamiętamy gdzie jest gracz
 var player_node = null
 
 func _ready():
-	# Szukamy w scenie głównej węzła o nazwie "Player"
-	# Używamy get_parent(), ponieważ wróg jest dzieckiem sceny Main, tak samo jak gracz
 	player_node = get_parent().get_node_or_null("Player")
+	
+	# Odtwarzamy dźwięk spawnu/hitu
+	$SpawnSound.play()
+	
+	# Losujemy, ile sekund pożyje dany wróg (od 3 do 8 sekund)
+	var random_lifetime = randf_range(3.0, 8.0)
+	await get_tree().create_timer(random_lifetime).timeout
+	die()
 
 func _process(delta):
-	# Jeśli gracz istnieje na mapie...
 	if player_node != null:
-		# 1. Obliczamy kierunek od wroga do gracza
 		var direction = (player_node.position - position).normalized()
-		
-		# 2. Przesuwamy wroga w tym kierunku z określoną prędkością
 		position += direction * speed * delta
+
+# Prawdziwa funkcja umierania, gotowa na dodanie strzelania!
+func die():
+	# 1. Zatrzymujemy wroga
+	set_process(false)
+	
+	# 2. Ukrywamy wroga
+	hide()
+	
+	# 3. Odtwarzamy dźwięk śmierci
+	$DeathSound.play()
+	
+	# 4. Czekamy aż dźwięk przestanie grać
+	await $DeathSound.finished
+	
+	# 5. Całkowicie usuwamy wroga
+	queue_free()

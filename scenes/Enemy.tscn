@@ -2,6 +2,8 @@
 
 [ext_resource type="Texture2D" uid="uid://lo573ehi77hb" path="res://icon.svg" id="1_3gvst"]
 [ext_resource type="Script" uid="uid://dfe0lpyyf6k0f" path="res://scenes/enemy.gd" id="1_55jtl"]
+[ext_resource type="AudioStream" uid="uid://4bei2b8x5mkc" path="res://Untitled.wav" id="3_mpr68"]
+[ext_resource type="AudioStream" uid="uid://cjyi7y5clel00" path="res://ded.wav" id="4_ft8do"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_55jtl"]
 size = Vector2(129, 128)
@@ -16,3 +18,9 @@ texture = ExtResource("1_3gvst")
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1471852766]
 position = Vector2(-1, 0)
 shape = SubResource("RectangleShape2D_55jtl")
+
+[node name="SpawnSound" type="AudioStreamPlayer2D" parent="." unique_id=1870052202]
+stream = ExtResource("3_mpr68")
+
+[node name="DeathSound" type="AudioStreamPlayer2D" parent="." unique_id=1348671678]
+stream = ExtResource("4_ft8do")
