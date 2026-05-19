@@ -2,12 +2,10 @@
 
 [ext_resource type="Script" uid="uid://dqu5vvnkxrtml" path="res://hud.gd" id="1_6e84v"]
 
-[node name="Node2D" type="Node2D" unique_id=5551771]
-
-[node name="HUD" type="CanvasLayer" parent="." unique_id=632174743]
+[node name="Node2D" type="CanvasLayer" unique_id=1219351022]
 script = ExtResource("1_6e84v")
 
-[node name="Label" type="Label" parent="HUD" unique_id=413048015]
+[node name="Label" type="Label" parent="." unique_id=56648496]
 offset_right = 40.0
 offset_bottom = 23.0
 text = "00:00"
