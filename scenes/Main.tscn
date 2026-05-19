@@ -1,0 +1,10 @@
+[gd_scene format=3 uid="uid://dkvg8apcfepju"]
+
+[ext_resource type="Script" uid="uid://dojtumr0hthqr" path="res://scenes/main.gd" id="1_elqb8"]
+
+[node name="Main" type="Node2D" unique_id=1150465566]
+position = Vector2(210, 228)
+script = ExtResource("1_elqb8")
+
+[node name="Timer" type="Timer" parent="." unique_id=840186147]
+autostart = true
