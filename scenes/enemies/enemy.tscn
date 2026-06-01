@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://djphki8cb53y5"]
 
 [ext_resource type="Texture2D" uid="uid://lo573ehi77hb" path="res://icon.svg" id="1_3gvst"]
-[ext_resource type="Script" uid="uid://dfe0lpyyf6k0f" path="res://scripts/enemy.gd" id="1_55jtl"]
+[ext_resource type="Script" uid="uid://dfe0lpyyf6k0f" path="res://scripts/systems/enemy.gd" id="1_55jtl"]
 [ext_resource type="AudioStream" uid="uid://4bei2b8x5mkc" path="res://audio/sfx/enemy_spawn.wav" id="3_mpr68"]
 [ext_resource type="AudioStream" uid="uid://cjyi7y5clel00" path="res://audio/sfx/enemy_death.wav" id="4_ft8do"]
 

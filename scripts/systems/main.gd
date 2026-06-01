@@ -1,7 +1,7 @@
 extends Node2D
 
 # Ładujemy scenę wroga
-var enemy_scene = preload("res://scenes/enemy.tscn")
+var enemy_scene = preload("res://scenes/enemies/enemy.tscn")
 
 @onready var spawn_timer = $Timer
 

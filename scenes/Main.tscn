@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://dkvg8apcfepju"]
 
-[ext_resource type="Script" uid="uid://dojtumr0hthqr" path="res://scenes/main.gd" id="1_elqb8"]
-[ext_resource type="PackedScene" uid="uid://bgujj5qrm2th" path="res://scenes/node_2d.tscn" id="2_rvslj"]
+[ext_resource type="Script" uid="uid://dojtumr0hthqr" path="res://scripts/systems/main.gd" id="1_elqb8"]
+[ext_resource type="PackedScene" uid="uid://bgujj5qrm2th" path="res://scenes/ui/hud.tscn" id="2_rvslj"]
 
 [node name="Main" type="Node2D" unique_id=1150465566]
 position = Vector2(210, 228)
