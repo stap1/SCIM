@@ -4,6 +4,9 @@ var speed = 150.0
 var player_node = null
 
 func _ready():
+	# OTO TA BRAKUJĄCA LINIJKA – wrzucamy meduzę do grupy, żeby łódź ją widziała:
+	add_to_group("enemies")
+	
 	# Szukamy nowej łodzi bezpiecznie przez Grupę "player"
 	player_node = get_tree().get_first_node_in_group("player")
 	

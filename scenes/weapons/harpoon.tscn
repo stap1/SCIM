@@ -1,0 +1,19 @@
+[gd_scene format=3 uid="uid://py5af316w0ij"]
+
+[ext_resource type="Script" uid="uid://6xarv0ubvasw" path="res://scripts/weapons/harpoon.gd" id="1_uumnc"]
+[ext_resource type="Texture2D" uid="uid://dwav8pccjvlxl" path="res://assets/harpun.svg.svg" id="2_gqujv"]
+[ext_resource type="AudioStream" uid="uid://bdatr0e725hkj" path="res://audio/sfx/GameFX_Shoot_01_fx_BANDLAB.wav" id="3_hmf5e"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_gqujv"]
+
+[node name="Harpoon" type="Area2D" unique_id=1296864370]
+script = ExtResource("1_uumnc")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=302299529]
+texture = ExtResource("2_gqujv")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=327204468]
+shape = SubResource("CapsuleShape2D_gqujv")
+
+[node name="AudioStreamPlayer2D" type="AudioStreamPlayer2D" parent="." unique_id=1941439324]
+stream = ExtResource("3_hmf5e")
