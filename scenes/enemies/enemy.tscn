@@ -28,3 +28,17 @@ pitch_scale = 0.53
 
 [node name="SpawnSound" type="AudioStreamPlayer2D" parent="." unique_id=904171346]
 stream = ExtResource("4_fcftc")
+
+[node name="DeathParticles" type="CPUParticles2D" parent="." unique_id=1528726450]
+z_index = 5
+emitting = false
+amount = 25
+one_shot = true
+explosiveness = 1.0
+spread = 180.0
+gravity = Vector2(0, 0)
+initial_velocity_min = 80.0
+initial_velocity_max = 150.0
+scale_amount_min = 3.0
+scale_amount_max = 6.0
+color = Color(0.94400704, 0.21400005, 0.6292439, 1)

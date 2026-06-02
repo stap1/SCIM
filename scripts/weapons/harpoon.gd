@@ -4,48 +4,74 @@ extends Area2D
 @export var damage: float = 1.0
 
 var direction: Vector2 = Vector2.ZERO
+var is_active: bool = false
+var lifetime: float = 0.0
+const MAX_LIFETIME: float = 3.0
 
-# Referencja do głośnika z dźwiękiem trafienia w meduzę
 @onready var hit_sound: AudioStreamPlayer2D = $HitSound
 
 func _ready() -> void:
 	area_entered.connect(_on_any_collision)
 	body_entered.connect(_on_any_collision)
 	
-	# Jeśli w nic nie trafi, harpun sam zniknie po 3 sekundach
-	await get_tree().create_timer(3.0).timeout
-	# Zabezpieczenie: jeśli harpun właśnie odtwarza dźwięk trafienia, nie usuwamy go przedwcześnie
-	if hit_sound and not hit_sound.playing:
-		queue_free()
+	# Na samym starcie gry harpun usypia samego siebie i czeka w magazynku
+	deactivate()
 
 func _physics_process(delta: float) -> void:
+	# Jeśli harpun jest uśpiony, całkowicie ignorujemy jego fizykę
+	if not is_active:
+		return
+		
 	if direction != Vector2.ZERO:
 		position += direction * speed * delta
+		
+	# Ręczny licznik czasu (bezpieczny dla Object Poolingu)
+	lifetime += delta
+	if lifetime >= MAX_LIFETIME:
+		deactivate()
 
-# NAPRAWIONA FUNKCJA - BRAK FRIENDLY FIRE
+# --- FUNKCJA WYBUDZAJĄCA Z PULI ---
+func fire(start_pos: Vector2, shoot_dir: Vector2) -> void:
+	global_position = start_pos
+	direction = shoot_dir
+	rotation = direction.angle() + PI/2
+	
+	lifetime = 0.0
+	is_active = true
+	visible = true
+	set_deferred("monitoring", true)
+	set_deferred("monitorable", true)
+
+# --- FUNKCJA USYPIAJĄCA (ZAMIAST queue_free) ---
+func deactivate() -> void:
+	is_active = false
+	visible = false
+	direction = Vector2.ZERO
+	set_deferred("monitoring", false)
+	set_deferred("monitorable", false)
+
+# --- KOLIZJE ---
 func _on_any_collision(something: Node) -> void:
+	if not is_active:
+		return
+		
 	var enemy_node = null
 	
-	# KLUCZOWA ZMIANA: Zanim każemy czemuś "umrzeć", upewniamy się, że to wróg (grupa "enemies")
 	if something.is_in_group("enemies") and something.has_method("die"):
 		enemy_node = something
 	elif something.get_parent() and something.get_parent().is_in_group("enemies") and something.get_parent().has_method("die"):
 		enemy_node = something.get_parent()
 		
 	if enemy_node:
-		# 1. Odpalamy dźwięk śmierci meduzy z poziomu harpuna
 		if hit_sound:
 			hit_sound.play()
 		
-		# 2. Zabijamy meduzę
 		enemy_node.die()
 		
-		# 3. Ukrywamy harpun i wyłączamy mu kolizje, żeby nie uderzył w nic dwa razy
+		# Wyłączamy fizykę i ukrywamy harpun, ale pozwalamy dźwiękowi grać
+		is_active = false
 		visible = false
 		set_deferred("monitoring", false)
 		set_deferred("monitorable", false)
 		
-		# 4. Czekamy, aż dźwięk skończy się odtwarzać, zanim skasujemy harpun z pamięci
-		if hit_sound:
-			await hit_sound.finished
-		queue_free()
+		# W Puli Obiektów NIE używamy queue_free()! Harpun po prostu zostaje uśpiony w tle.

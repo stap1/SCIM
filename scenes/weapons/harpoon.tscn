@@ -15,5 +15,5 @@ texture = ExtResource("2_gqujv")
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=327204468]
 shape = SubResource("CapsuleShape2D_gqujv")
 
-[node name="AudioStreamPlayer2D" type="AudioStreamPlayer2D" parent="." unique_id=1941439324]
+[node name="HitSound" type="AudioStreamPlayer2D" parent="." unique_id=1941439324]
 stream = ExtResource("3_hmf5e")

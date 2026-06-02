@@ -10,7 +10,7 @@ func _ready():
 	if has_node("SpawnSound"):
 		$SpawnSound.play()
 		
-	# NOWE: Nasłuchujemy, czy meduza fizycznie wpadła na ciało gracza (łódź)
+	# Nasłuchujemy, czy meduza fizycznie wpadła na ciało gracza (łódź)
 	body_entered.connect(_on_body_entered)
 
 func _process(delta):
@@ -28,17 +28,29 @@ func _process(delta):
 
 func die():
 	set_process(false)
-	hide()
+	
+	# ZAMIAST chować całą meduzę (co ukryłoby też cząsteczki), chowamy tylko jej grafikę!
+	if has_node("Sprite2D"):
+		$Sprite2D.hide()
+		
+	# Wyłączamy kolizję natychmiast, żeby harpuny przez nią przelatywały po jej śmierci
 	set_deferred("monitoring", false)
 	set_deferred("monitorable", false)
 	
+	# --- ODPALAMY WYBUCH (JUICE) ---
+	if has_node("DeathParticles"):
+		$DeathParticles.emitting = true
+	
+	# Odpalamy dźwięk
 	if has_node("DeathSound"):
 		$DeathSound.play()
-		await $DeathSound.finished
+		
+	# Czekamy równą 1 sekundę, aby cząsteczki na spokojnie opadły, zanim zniszczymy obiekt
+	await get_tree().create_timer(1.0).timeout
 	
 	queue_free()
 
-# --- NOWA FUNKCJA: ZADAWANIE OBRAŻEŃ ---
+# --- ZADAWANIE OBRAŻEŃ ---
 func _on_body_entered(body: Node2D) -> void:
 	# Sprawdzamy, czy obiekt z którym się zderzyliśmy to łódź gracza
 	if body.is_in_group("player") and body.has_method("take_damage"):

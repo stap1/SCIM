@@ -9,17 +9,24 @@ extends CharacterBody2D
 @export var max_hp: float = 100.0
 var current_hp: float
 
+# --- ZMIENNA DO ANIMACJI FAL (JUICE) ---
+var wave_time: float = 0.0
+
 var harpoon_scene = preload("res://scenes/weapons/harpoon.tscn")
+
+# --- ZMIENNE DO PULI HARPUNÓW ---
+var harpoon_pool: Array = []
+const POOL_SIZE: int = 20
+
 @onready var weapon_timer: Timer = $WeaponTimer
 @onready var shoot_sound: AudioStreamPlayer2D = $ShootSound
 
-# Szukamy paska zdrowia w scenie głównej (rodzicu łodzi)
-@onready var health_bar: ProgressBar = get_parent().get_node("HealthBar")
+# Szukamy paska zdrowia w scenie głównej
+@onready var health_bar: ProgressBar = get_parent().get_node_or_null("HealthBar")
 
 func _ready() -> void:
 	add_to_group("player")
 	
-	# Ustawiamy HP na maksimum przy starcie
 	current_hp = max_hp
 	if health_bar:
 		health_bar.max_value = max_hp
@@ -29,6 +36,12 @@ func _ready() -> void:
 		if weapon_timer.timeout.is_connected(_on_weapon_timer_timeout):
 			weapon_timer.timeout.disconnect(_on_weapon_timer_timeout)
 		weapon_timer.timeout.connect(_on_weapon_timer_timeout)
+
+	# --- TWORZENIE PULI HARPUNÓW ---
+	for i in range(POOL_SIZE):
+		var harpoon = harpoon_scene.instantiate()
+		get_parent().call_deferred("add_child", harpoon)
+		harpoon_pool.append(harpoon)
 
 func _physics_process(delta: float) -> void:
 	_handle_movement(delta)
@@ -56,30 +69,24 @@ func _handle_movement(delta: float) -> void:
 	else:
 		velocity = velocity.move_toward(Vector2.ZERO, friction * delta)
 
-# --- OTRZYMYWANIE OBRAŻEŃ ---
 func take_damage(amount: float) -> void:
 	current_hp -= amount
-	print("Oberwałem! Zostało HP: ", current_hp)
 	
 	if health_bar:
 		health_bar.value = current_hp
 		
-	# Błysk na czerwono (Visual Feedback)
-	modulate = Color(1, 0, 0) # Zmienia kolor łodzi na czerwony
+	modulate = Color(1, 0, 0)
 	await get_tree().create_timer(0.15).timeout
-	modulate = Color(1, 1, 1) # Wraca do normalnych kolorów
+	modulate = Color(1, 1, 1)
 	
-	# Sprawdzamy czy łódź zatonęła
 	if current_hp <= 0:
 		die()
 
 func die() -> void:
-	print("GAME OVER - Łódź zatonęła!")
 	GameState.is_game_over = true
-	hide() # Ukrywamy łódź
+	hide() 
 	set_physics_process(false)
 	
-	# KLUCZOWA POPRAWKA: Wyłączamy automat strzelający po śmierci łodzi!
 	if weapon_timer:
 		weapon_timer.stop()
 
@@ -100,13 +107,38 @@ func _on_weapon_timer_timeout() -> void:
 	_shoot_at(closest_enemy.global_position)
 
 func _shoot_at(target_position: Vector2) -> void:
-	var harpoon = harpoon_scene.instantiate()
-	get_parent().add_child(harpoon)
-	harpoon.global_position = global_position
+	var available_harpoon = null
+	for harpoon in harpoon_pool:
+		if not harpoon.is_active:
+			available_harpoon = harpoon
+			break
+			
+	if available_harpoon:
+		var shoot_dir = (target_position - global_position).normalized()
+		available_harpoon.fire(global_position, shoot_dir)
+		
+		if shoot_sound:
+			shoot_sound.play()
+	else:
+		print("Brak wolnych harpunów w puli!")
+
+# --- ODŚWIEŻANIE WIZUALNE I LICZNIK ---
+func _process(delta: float) -> void:
+	if GameState.is_game_over:
+		return
+		
+	wave_time += delta
 	
-	var shoot_dir = (target_position - global_position).normalized()
-	harpoon.direction = shoot_dir
-	harpoon.rotation = shoot_dir.angle() + PI/2
-	
-	if shoot_sound:
-		shoot_sound.play()
+	if has_node("Sprite2D"):
+		$Sprite2D.position.y = sin(wave_time * 4.0) * 3.0
+		$Sprite2D.rotation = cos(wave_time * 2.5) * 0.05
+
+	# Pancerne aktualizowanie licznika przez Grupy
+	var ui_labels = get_tree().get_nodes_in_group("ammo_ui")
+	if ui_labels.size() > 0:
+		var available_count = 0
+		for harpoon in harpoon_pool:
+			if not harpoon.is_active:
+				available_count += 1
+				
+		ui_labels[0].text = str(available_count) + " / " + str(POOL_SIZE)

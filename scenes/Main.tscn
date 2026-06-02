@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://dkvg8apcfepju"]
 
 [ext_resource type="Script" uid="uid://dojtumr0hthqr" path="res://scripts/systems/main.gd" id="1_elqb8"]
+[ext_resource type="Texture2D" uid="uid://dwav8pccjvlxl" path="res://assets/harpun.svg.svg" id="3_jyhfs"]
 [ext_resource type="PackedScene" uid="uid://df7rbwsa6d6ec" path="res://scenes/player/boat.tscn" id="3_sugp2"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_0wfyh"]
@@ -37,7 +38,6 @@ show_percentage = false
 [node name="GameOverScreen" type="CanvasLayer" parent="." unique_id=883235372]
 
 [node name="ColorRect" type="ColorRect" parent="GameOverScreen" unique_id=307616514]
-visible = false
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -63,3 +63,18 @@ offset_right = 955.0
 offset_bottom = 425.0
 theme_override_font_sizes/font_size = 28
 text = "SPRÓBUJ PONOWNIE"
+
+[node name="AmmoIcon" type="TextureRect" parent="." unique_id=28247662]
+offset_left = 582.0
+offset_top = -227.0
+offset_right = 600.0
+offset_bottom = -194.0
+texture = ExtResource("3_jyhfs")
+expand_mode = 1
+
+[node name="AmmoLabel" type="Label" parent="." unique_id=2142640378 groups=["ammo_ui"]]
+offset_left = 533.0
+offset_top = -223.0
+offset_right = 576.0
+offset_bottom = -200.0
+text = "20/20"
