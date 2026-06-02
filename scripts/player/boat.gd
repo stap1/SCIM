@@ -1,18 +1,30 @@
 extends CharacterBody2D
 
-@export var max_speed: float = 220.0     # Zmniejszamy prędkość maksymalną, żeby łatwiej było panować nad łodzią
-@export var acceleration: float = 600.0  # Zwiększamy przyspieszenie – łódź szybciej reaguje na kliknięcie i nie muli na starcie
-@export var friction: float = 700.0      # Dużo większe hamowanie! Teraz łódź szybciej się zatrzymuje i mniej "driftuje" na wodzie
-@export var rotation_speed: float = 5.0  # Trochę wolniejszy obrót kadłuba, żeby nie kręciła się jak szalona
+@export var max_speed: float = 220.0
+@export var acceleration: float = 600.0
+@export var friction: float = 700.0
+@export var rotation_speed: float = 5.0
+
+# --- NOWE ZMIENNE DLA ZDROWIA ---
+@export var max_hp: float = 100.0
+var current_hp: float
 
 var harpoon_scene = preload("res://scenes/weapons/harpoon.tscn")
-
 @onready var weapon_timer: Timer = $WeaponTimer
-# NOWE: Odniesienie do głośnika z dźwiękiem wystrzału w drzewie węzłów łodzi
 @onready var shoot_sound: AudioStreamPlayer2D = $ShootSound
+
+# Szukamy paska zdrowia w scenie głównej (rodzicu łodzi)
+@onready var health_bar: ProgressBar = get_parent().get_node("HealthBar")
 
 func _ready() -> void:
 	add_to_group("player")
+	
+	# Ustawiamy HP na maksimum przy starcie
+	current_hp = max_hp
+	if health_bar:
+		health_bar.max_value = max_hp
+		health_bar.value = current_hp
+	
 	if weapon_timer:
 		if weapon_timer.timeout.is_connected(_on_weapon_timer_timeout):
 			weapon_timer.timeout.disconnect(_on_weapon_timer_timeout)
@@ -22,10 +34,7 @@ func _physics_process(delta: float) -> void:
 	_handle_movement(delta)
 	move_and_slide()
 	
-	# PŁYNNE I MOBILNE OBRACANIE KADŁUBA:
-	# Jeśli łódź płynie, to zamiast natychmiastowego obrotu, używamy lerp_angle(), 
-	# co daje piękny, płynny efekt skręcania łodzi na wodzie!
-	if velocity.length() > 10: # sprawdzamy czy na pewno płynie, a nie lekko drży
+	if velocity.length() > 10:
 		var target_angle = velocity.angle() + PI/2
 		rotation = rotate_toward(rotation, target_angle, rotation_speed * delta)
 
@@ -42,11 +51,37 @@ func _handle_movement(delta: float) -> void:
 		
 	input_dir = input_dir.normalized()
 	
-	# Płynne rozpędzanie i hamowanie na wodzie
 	if input_dir.length() > 0:
 		velocity = velocity.move_toward(input_dir * max_speed, acceleration * delta)
 	else:
 		velocity = velocity.move_toward(Vector2.ZERO, friction * delta)
+
+# --- OTRZYMYWANIE OBRAŻEŃ ---
+func take_damage(amount: float) -> void:
+	current_hp -= amount
+	print("Oberwałem! Zostało HP: ", current_hp)
+	
+	if health_bar:
+		health_bar.value = current_hp
+		
+	# Błysk na czerwono (Visual Feedback)
+	modulate = Color(1, 0, 0) # Zmienia kolor łodzi na czerwony
+	await get_tree().create_timer(0.15).timeout
+	modulate = Color(1, 1, 1) # Wraca do normalnych kolorów
+	
+	# Sprawdzamy czy łódź zatonęła
+	if current_hp <= 0:
+		die()
+
+func die() -> void:
+	print("GAME OVER - Łódź zatonęła!")
+	GameState.is_game_over = true
+	hide() # Ukrywamy łódź
+	set_physics_process(false)
+	
+	# KLUCZOWA POPRAWKA: Wyłączamy automat strzelający po śmierci łodzi!
+	if weapon_timer:
+		weapon_timer.stop()
 
 func _on_weapon_timer_timeout() -> void:
 	var enemies = get_tree().get_nodes_in_group("enemies")
@@ -73,6 +108,5 @@ func _shoot_at(target_position: Vector2) -> void:
 	harpoon.direction = shoot_dir
 	harpoon.rotation = shoot_dir.angle() + PI/2
 	
-	# NOWE: Odpalenie dźwięku wystrzału z harpunu!
 	if shoot_sound:
 		shoot_sound.play()

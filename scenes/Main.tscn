@@ -3,6 +3,12 @@
 [ext_resource type="Script" uid="uid://dojtumr0hthqr" path="res://scripts/systems/main.gd" id="1_elqb8"]
 [ext_resource type="PackedScene" uid="uid://df7rbwsa6d6ec" path="res://scenes/player/boat.tscn" id="3_sugp2"]
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_0wfyh"]
+bg_color = Color(0.06, 0.06, 0.06, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_sugp2"]
+bg_color = Color(0.74, 0.1554, 0.1554, 1)
+
 [node name="Main" type="Node2D" unique_id=1150465566]
 position = Vector2(210, 228)
 script = ExtResource("1_elqb8")
@@ -18,3 +24,42 @@ offset_top = -226.0
 offset_right = -170.0
 offset_bottom = -203.0
 text = "Czas: 0s"
+
+[node name="HealthBar" type="ProgressBar" parent="." unique_id=569739484]
+offset_left = 640.0
+offset_top = -226.0
+offset_right = 940.0
+offset_bottom = -196.0
+theme_override_styles/background = SubResource("StyleBoxFlat_0wfyh")
+theme_override_styles/fill = SubResource("StyleBoxFlat_sugp2")
+show_percentage = false
+
+[node name="GameOverScreen" type="CanvasLayer" parent="." unique_id=883235372]
+
+[node name="ColorRect" type="ColorRect" parent="GameOverScreen" unique_id=307616514]
+visible = false
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.09, 0.09, 0.09, 0.7058824)
+
+[node name="Label" type="Label" parent="GameOverScreen/ColorRect" unique_id=1579067598]
+layout_mode = 0
+offset_left = 365.0
+offset_top = 232.0
+offset_right = 777.0
+offset_bottom = 331.0
+theme_override_colors/font_color = Color(1, 0.41000003, 0.41000003, 1)
+theme_override_font_sizes/font_size = 72
+text = "GAME OVER"
+
+[node name="RestartButton" type="Button" parent="GameOverScreen/ColorRect" unique_id=722818110]
+layout_mode = 0
+offset_left = 219.0
+offset_top = 318.0
+offset_right = 955.0
+offset_bottom = 425.0
+theme_override_font_sizes/font_size = 28
+text = "SPRÓBUJ PONOWNIE"

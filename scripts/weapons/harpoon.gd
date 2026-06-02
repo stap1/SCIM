@@ -5,7 +5,7 @@ extends Area2D
 
 var direction: Vector2 = Vector2.ZERO
 
-# NOWE: Referencja do głośnika z dźwiękiem trafienia w meduzę
+# Referencja do głośnika z dźwiękiem trafienia w meduzę
 @onready var hit_sound: AudioStreamPlayer2D = $HitSound
 
 func _ready() -> void:
@@ -22,14 +22,14 @@ func _physics_process(delta: float) -> void:
 	if direction != Vector2.ZERO:
 		position += direction * speed * delta
 
-# TUTAJ WSKAKUJE TA FUNKCJA Z DŹWIĘKIEM ŚMIERCI:
+# NAPRAWIONA FUNKCJA - BRAK FRIENDLY FIRE
 func _on_any_collision(something: Node) -> void:
-	print("!!! KONTROLNY ALERT: Harpun fizycznie czegoś dotknął: ", something.name)
-	
 	var enemy_node = null
-	if something.has_method("die"):
+	
+	# KLUCZOWA ZMIANA: Zanim każemy czemuś "umrzeć", upewniamy się, że to wróg (grupa "enemies")
+	if something.is_in_group("enemies") and something.has_method("die"):
 		enemy_node = something
-	elif something.get_parent() and something.get_parent().has_method("die"):
+	elif something.get_parent() and something.get_parent().is_in_group("enemies") and something.get_parent().has_method("die"):
 		enemy_node = something.get_parent()
 		
 	if enemy_node:
