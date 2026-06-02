@@ -1,16 +1,13 @@
 [gd_scene format=3 uid="uid://dkvg8apcfepju"]
 
 [ext_resource type="Script" uid="uid://dojtumr0hthqr" path="res://scripts/systems/main.gd" id="1_elqb8"]
-[ext_resource type="PackedScene" uid="uid://bgujj5qrm2th" path="res://scenes/ui/hud.tscn" id="2_rvslj"]
+[ext_resource type="PackedScene" uid="uid://df7rbwsa6d6ec" path="res://scenes/player/boat.tscn" id="3_sugp2"]
 
 [node name="Main" type="Node2D" unique_id=1150465566]
 position = Vector2(210, 228)
 script = ExtResource("1_elqb8")
 
-[node name="Node2D" parent="." unique_id=1219351022 instance=ExtResource("2_rvslj")]
-
 [node name="Timer" type="Timer" parent="." unique_id=840186147]
 autostart = true
 
-[node name="Player" type="Node2D" parent="." unique_id=51227898]
-position = Vector2(300, 101)
+[node name="Boat" parent="." unique_id=1889304063 instance=ExtResource("3_sugp2")]

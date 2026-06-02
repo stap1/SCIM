@@ -4,7 +4,8 @@ var speed = 150.0
 var player_node = null
 
 func _ready():
-	player_node = get_parent().get_node_or_null("Player")
+	# Szukamy nowej łodzi bezpiecznie przez Grupę "player"
+	player_node = get_tree().get_first_node_in_group("player")
 	
 	# Odtwarzamy dźwięk spawnu/hitu
 	$SpawnSound.play()
@@ -15,9 +16,21 @@ func _ready():
 	die()
 
 func _process(delta):
-	if player_node != null:
-		var direction = (player_node.position - position).normalized()
-		position += direction * speed * delta
+	# Zabezpieczenie przed ruchem podczas pauzy globalnej
+	if GameState.is_paused or GameState.is_game_over:
+		return
+
+	# Jeśli nie mamy gracza lub referencja jest nieważna, szukamy go ponownie
+	if player_node == null or not is_instance_valid(player_node):
+		player_node = get_tree().get_first_node_in_group("player")
+	
+	# Jeśli łódka jeszcze fizycznie nie zdążyła się załadować – czekamy na kolejną klatkę
+	if player_node == null:
+		return
+		
+	# Prawdziwy, automatyczny ruch w stronę globalnej pozycji nowej łodzi
+	var direction = (player_node.global_position - global_position).normalized()
+	position += direction * speed * delta
 
 # Prawdziwa funkcja umierania, gotowa na dodanie strzelania!
 func die():
