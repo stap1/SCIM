@@ -50,6 +50,7 @@ Ikony kart ulepszeń (G2): po jednej na każde z 6 ulepszeń z `Upgrades.UPGRADE
 | `upgrade_resource_magnet.png` | 96x96 | 192x192 | "Magnes na zasoby" - +40% zasięgu zbierania XP (np. magnes + orb). | Średni | Co level-up | brak |
 | `upgrade_double_harpoon.png` | 96x96 | 192x192 | "Podwójny harpun" - atak na 2 wrogów (np. dwa groty). | Średni | Co level-up | brak |
 | `hud_ammo_icon.png` | 32x32 | 64x64 | Ikona amunicji w HUD (licznik harpunów). Może użyć `harpoon.png`. | Niski | Ciągła (HUD) | reuse |
+| `hull_hp_0.png` ... `hull_hp_4.png` | 300x40 | 600x80 | Pasek HP jako drewniany kadłub w 5 etapach zniszczenia: `0` = cały, `4` = roztrzaskany (coraz więcej spękań/dziur, przeciekająca woda). HUD dobiera klatkę przez `hull_stage(HP)`. Dziś placeholder: barwa wypełnienia ProgressBar (drewno → czerwień). | Średni | Ciągła (HUD) | brak |
 | `app_icon.png` | 128x128 | 256x256 | Ikona aplikacji / kafelek web. Poza rozgrywką. Dziś `icon.svg`. | Niski | Poza grą (launcher/web) | wymiana |
 
 ## C. Tło i efekty
