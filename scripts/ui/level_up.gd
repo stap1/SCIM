@@ -6,12 +6,6 @@ extends CanvasLayer
 
 signal upgrade_chosen(id: String)
 
-# Pula dostepnych ulepszen (id). W kroku 15 dostana realne efekty i opisy.
-const UPGRADE_POOL: Array[String] = [
-	"faster_attack", "longer_range", "tougher_hull",
-	"faster_boat", "resource_magnet", "double_harpoon",
-]
-
 @onready var panel: Control = $Panel
 @onready var cards: Array = [$Panel/Card0, $Panel/Card1, $Panel/Card2]
 
@@ -21,13 +15,15 @@ func _ready() -> void:
 	if panel:
 		panel.hide()
 	GameState.level_up.connect(_on_level_up)
+	# Wybor karty naklada realny efekt ulepszenia (autoload Upgrades).
+	upgrade_chosen.connect(Upgrades.apply)
 	for i in cards.size():
 		var card = cards[i]
 		if card:
 			card.pressed.connect(_on_card_pressed.bind(i))
 
 func _on_level_up(_new_level: int) -> void:
-	_current_ids = pick_three(UPGRADE_POOL, randi())
+	_current_ids = pick_three(_upgrade_pool(), randi())
 	for i in cards.size():
 		if cards[i] and i < _current_ids.size():
 			_set_card_text(cards[i], _current_ids[i])
@@ -35,12 +31,23 @@ func _on_level_up(_new_level: int) -> void:
 		panel.show()
 	get_tree().paused = true
 
+# Pula id ulepszen z jedynego zrodla (autoload Upgrades).
+func _upgrade_pool() -> Array[String]:
+	var pool: Array[String] = []
+	for id in Upgrades.UPGRADES:
+		pool.append(id)
+	return pool
+
 func _set_card_text(card: Node, id: String) -> void:
+	var text := id
+	if Upgrades.UPGRADES.has(id):
+		var u = Upgrades.UPGRADES[id]
+		text = str(u.get("name", id)) + "\n" + str(u.get("description", ""))
 	var label = card.get_node_or_null("Label")
 	if label:
-		label.text = id
+		label.text = text
 	else:
-		card.text = id
+		card.text = text
 
 func _on_card_pressed(index: int) -> void:
 	var id: String = _current_ids[index] if index < _current_ids.size() else ""

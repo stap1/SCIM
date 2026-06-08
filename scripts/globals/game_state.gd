@@ -25,6 +25,8 @@ var max_health: float = 100.0
 
 # --- Pola pomocnicze uzywane przez pozostale systemy gry ---
 var xp_to_next: int = 0
+# Mnoznik zasiegu zbierania XP (upgrade resource_magnet). Czytany przez XpOrb na spawnie.
+var magnet_range_mult: float = 1.0
 var eco_score: int = 0
 var enemies_killed: int = 0
 var miniboss_defeated: bool = false
@@ -42,6 +44,7 @@ func reset() -> void:
 	health = max_health
 	enemies_killed = 0
 	miniboss_defeated = false
+	magnet_range_mult = 1.0
 	is_paused = false
 	is_game_over = false
 	health_changed.emit(health)

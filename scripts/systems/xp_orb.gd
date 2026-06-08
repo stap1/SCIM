@@ -12,6 +12,8 @@ var is_collected: bool = false
 var _player: Node2D = null
 
 func _ready() -> void:
+	# Upgrade resource_magnet zwieksza zasieg zbierania nowo powstalych orbow.
+	magnet_range *= GameState.magnet_range_mult
 	# Orb (mask=1) wykrywa cialo gracza (layer 1) i zbiera sie przy kontakcie.
 	body_entered.connect(_on_body_entered)
 
