@@ -67,3 +67,7 @@ const XP_MAGNET_SPEED: float = 250.0
 const XP_MAGNET_RANGE: float = 120.0
 # Po tylu sekundach aktywnej gry niezebrany orb znika (audyt P0.1).
 const XP_ORB_LIFETIME: float = 12.0
+
+# --- Progresja ---
+# Maksymalny poziom gracza = wiek Ernesta Hemingwaya w chwili smierci.
+const MAX_LEVEL: int = 61
