@@ -29,6 +29,8 @@ var max_health: float = 100.0
 var xp_to_next: int = 0
 # Mnoznik zasiegu zbierania XP (upgrade resource_magnet). Czytany przez XpOrb na spawnie.
 var magnet_range_mult: float = 1.0
+# Dlugosc sesji w minutach (ustawienie gracza, ladowane z configu - nie resetowane).
+var session_length: int = 15
 var eco_score: int = 0
 var enemies_killed: int = 0
 var miniboss_defeated: bool = false

@@ -1,0 +1,52 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/settings.gd" id="1_set"]
+
+[node name="Settings" type="Control"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource("1_set")
+
+[node name="Background" type="ColorRect" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0.1, 0.13, 0.18, 1)
+
+[node name="Panel" type="VBoxContainer" parent="."]
+offset_left = 380.0
+offset_top = 150.0
+offset_right = 780.0
+offset_bottom = 520.0
+theme_override_constants/separation = 12
+
+[node name="Title" type="Label" parent="Panel"]
+theme_override_font_sizes/font_size = 36
+text = "Ustawienia"
+
+[node name="MusicLabel" type="Label" parent="Panel"]
+text = "Muzyka"
+
+[node name="MusicSlider" type="HSlider" parent="Panel"]
+custom_minimum_size = Vector2(360, 20)
+max_value = 1.0
+step = 0.01
+value = 1.0
+
+[node name="SFXLabel" type="Label" parent="Panel"]
+text = "Efekty (SFX)"
+
+[node name="SFXSlider" type="HSlider" parent="Panel"]
+custom_minimum_size = Vector2(360, 20)
+max_value = 1.0
+step = 0.01
+value = 1.0
+
+[node name="SessionLabel" type="Label" parent="Panel"]
+text = "Dlugosc sesji"
+
+[node name="SessionOption" type="OptionButton" parent="Panel"]
+
+[node name="BackButton" type="Button" parent="Panel"]
+text = "Powrot"

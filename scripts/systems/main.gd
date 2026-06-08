@@ -11,3 +11,6 @@ func _process(delta: float) -> void:
 	# JEDYNE miejsce liczenia czasu w calym projekcie (HUD jest read-only, czyta przez sygnaly).
 	if not GameState.is_game_over:
 		GameState.add_time(delta)
+		# Koniec gry po uplywie ustawionej dlugosci sesji.
+		if GameState.session_length > 0 and GameState.time >= GameState.session_length * 60:
+			GameState.trigger_game_over()
