@@ -15,8 +15,6 @@ const SFX_PATHS := {
 
 const SFX_POOL_SIZE := 8
 
-const SettingsScript := preload("res://scripts/ui/settings.gd")
-
 var _sfx_streams := {}
 var _sfx_players: Array[AudioStreamPlayer] = []
 var _sfx_index := 0
@@ -51,19 +49,7 @@ func _ready() -> void:
 	GameState.level_up.connect(_on_level_up)
 	GameState.game_over.connect(_on_game_over)
 	GameState.boss_incoming.connect(_on_boss_incoming)
-
-	# Zastosuj zapisane ustawienia (glosnosc) i wczytaj dlugosc sesji na starcie gry.
-	var s := SettingsScript.load_settings(SettingsScript.SETTINGS_PATH)
-	_apply_saved_bus("Music", s["music_vol"])
-	_apply_saved_bus("SFX", s["sfx_vol"])
-	GameState.session_length = int(s["session_length"])
-	GameState.reduce_shake = bool(s["reduce_shake"])
-	GameState.reduce_flashing = bool(s["reduce_flashing"])
-
-func _apply_saved_bus(bus_name: String, value: float) -> void:
-	var idx := AudioServer.get_bus_index(bus_name)
-	if idx != -1:
-		AudioServer.set_bus_volume_db(idx, SettingsScript.slider_to_db(value))
+	# Glosnosc busow + sesja/accessibility ustawia SettingsStore (autoload przed AudioManager).
 
 func _on_level_up(_new_level: int) -> void:
 	play_sfx("level_up")
