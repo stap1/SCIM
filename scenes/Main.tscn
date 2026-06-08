@@ -3,6 +3,7 @@
 [ext_resource type="Script" uid="uid://dojtumr0hthqr" path="res://scripts/systems/main.gd" id="1_elqb8"]
 [ext_resource type="Texture2D" uid="uid://dwav8pccjvlxl" path="res://assets/harpun.svg.svg" id="3_jyhfs"]
 [ext_resource type="PackedScene" uid="uid://df7rbwsa6d6ec" path="res://scenes/player/boat.tscn" id="3_sugp2"]
+[ext_resource type="Script" path="res://scripts/systems/enemy_spawner.gd" id="4_spawner"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_0wfyh"]
 bg_color = Color(0.06, 0.06, 0.06, 1)
@@ -23,10 +24,10 @@ offset_bottom = 1000.0
 color = Color(0.16470589, 0.2901961, 0.41960785, 1)
 mouse_filter = 2
 
-[node name="Timer" type="Timer" parent="." unique_id=840186147]
-autostart = true
-
 [node name="Boat" parent="." unique_id=1889304063 instance=ExtResource("3_sugp2")]
+
+[node name="EnemySpawner" type="Node" parent="."]
+script = ExtResource("4_spawner")
 
 [node name="TimeLabel" type="Label" parent="." unique_id=76601758]
 offset_left = -210.0

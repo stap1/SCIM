@@ -1,64 +1,73 @@
-extends Area2D
+extends CharacterBody2D
 
-var speed = 150.0
-var player_node = null
+@export var speed: float = 80.0
+@export var max_health: float = 10.0
+
+var health: float
 var is_dying: bool = false
+var target: Node2D = null
 
-func _ready():
+func _ready() -> void:
+	health = max_health
 	add_to_group("enemies")
-	player_node = get_tree().get_first_node_in_group("player")
-	
+
 	if has_node("SpawnSound"):
 		$SpawnSound.play()
-		
-	# Nasłuchujemy, czy meduza fizycznie wpadła na ciało gracza (łódź)
-	body_entered.connect(_on_body_entered)
 
-func _process(delta):
+	# Kontakt-damage do gracza: CharacterBody2D nie emituje body_entered,
+	# wiec wykrywamy kontakt dzieckiem Area2D "DamageArea".
+	if has_node("DamageArea"):
+		$DamageArea.body_entered.connect(_on_damage_area_body_entered)
+
+func set_target(t: Node2D) -> void:
+	target = t
+
+func _physics_process(_delta: float) -> void:
 	if GameState.is_paused or GameState.is_game_over:
 		return
 
-	if player_node == null or not is_instance_valid(player_node):
-		player_node = get_tree().get_first_node_in_group("player")
-	
-	if player_node == null:
+	if target == null or not is_instance_valid(target):
+		target = get_tree().get_first_node_in_group("player")
+	if target == null:
 		return
-		
-	var direction = (player_node.global_position - global_position).normalized()
-	position += direction * speed * delta
 
-func die():
-	# Death guard: pierwsza smierc wygrywa, kolejne wywolania sa ignorowane (brak podwojnego queue_free).
+	velocity = (target.global_position - global_position).normalized() * speed
+	move_and_slide()
+
+func take_damage(amount: float) -> void:
+	health -= amount
+	if health <= 0.0:
+		die()
+
+func die() -> void:
+	# Death guard: pierwsza smierc wygrywa, kolejne wywolania ignorowane (brak podwojnego queue_free).
 	if is_dying:
 		return
 	is_dying = true
 
-	set_process(false)
-	
-	# ZAMIAST chować całą meduzę (co ukryłoby też cząsteczki), chowamy tylko jej grafikę!
+	set_physics_process(false)
+
+	# Chowamy tylko grafike, by czasteczki dokonczyly animacje.
 	if has_node("Sprite2D"):
 		$Sprite2D.hide()
-		
-	# Wyłączamy kolizję natychmiast, żeby harpuny przez nią przelatywały po jej śmierci
-	set_deferred("monitoring", false)
-	set_deferred("monitorable", false)
-	
-	# --- ODPALAMY WYBUCH (JUICE) ---
+
+	# Wylaczamy wykrywanie kontaktu, by martwa meduza nie zadawala obrazen ani nie byla ponownie trafiana.
+	if has_node("DamageArea"):
+		$DamageArea.set_deferred("monitoring", false)
+		$DamageArea.set_deferred("monitorable", false)
+
 	if has_node("DeathParticles"):
 		$DeathParticles.emitting = true
-	
-	# Odpalamy dźwięk
+
 	if has_node("DeathSound"):
 		$DeathSound.play()
-		
-	# Czekamy równą 1 sekundę, aby cząsteczki na spokojnie opadły, zanim zniszczymy obiekt
+
+	# Czekamy az czasteczki opadna, dopiero potem niszczymy obiekt.
 	await get_tree().create_timer(1.0).timeout
-	
 	queue_free()
 
-# --- ZADAWANIE OBRAŻEŃ ---
-func _on_body_entered(body: Node2D) -> void:
-	# Sprawdzamy, czy obiekt z którym się zderzyliśmy to łódź gracza
+# --- Kontakt z lodzia (kamikaze) ---
+func _on_damage_area_body_entered(body: Node2D) -> void:
 	if body.is_in_group("player") and body.has_method("take_damage"):
-		body.take_damage(20.0) # Zadajemy 20 pkt obrażeń
-		die() # Meduza wybucha po ugryzieniu (styl kamikadze)
+		body.take_damage(20.0)
+		die()
