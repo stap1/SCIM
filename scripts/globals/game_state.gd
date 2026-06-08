@@ -68,18 +68,31 @@ func add_score(amount: int) -> void:
 	score_changed.emit(score)
 
 # Wymuszony awans (nagroda za pokonanie bossa) - zwieksza poziom i emituje level_up.
+# Respektuje cap poziomu (na maksie nagroda nie przekracza GameConfig.MAX_LEVEL).
 func grant_level_up() -> void:
+	if level >= GameConfig.MAX_LEVEL:
+		return
 	level += 1
 	level_up.emit(level)
 
 func add_xp(amount: int) -> void:
+	# Cap poziomu (GameConfig.MAX_LEVEL): na maksie XP nie ma juz dokad rosnac.
+	if level >= GameConfig.MAX_LEVEL:
+		xp = 0
+		xp_to_next = 0
+		xp_changed.emit(xp)
+		return
 	xp += amount
-	# Wiele awansow naraz: while (nie if) - duza wartosc nie gubi poziomow.
-	while xp >= xp_threshold(level):
+	# Wiele awansow naraz: while (nie if) - duza wartosc nie gubi poziomow; stop na capie.
+	while level < GameConfig.MAX_LEVEL and xp >= xp_threshold(level):
 		xp -= xp_threshold(level)
 		level += 1
 		level_up.emit(level)
-	xp_to_next = xp_threshold(level)
+	if level >= GameConfig.MAX_LEVEL:
+		xp = 0
+		xp_to_next = 0
+	else:
+		xp_to_next = xp_threshold(level)
 	xp_changed.emit(xp)
 
 # Czysta funkcja: ile XP potrzeba na dany poziom. Wzor: level*10 + (level-1)^2 * 5.
