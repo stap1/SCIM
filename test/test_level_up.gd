@@ -5,6 +5,10 @@ extends GutTest
 const LevelUpScene := preload("res://scenes/ui/level_up.tscn")
 const LevelUpScript := preload("res://scripts/ui/level_up.gd")
 
+func before_each() -> void:
+	# Reset stanu (czysci tez poziomy ulepszen przez session_reset) - pula kart pelna.
+	GameState.reset()
+
 func after_each() -> void:
 	# Bezpiecznik: gdyby test zostawil zapauzowane drzewo.
 	get_tree().paused = false

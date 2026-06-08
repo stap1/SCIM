@@ -26,9 +26,18 @@ func _ready() -> void:
 
 func _on_level_up(_new_level: int) -> void:
 	_current_ids = pick_three(_upgrade_pool(), randi())
+	# Wszystkie ulepszenia wyczerpane (max_level) - nie pauzuj, by nie zablokowac gry.
+	if _current_ids.is_empty():
+		return
 	for i in cards.size():
-		if cards[i] and i < _current_ids.size():
-			_set_card_text(cards[i], _current_ids[i])
+		var card = cards[i]
+		if card == null:
+			continue
+		if i < _current_ids.size():
+			card.show()
+			_set_card_text(card, _current_ids[i])
+		else:
+			card.hide()
 	if panel:
 		panel.show()
 	get_tree().paused = true
@@ -45,12 +54,9 @@ func _flash() -> void:
 	var t := create_tween()
 	t.tween_property(flash, "color:a", 0.0, 0.4)
 
-# Pula id ulepszen z jedynego zrodla (autoload Upgrades).
+# Pula id ulepszen jeszcze niewyczerpanych (Upgrades pilnuje max_level).
 func _upgrade_pool() -> Array[String]:
-	var pool: Array[String] = []
-	for id in Upgrades.UPGRADES:
-		pool.append(id)
-	return pool
+	return Upgrades.available_ids()
 
 func _set_card_text(card: Node, id: String) -> void:
 	var text := id

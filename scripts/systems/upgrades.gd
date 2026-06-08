@@ -8,33 +8,59 @@ const UPGRADES := {
 		"id": "faster_attack",
 		"name": "Szybszy harpun",
 		"description": "Atak co 15% krocej",
+		"max_level": 3,
 	},
 	"longer_range": {
 		"id": "longer_range",
 		"name": "Dluzszy zasieg",
 		"description": "Zasieg ataku +20%",
+		"max_level": 3,
 	},
 	"tougher_hull": {
 		"id": "tougher_hull",
 		"name": "Mocniejszy kadlub",
 		"description": "Max HP +30 (i +30 HP)",
+		"max_level": 3,
 	},
 	"faster_boat": {
 		"id": "faster_boat",
 		"name": "Szybsza lodz",
 		"description": "Predkosc +20%",
+		"max_level": 3,
 	},
 	"resource_magnet": {
 		"id": "resource_magnet",
 		"name": "Magnes na zasoby",
 		"description": "Zasieg zbierania XP +40%",
+		"max_level": 3,
 	},
 	"double_harpoon": {
 		"id": "double_harpoon",
 		"name": "Podwojny harpun",
 		"description": "Atakuj 2 najblizszych wrogow",
+		"max_level": 1,
 	},
 }
+
+# Aktualne poziomy wybranych ulepszen (id -> ile razy wzieto). Resetowane na nowa sesje.
+var _levels: Dictionary = {}
+
+func _ready() -> void:
+	GameState.session_reset.connect(reset_levels)
+
+func reset_levels() -> void:
+	_levels.clear()
+
+func level_of(id: String) -> int:
+	return _levels.get(id, 0)
+
+# Ulepszenia jeszcze nie wyczerpane (poziom < max_level) - do losowania kart.
+func available_ids() -> Array[String]:
+	var out: Array[String] = []
+	for id in UPGRADES:
+		if level_of(id) < int(UPGRADES[id]["max_level"]):
+			out.append(id)
+	return out
 
 # --- Czyste funkcje (bez zaleznosci od drzewa, testowalne) ---
 static func apply_faster_attack(interval: float) -> float:
@@ -57,6 +83,10 @@ static func apply_double_harpoon() -> int:
 
 # --- Aplikacja efektu do wezlow gry (luzne powiazanie przez grupy) ---
 func apply(id: String) -> void:
+	if not UPGRADES.has(id):
+		return
+	# Liczymy wybor (cap stackowania). Robimy to przed efektem - wybor zaszedl niezaleznie.
+	_levels[id] = level_of(id) + 1
 	match id:
 		"faster_attack":
 			var aa := _auto_attacker()
