@@ -7,6 +7,7 @@ extends Node
 @export var max_enemies: int = 30
 
 const EnemyScene := preload("res://scenes/enemies/enemy.tscn")
+const DeathBurstScene := preload("res://scenes/death_burst.tscn")
 
 var _timer: Timer
 
@@ -37,6 +38,13 @@ func _on_timeout() -> void:
 	enemy.global_position = pos
 	if player != null and enemy.has_method("set_target"):
 		enemy.set_target(player)
+	# Particle smierci spawnujemy do current_scene (nie do znikajacego wroga).
+	enemy.died.connect(_on_enemy_died)
+
+func _on_enemy_died(pos: Vector2) -> void:
+	var burst := DeathBurstScene.instantiate()
+	get_parent().add_child(burst)
+	burst.global_position = pos
 
 # Czysta funkcja (bez zaleznosci od drzewa): pozycja tuz poza prostokatem widoku.
 # edge: 0=gora, 1=prawo, 2=dol, 3=lewo. Zawsze zwraca punkt poza [0, viewport_size].

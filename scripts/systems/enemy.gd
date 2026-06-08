@@ -1,7 +1,10 @@
 extends CharacterBody2D
 
+signal died(position: Vector2)
+
 @export var speed: float = 80.0
 @export var max_health: float = 10.0
+@export var kill_score: int = 1
 
 var health: float
 var is_dying: bool = false
@@ -35,29 +38,12 @@ func take_damage(amount: float) -> void:
 		die()
 
 func die() -> void:
-	# Death guard: pierwsza smierc wygrywa, kolejne wywolania ignorowane (brak podwojnego queue_free).
+	# Death guard: pierwsza smierc wygrywa, kolejne wywolania ignorowane (brak podwojnego score/queue_free).
 	if is_dying:
 		return
 	is_dying = true
 
-	set_physics_process(false)
-
-	# Martwy wrog znika z kolizji: nie jest juz trafiany przez harpun ani wykrywany przez Hurtbox lodzi
-	# (warstwa 0 = poza maskami), wiec przez 1s animacji czasteczek nie zadaje obrazen.
-	set_deferred("collision_layer", 0)
-	if has_node("CollisionShape2D"):
-		$CollisionShape2D.set_deferred("disabled", true)
-
-	# Chowamy tylko grafike, by czasteczki dokonczyly animacje.
-	if has_node("Sprite2D"):
-		$Sprite2D.hide()
-
-	if has_node("DeathParticles"):
-		$DeathParticles.emitting = true
-
-	if has_node("DeathSound"):
-		$DeathSound.play()
-
-	# Czekamy az czasteczki opadna, dopiero potem niszczymy obiekt.
-	await get_tree().create_timer(1.0).timeout
+	GameState.add_score(kill_score)
+	# Sygnal niesie pozycje ZANIM wezel zniknie - DeathBurst spawnuje sie niezaleznie w current_scene.
+	died.emit(global_position)
 	queue_free()
