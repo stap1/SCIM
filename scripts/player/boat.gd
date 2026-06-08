@@ -24,18 +24,13 @@ const POOL_SIZE: int = 20
 @onready var shoot_sound: AudioStreamPlayer2D = $ShootSound
 @onready var hurtbox: Area2D = $Hurtbox
 
-# Szukamy paska zdrowia w scenie głównej
-@onready var health_bar: ProgressBar = get_parent().get_node_or_null("HealthBar")
-
 func _ready() -> void:
 	add_to_group("player")
 
 	# HP gracza zyje w GameState (jedyne zrodlo prawdy). Reset na starcie sceny (takze po restarcie).
+	# Pasek zycia pokazuje HUD (read-only przez sygnal health_changed) - lodz go nie dotyka.
 	GameState.health = GameState.max_health
 	GameState.health_changed.connect(_on_health_changed)
-	if health_bar:
-		health_bar.max_value = GameState.max_health
-		health_bar.value = GameState.health
 
 	# Hurtbox wykrywa wrogow: sygnal daje natychmiastowy pierwszy cios,
 	# a polling w _physics_process zapewnia obrazenia ciagle (oba bramkowane cooldownem).
@@ -122,8 +117,6 @@ func _flash_hit() -> void:
 	tw.tween_property(self, "modulate", Color(1, 1, 1), 0.15)
 
 func _on_health_changed(new_health: float) -> void:
-	if health_bar:
-		health_bar.value = new_health
 	if new_health <= 0.0:
 		die()
 

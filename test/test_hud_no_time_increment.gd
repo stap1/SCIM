@@ -21,6 +21,9 @@ func test_hud_does_not_increment_time() -> void:
 		"HUD nie moze wywolywac add_time - czas liczy tylko main.gd")
 
 func test_time_counted_in_main() -> void:
+	# Od KROK 7 main.gd liczy czas przez GameState.add_time(delta) - jedyne miejsce liczenia.
 	var src := _read_source("res://scripts/systems/main.gd")
-	assert_true(src.find("GameState.time +=") != -1,
-		"Czas musi byc liczony w main.gd (jedyne miejsce inkrementacji czasu)")
+	assert_true(src.find("GameState.add_time") != -1,
+		"Czas musi byc liczony w main.gd przez GameState.add_time (jedyne miejsce)")
+	assert_true(src.find("GameState.time +=") == -1,
+		"main.gd nie moze inkrementowac czasu wprost - tylko przez add_time")

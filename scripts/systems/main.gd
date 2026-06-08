@@ -1,7 +1,5 @@
 extends Node2D
 
-@onready var time_label: Label = $TimeLabel
-
 # Celujemy bezposrednio w ColorRect, ktory trzyma cale UI smierci
 @onready var game_over_bg = $GameOverScreen/ColorRect
 @onready var restart_button = $GameOverScreen/ColorRect/RestartButton
@@ -22,11 +20,9 @@ func _ready() -> void:
 		game_over_bg.modulate.a = 0.0
 
 func _process(delta: float) -> void:
-	# JEDYNE miejsce liczenia czasu w calym projekcie (HUD jest read-only).
+	# JEDYNE miejsce liczenia czasu w calym projekcie (HUD jest read-only, czyta przez sygnaly).
 	if not GameState.is_game_over:
-		GameState.time += delta
-		if time_label:
-			time_label.text = "Czas: " + str(int(GameState.time)) + "s"
+		GameState.add_time(delta)
 	else:
 		# Odpalamy efekt wejscia raz, gdy gracz umrze i tlo wciaz jest schowane
 		if game_over_bg and not game_over_bg.visible:
