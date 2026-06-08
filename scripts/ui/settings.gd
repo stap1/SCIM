@@ -1,9 +1,10 @@
 extends Control
 
 # Ekran ustawien: glosnosc Music/SFX, dlugosc sesji, accessibility (reduce shake/flash).
-# Zapis/odczyt przez ConfigFile (user://settings.cfg). Czyste funkcje na dole.
+# Trwalosc i czyste funkcje sa w neutralnym autoloadzie SettingsStore (P1.5) - ten ekran
+# tylko buduje UI i deleguje zapis/odczyt do SettingsStore. Nie zawiera juz wlasnej
+# logiki persystencji/audio, by gameplay/audio nie musialy siegac do skryptu UI.
 
-const SETTINGS_PATH := "user://settings.cfg"
 const SESSION_LENGTHS := [10, 15, 20]
 
 @onready var music_slider: HSlider = get_node_or_null("Panel/MusicSlider")
@@ -18,7 +19,7 @@ func _ready() -> void:
 		for length in SESSION_LENGTHS:
 			session_option.add_item("%d min" % length)
 
-	var s := load_settings(SETTINGS_PATH)
+	var s := SettingsStore.load_settings(SettingsStore.SETTINGS_PATH)
 
 	if music_slider:
 		music_slider.min_value = 0.0
@@ -45,18 +46,18 @@ func _ready() -> void:
 	if back_button:
 		back_button.pressed.connect(_on_back)
 
-	_apply_bus("Music", s["music_vol"])
-	_apply_bus("SFX", s["sfx_vol"])
+	SettingsStore.apply_bus("Music", s["music_vol"])
+	SettingsStore.apply_bus("SFX", s["sfx_vol"])
 	GameState.session_length = int(s["session_length"])
 	GameState.reduce_shake = bool(s["reduce_shake"])
 	GameState.reduce_flashing = bool(s["reduce_flashing"])
 
 func _on_music_changed(v: float) -> void:
-	_apply_bus("Music", v)
+	SettingsStore.apply_bus("Music", v)
 	_save()
 
 func _on_sfx_changed(v: float) -> void:
-	_apply_bus("SFX", v)
+	SettingsStore.apply_bus("SFX", v)
 	_save()
 
 func _on_session_selected(idx: int) -> void:
@@ -74,50 +75,8 @@ func _on_reduce_flash_toggled(pressed: bool) -> void:
 func _on_back() -> void:
 	get_tree().change_scene_to_file("res://scenes/MainMenu.tscn")
 
-func _apply_bus(bus_name: String, value: float) -> void:
-	var i := AudioServer.get_bus_index(bus_name)
-	if i != -1:
-		AudioServer.set_bus_volume_db(i, slider_to_db(value))
-
 func _save() -> void:
 	var mv: float = music_slider.value if music_slider else 1.0
 	var sv: float = sfx_slider.value if sfx_slider else 1.0
-	save_settings(SETTINGS_PATH, mv, sv, GameState.session_length,
+	SettingsStore.save_settings(SettingsStore.SETTINGS_PATH, mv, sv, GameState.session_length,
 		GameState.reduce_shake, GameState.reduce_flashing)
-
-# --- Czyste funkcje (testowalne) ---
-
-# 0.0 -> -80 db (cisza), 1.0 -> 0 db. Liniowa interpolacja w db.
-static func slider_to_db(value_0_1: float) -> float:
-	return -80.0 + clampf(value_0_1, 0.0, 1.0) * 80.0
-
-# Accessibility: efekt grany tylko gdy redukcja wylaczona.
-static func should_apply_shake(reduce_shake_enabled: bool) -> bool:
-	return not reduce_shake_enabled
-
-static func should_flash(reduce_flashing_enabled: bool) -> bool:
-	return not reduce_flashing_enabled
-
-static func save_settings(path: String, music_vol: float, sfx_vol: float, session_length: int,
-		reduce_shake: bool = false, reduce_flashing: bool = false) -> void:
-	var cfg := ConfigFile.new()
-	cfg.set_value("audio", "music_vol", music_vol)
-	cfg.set_value("audio", "sfx_vol", sfx_vol)
-	cfg.set_value("game", "session_length", session_length)
-	cfg.set_value("accessibility", "reduce_shake", reduce_shake)
-	cfg.set_value("accessibility", "reduce_flashing", reduce_flashing)
-	cfg.save(path)
-
-static func load_settings(path: String) -> Dictionary:
-	var cfg := ConfigFile.new()
-	var result := {
-		"music_vol": 1.0, "sfx_vol": 1.0, "session_length": 15,
-		"reduce_shake": false, "reduce_flashing": false,
-	}
-	if cfg.load(path) == OK:
-		result["music_vol"] = cfg.get_value("audio", "music_vol", 1.0)
-		result["sfx_vol"] = cfg.get_value("audio", "sfx_vol", 1.0)
-		result["session_length"] = cfg.get_value("game", "session_length", 15)
-		result["reduce_shake"] = cfg.get_value("accessibility", "reduce_shake", false)
-		result["reduce_flashing"] = cfg.get_value("accessibility", "reduce_flashing", false)
-	return result

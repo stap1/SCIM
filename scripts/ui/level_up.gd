@@ -6,8 +6,6 @@ extends CanvasLayer
 
 signal upgrade_chosen(id: String)
 
-const Accessibility := preload("res://scripts/ui/settings.gd")
-
 @onready var panel: Control = $Panel
 @onready var cards: Array = [$Panel/Card0, $Panel/Card1, $Panel/Card2]
 
@@ -52,7 +50,7 @@ func _flash() -> void:
 	var flash := get_node_or_null("Flash")
 	if flash == null:
 		return
-	if not Accessibility.should_flash(GameState.reduce_flashing):
+	if not SettingsStore.should_flash(GameState.reduce_flashing):
 		return
 	flash.color = Color(1, 1, 1, 0.7)
 	var t := create_tween()

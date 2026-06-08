@@ -18,8 +18,6 @@ var wave_time: float = 0.0
 @onready var hurtbox: Area2D = $Hurtbox
 @onready var camera: Camera2D = get_node_or_null("Camera2D")
 
-const Accessibility := preload("res://scripts/ui/settings.gd")
-
 func _ready() -> void:
 	add_to_group("player")
 
@@ -101,7 +99,7 @@ func try_take_enemy_hit() -> void:
 func _do_shake() -> void:
 	if camera == null:
 		return
-	if not Accessibility.should_apply_shake(GameState.reduce_shake):
+	if not SettingsStore.should_apply_shake(GameState.reduce_shake):
 		return
 	var t := create_tween()
 	camera.offset = Vector2(randf_range(-6.0, 6.0), randf_range(-6.0, 6.0))

@@ -109,7 +109,7 @@ Metryki: ~1421 linii logiki (20 plików `.gd`) + 19 linii shadera; ~844 linii te
 | ✅ P1.2 | ~~`max_level` ulepszeń + filtr `pick_three`~~ **WYKONANE** - `max_level` per ulepszenie, `available_ids()` filtruje wyczerpane, reset na `session_reset`, anty-softlock | E4 | PROG | #6 |
 | ✅ P1.3 | ~~`GameConfig` (jedno źródło balansu)~~ **WYKONANE** - autoload tylko-`const` (`scripts/globals/game_config.gd`), pierwszy w kolejce; `START_HEALTH`→`PLAYER_MAX_HP` + rozsiane literały (gracz/harpun/wróg/boss/XP/spawn) czytają z GameConfig; test wiringu `test_game_config.gd` (re-hardcode = oblany test) | E1 | PROG | #3 |
 | ✅ P1.4 | ~~`EnemyBase` (usuń duplikację enemy↔boss)~~ **WYKONANE** - `class_name EnemyBase extends CharacterBody2D` (`scripts/systems/enemy_base.gd`); wspólne `health`/`is_dying`/`target`/`set_target`/`take_damage`/`die`/grupa `enemies` + haki `_on_health_changed`/`_on_death`; `enemy.gd` i `motor_boat.gd` dziedziczą, bazowe HP/score z GameConfig w `_init()`; guard `is_dying` jako regresja #2 w `test_enemy_base.gd` | E3 | PROG | #1 #6 |
-| P1.5 | Neutralny `SettingsStore`/accessibility (usuń coupling gameplay/audio→UI) | E5 E6 | PROG | #1 #6 |
+| ✅ P1.5 | ~~Neutralny `SettingsStore`/accessibility (usuń coupling gameplay/audio→UI)~~ **WYKONANE** - autoload `scripts/globals/settings_store.gd` (po GameState, przed AudioManager) jest jedynym właścicielem trwałości (ConfigFile) + czystych funkcji (`slider_to_db`/`should_apply_shake`/`should_flash`/`save_settings`/`load_settings`) + `apply_saved()`/`apply_bus()`; `boat.gd`/`audio_manager.gd`/`level_up.gd` czytają z `SettingsStore` zamiast `preload`ować skrypt ekranu UI; `settings.gd` tylko buduje UI i deleguje; strażnik regresji w `test_settings_store.gd` (źródła gameplay/audio nie zawierają `scripts/ui/settings.gd`) | E5 E6 | PROG | #1 #6 |
 | P1.6 | Czytelność stanu: rozdz. sesja/ustawienia + reset + usunięcie `eco_score` | E1 E7 | PROG | #1 #6 |
 
 **P2 - jakość / rozszerzalność / UX**
@@ -138,7 +138,7 @@ Metryki: ~1421 linii logiki (20 plików `.gd`) + 19 linii shadera; ~844 linii te
 
 - **Stan ogólny: zdrowy.** Kompletny, działający, web-build OK, 87 testów + 4 regresje zielone. **Zero błędów krytycznych.**
 - **Najmocniejsze:** rdzeń `GameState` (single source), HUD read-only, pooling/targeting, obsługa błędów audio/persystencji (lepsza niż spec), warstwa efektów web-friendly, dyscyplina czystych funkcji + testów.
-- **Najważniejszy dług:** (1) ✅ orby XP (P0.1), (2) ✅ error-scan CI (P0.2), (3) ✅ warstwy kolizji (P1.1), (4) ✅ `max_level` (P1.2) - **wszystkie 4 zamknięte**. Dodatkowo ✅ `GameConfig` (P1.3) i ✅ `EnemyBase` (P1.4). Pozostaje P1.5-P1.6 (SettingsStore, czytelność stanu) + P2/P3.
+- **Najważniejszy dług:** (1) ✅ orby XP (P0.1), (2) ✅ error-scan CI (P0.2), (3) ✅ warstwy kolizji (P1.1), (4) ✅ `max_level` (P1.2) - **wszystkie 4 zamknięte**. Dodatkowo ✅ `GameConfig` (P1.3), ✅ `EnemyBase` (P1.4) i ✅ `SettingsStore` (P1.5). Pozostaje P1.6 (czytelność stanu) + P2/P3.
 - **Dokumentacja:** pogodzić TECH_SPEC z rzeczywistością (wdrożyć GameConfig/EnemyBase/named-layers/max_level/OGG/InputMap; resztę zaktualizować do as-built; EventBus odrzucić).
 - **Kolejność prac:** P0 → P1 → P2 → P3, każda zmiana z testem, utrzymać 4 testy regresji, po każdej GUT + error-scan zielone.
 
