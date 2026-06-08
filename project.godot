@@ -22,9 +22,9 @@ GameState="*uid://kguqub804fro"
 Upgrades="*res://scripts/systems/upgrades.gd"
 AudioManager="*res://scripts/systems/audio_manager.gd"
 
-[audio]
+[editor_plugins]
 
-buses/default_bus_layout="res://default_bus_layout.tres"
+enabled=PackedStringArray("res://addons/gut/plugin.cfg")
 
 [layer_names]
 
@@ -32,10 +32,6 @@ buses/default_bus_layout="res://default_bus_layout.tres"
 2d_physics/layer_2="enemy"
 2d_physics/layer_3="harpoon"
 2d_physics/layer_4="pickup"
-
-[editor_plugins]
-
-enabled=PackedStringArray("res://addons/gut/plugin.cfg")
 
 [physics]
 

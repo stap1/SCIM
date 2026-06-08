@@ -40,6 +40,10 @@ func _on_timeout() -> void:
 
 	_check_boss()
 
+	# Karencja startowa - brak zwyklych wrogow przez pierwsze SPAWN_GRACE_SECONDS.
+	if is_in_grace(GameState.time, GameConfig.SPAWN_GRACE_SECONDS):
+		return
+
 	if get_tree().get_nodes_in_group("enemies").size() >= max_enemies:
 		return
 
@@ -87,6 +91,10 @@ func _on_enemy_died(pos: Vector2) -> void:
 	orb.global_position = pos
 
 # --- Mini-boss ---
+
+# Czysta funkcja: czy trwa karencja startowa (brak zwyklych wrogow).
+static func is_in_grace(time: float, grace: float) -> bool:
+	return time < grace
 
 # Czysta funkcja: czas na bossa (dokladnie raz po MINIBOSS_SPAWN_TIME).
 static func should_spawn_boss(time: float, already_spawned: bool) -> bool:
