@@ -77,6 +77,7 @@ func die() -> void:
 	if is_dying:
 		return
 	is_dying = true
+	GameState.enemies_killed += 1
 	GameState.add_score(kill_score)
 	boss_defeated.emit(global_position)
 	queue_free()

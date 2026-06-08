@@ -43,6 +43,7 @@ func die() -> void:
 		return
 	is_dying = true
 
+	GameState.enemies_killed += 1
 	GameState.add_score(kill_score)
 	# Sygnal niesie pozycje ZANIM wezel zniknie - DeathBurst spawnuje sie niezaleznie w current_scene.
 	died.emit(global_position)

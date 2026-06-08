@@ -1,0 +1,35 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/scores.gd" id="1_sc"]
+
+[node name="Scores" type="Control"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource("1_sc")
+
+[node name="Background" type="ColorRect" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0.1, 0.13, 0.18, 1)
+
+[node name="Panel" type="VBoxContainer" parent="."]
+offset_left = 420.0
+offset_top = 140.0
+offset_right = 740.0
+offset_bottom = 520.0
+theme_override_constants/separation = 16
+
+[node name="Title" type="Label" parent="Panel"]
+theme_override_font_sizes/font_size = 40
+horizontal_alignment = 1
+text = "Najlepsze wyniki"
+
+[node name="ScoresList" type="Label" parent="Panel"]
+theme_override_font_sizes/font_size = 28
+horizontal_alignment = 1
+text = "Brak wynikow"
+
+[node name="BackButton" type="Button" parent="Panel"]
+text = "Powrot"
