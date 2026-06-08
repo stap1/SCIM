@@ -99,7 +99,7 @@ Metryki: ~1421 linii logiki (20 plików `.gd`) + 19 linii shadera; ~844 linii te
 **P0 - stabilność / realny defekt**
 | # | Zadanie | Etap | Właśc. | Prio (#) |
 |---|---|---|---|---|
-| P0.1 | Cap/lifetime orbów XP (jedyna realna kumulacja per-klatka) | E3 | PROG | #4 #5 |
+| ✅ P0.1 | ~~Cap/lifetime orbów XP~~ **WYKONANE** - `xp_orb.lifetime` (12 s, niezebrane orby znikają) + test | E3 | PROG | #4 #5 |
 | P0.2 | Twardy error-scan w CI (headless `--quit-after` + grep `SCRIPT ERROR`) | E8 | PROG | #5 |
 
 **P1 - wysoka wartość (hybryda + balans + czytelność)**

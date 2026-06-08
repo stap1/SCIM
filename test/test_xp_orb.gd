@@ -29,3 +29,11 @@ func test_orb_collects_only_once() -> void:
 	orb._collect() # drugie wywolanie - guard is_collected blokuje
 	assert_eq(GameState.xp, before + ov, "orb dodaje xp dokladnie raz (guard is_collected)")
 	await wait_physics_frames(1)
+
+func test_orb_despawns_after_lifetime() -> void:
+	# P0.1: niezebrany orb (brak gracza/poza zasiegiem) znika po lifetime - brak kumulacji.
+	var orb = XpOrbScene.instantiate()
+	orb.lifetime = 0.05
+	add_child_autofree(orb)
+	await wait_physics_frames(8)
+	assert_false(is_instance_valid(orb), "niezebrany orb znika po uplywie lifetime")
