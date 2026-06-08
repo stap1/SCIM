@@ -4,7 +4,7 @@
 
 # Imported translations (automatically generated)
 export.cfg
-export_presets.cfg
+# export_presets.cfg jest wersjonowany (preset Web/Windows dla buildu - krok 22)
 
 # Mono-specific ignores (jeśli używasz .NET)
 .mono/

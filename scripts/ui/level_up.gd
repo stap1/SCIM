@@ -6,6 +6,8 @@ extends CanvasLayer
 
 signal upgrade_chosen(id: String)
 
+const Accessibility := preload("res://scripts/ui/settings.gd")
+
 @onready var panel: Control = $Panel
 @onready var cards: Array = [$Panel/Card0, $Panel/Card1, $Panel/Card2]
 
@@ -30,6 +32,18 @@ func _on_level_up(_new_level: int) -> void:
 	if panel:
 		panel.show()
 	get_tree().paused = true
+	_flash()
+
+# Krotki rozblysk przy awansie - pomijany gdy accessibility "reduce flashing" wlaczone.
+func _flash() -> void:
+	var flash := get_node_or_null("Flash")
+	if flash == null:
+		return
+	if not Accessibility.should_flash(GameState.reduce_flashing):
+		return
+	flash.color = Color(1, 1, 1, 0.7)
+	var t := create_tween()
+	t.tween_property(flash, "color:a", 0.0, 0.4)
 
 # Pula id ulepszen z jedynego zrodla (autoload Upgrades).
 func _upgrade_pool() -> Array[String]:

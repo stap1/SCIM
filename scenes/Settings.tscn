@@ -48,5 +48,11 @@ text = "Dlugosc sesji"
 
 [node name="SessionOption" type="OptionButton" parent="Panel"]
 
+[node name="ReduceShakeCheck" type="CheckButton" parent="Panel"]
+text = "Ogranicz trzesienie ekranu"
+
+[node name="ReduceFlashCheck" type="CheckButton" parent="Panel"]
+text = "Ogranicz miganie"
+
 [node name="BackButton" type="Button" parent="Panel"]
 text = "Powrot"

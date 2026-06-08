@@ -31,6 +31,9 @@ var xp_to_next: int = 0
 var magnet_range_mult: float = 1.0
 # Dlugosc sesji w minutach (ustawienie gracza, ladowane z configu - nie resetowane).
 var session_length: int = 15
+# Accessibility (ustawienia gracza) - czytane przez kod efektow (shake/flash).
+var reduce_shake: bool = false
+var reduce_flashing: bool = false
 var eco_score: int = 0
 var enemies_killed: int = 0
 var miniboss_defeated: bool = false

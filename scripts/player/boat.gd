@@ -15,6 +15,9 @@ var time_since_last_hit: float = 999.0
 var wave_time: float = 0.0
 
 @onready var hurtbox: Area2D = $Hurtbox
+@onready var camera: Camera2D = get_node_or_null("Camera2D")
+
+const Accessibility := preload("res://scripts/ui/settings.gd")
 
 func _ready() -> void:
 	add_to_group("player")
@@ -91,6 +94,17 @@ func try_take_enemy_hit() -> void:
 	time_since_last_hit = 0.0
 	if is_inside_tree():
 		_flash_hit()
+		_do_shake()
+
+# Trzesienie ekranu na trafieniu - pomijane gdy accessibility "reduce shake" wlaczone.
+func _do_shake() -> void:
+	if camera == null:
+		return
+	if not Accessibility.should_apply_shake(GameState.reduce_shake):
+		return
+	var t := create_tween()
+	camera.offset = Vector2(randf_range(-6.0, 6.0), randf_range(-6.0, 6.0))
+	t.tween_property(camera, "offset", Vector2.ZERO, 0.2)
 
 func _flash_hit() -> void:
 	modulate = Color(1, 0.3, 0.3)
@@ -102,9 +116,15 @@ func _on_health_changed(new_health: float) -> void:
 		die()
 
 func die() -> void:
-	# Game over wyzwala GameState.take_damage przy HP<=0. Tu tylko reakcja wizualna lodzi.
-	hide()
+	# Game over wyzwala GameState.take_damage przy HP<=0. Tu animacja smierci lodzi.
 	set_physics_process(false)
+	# ALWAYS, by animacja zagrala mimo get_tree().paused (ekran game over).
+	process_mode = Node.PROCESS_MODE_ALWAYS
+	var tween := create_tween()
+	tween.set_parallel(true)
+	tween.tween_property(self, "scale", scale * 1.5, 0.5)
+	tween.tween_property(self, "rotation", rotation + PI, 0.5)
+	tween.tween_property(self, "modulate:a", 0.0, 0.5)
 
 # Dzwiek strzalu - publiczne API dla AutoAttacker (SFX centralnie przez AudioManager).
 func play_shoot_sound() -> void:

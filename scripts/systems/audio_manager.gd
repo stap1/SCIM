@@ -57,6 +57,8 @@ func _ready() -> void:
 	_apply_saved_bus("Music", s["music_vol"])
 	_apply_saved_bus("SFX", s["sfx_vol"])
 	GameState.session_length = int(s["session_length"])
+	GameState.reduce_shake = bool(s["reduce_shake"])
+	GameState.reduce_flashing = bool(s["reduce_flashing"])
 
 func _apply_saved_bus(bus_name: String, value: float) -> void:
 	var idx := AudioServer.get_bus_index(bus_name)
