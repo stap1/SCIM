@@ -26,11 +26,6 @@ func _ready() -> void:
 	GameState.health = GameState.max_health
 	GameState.health_changed.connect(_on_health_changed)
 
-	# Hurtbox wykrywa wrogow: sygnal daje natychmiastowy pierwszy cios,
-	# a polling w _physics_process zapewnia obrazenia ciagle (oba bramkowane cooldownem).
-	if hurtbox:
-		hurtbox.body_entered.connect(_on_hurtbox_body_entered)
-
 func _physics_process(delta: float) -> void:
 	_handle_movement(delta)
 	move_and_slide()
@@ -39,7 +34,8 @@ func _physics_process(delta: float) -> void:
 		var target_angle = velocity.angle() + PI/2
 		rotation = rotate_toward(rotation, target_angle, rotation_speed * delta)
 
-	# Kontakt z wrogiem: Hurtbox wykrywa, obrazenia ida WYLACZNIE przez GameState, z cooldownem (i-frames).
+	# Kontakt z wrogiem - JEDNA sciezka: polling Hurtboxa co klatke fizyki (pierwszy cios
+	# w obrebie klatki + obrazenia ciagle). Obrazenia WYLACZNIE przez GameState, z cooldownem (i-frames).
 	time_since_last_hit += delta
 	if not GameState.is_game_over and _enemy_in_hurtbox():
 		try_take_enemy_hit()
@@ -72,10 +68,6 @@ func _handle_movement(delta: float) -> void:
 # Czysta funkcja: czy minelo dosc czasu od ostatniego trafienia (i-frames).
 static func can_take_hit(time_since_last: float, cooldown: float) -> bool:
 	return time_since_last >= cooldown
-
-func _on_hurtbox_body_entered(body: Node2D) -> void:
-	if not GameState.is_game_over and body.is_in_group("enemies"):
-		try_take_enemy_hit()
 
 func _enemy_in_hurtbox() -> bool:
 	if hurtbox == null:
@@ -129,7 +121,7 @@ func die() -> void:
 func play_shoot_sound() -> void:
 	AudioManager.play_sfx("harpoon_shot")
 
-# --- ODŚWIEŻANIE WIZUALNE I LICZNIK ---
+# --- ODŚWIEŻANIE WIZUALNE (juice fal). Licznik amunicji jest event-driven w HUD. ---
 func _process(delta: float) -> void:
 	if GameState.is_game_over:
 		return
@@ -139,10 +131,3 @@ func _process(delta: float) -> void:
 	if has_node("Sprite2D"):
 		$Sprite2D.position.y = sin(wave_time * 4.0) * 3.0
 		$Sprite2D.rotation = cos(wave_time * 2.5) * 0.05
-
-	# Pancerne aktualizowanie licznika przez Grupy
-	var ui_labels = get_tree().get_nodes_in_group("ammo_ui")
-	if ui_labels.size() > 0:
-		var pool = get_tree().get_first_node_in_group("harpoon_pool")
-		if pool:
-			ui_labels[0].text = str(pool.available_count()) + " / " + str(pool.total_count())
