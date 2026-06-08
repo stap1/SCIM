@@ -40,18 +40,28 @@ func _physics_process(delta: float) -> void:
 	if not GameState.is_game_over and _enemy_in_hurtbox():
 		try_take_enemy_hit()
 
-# Znormalizowany kierunek wejscia (WSAD + strzalki). Wydzielone dla testowalnosci.
+# Znormalizowany kierunek wejscia z akcji InputMap (move_*). Akcje pozwalaja na
+# remapowanie i sterowanie mobilne (przyciski dotykowe emituja te same akcje).
 func get_input_direction() -> Vector2:
-	var input_dir := Vector2.ZERO
-	if Input.is_key_pressed(KEY_RIGHT) or Input.is_key_pressed(KEY_D):
-		input_dir.x += 1
-	if Input.is_key_pressed(KEY_LEFT) or Input.is_key_pressed(KEY_A):
-		input_dir.x -= 1
-	if Input.is_key_pressed(KEY_DOWN) or Input.is_key_pressed(KEY_S):
-		input_dir.y += 1
-	if Input.is_key_pressed(KEY_UP) or Input.is_key_pressed(KEY_W):
-		input_dir.y -= 1
-	return input_dir.normalized()
+	return direction_from_input(
+		Input.is_action_pressed("move_right"),
+		Input.is_action_pressed("move_left"),
+		Input.is_action_pressed("move_down"),
+		Input.is_action_pressed("move_up"))
+
+# Czysta funkcja: kierunek z 4 stanow wcisniecia. Normalizacja gwarantuje, ze ruch
+# ukosny nie jest szybszy niz prosty; przeciwne kierunki kasuja sie.
+static func direction_from_input(right: bool, left: bool, down: bool, up: bool) -> Vector2:
+	var dir := Vector2.ZERO
+	if right:
+		dir.x += 1
+	if left:
+		dir.x -= 1
+	if down:
+		dir.y += 1
+	if up:
+		dir.y -= 1
+	return dir.normalized()
 
 # Czysta funkcja bez zaleznosci od drzewa scen: docelowa predkosc dla danego kierunku.
 # Normalizacja gwarantuje, ze ruch ukosny nie jest szybszy niz prosty.
