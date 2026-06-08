@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=3 uid="uid://dkvg8apcfepju"]
+[gd_scene load_steps=8 format=3 uid="uid://dkvg8apcfepju"]
 
 [ext_resource type="Script" uid="uid://dojtumr0hthqr" path="res://scripts/systems/main.gd" id="1_elqb8"]
 [ext_resource type="PackedScene" uid="uid://df7rbwsa6d6ec" path="res://scenes/player/boat.tscn" id="3_sugp2"]
@@ -6,6 +6,7 @@
 [ext_resource type="PackedScene" uid="uid://bgujj5qrm2th" path="res://scenes/ui/hud.tscn" id="5_hud"]
 [ext_resource type="PackedScene" path="res://scenes/ui/game_over.tscn" id="6_gameover"]
 [ext_resource type="Script" path="res://scripts/weapons/harpoon_pool.gd" id="7_pool"]
+[ext_resource type="PackedScene" path="res://scenes/ui/level_up.tscn" id="8_levelup"]
 
 [node name="Main" type="Node2D" unique_id=1150465566]
 position = Vector2(210, 228)
@@ -29,5 +30,7 @@ script = ExtResource("4_spawner")
 script = ExtResource("7_pool")
 
 [node name="HUD" parent="." instance=ExtResource("5_hud")]
+
+[node name="LevelUp" parent="." instance=ExtResource("8_levelup")]
 
 [node name="GameOver" parent="." instance=ExtResource("6_gameover")]

@@ -1,0 +1,74 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/level_up.gd" id="1_lu"]
+
+[node name="LevelUp" type="CanvasLayer"]
+layer = 5
+process_mode = 3
+script = ExtResource("1_lu")
+
+[node name="Panel" type="Control" parent="."]
+visible = false
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="Background" type="ColorRect" parent="Panel"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0.05, 0.05, 0.1, 0.85)
+
+[node name="Title" type="Label" parent="Panel"]
+offset_left = 340.0
+offset_top = 110.0
+offset_right = 820.0
+offset_bottom = 170.0
+theme_override_font_sizes/font_size = 40
+horizontal_alignment = 1
+text = "POZIOM W GORE - wybierz ulepszenie"
+
+[node name="Card0" type="Button" parent="Panel"]
+offset_left = 120.0
+offset_top = 260.0
+offset_right = 380.0
+offset_bottom = 460.0
+
+[node name="Label" type="Label" parent="Panel/Card0"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+horizontal_alignment = 1
+vertical_alignment = 1
+text = "Card0"
+
+[node name="Card1" type="Button" parent="Panel"]
+offset_left = 450.0
+offset_top = 260.0
+offset_right = 710.0
+offset_bottom = 460.0
+
+[node name="Label" type="Label" parent="Panel/Card1"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+horizontal_alignment = 1
+vertical_alignment = 1
+text = "Card1"
+
+[node name="Card2" type="Button" parent="Panel"]
+offset_left = 780.0
+offset_top = 260.0
+offset_right = 1040.0
+offset_bottom = 460.0
+
+[node name="Label" type="Label" parent="Panel/Card2"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+horizontal_alignment = 1
+vertical_alignment = 1
+text = "Card2"
