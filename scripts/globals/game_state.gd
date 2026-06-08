@@ -9,6 +9,8 @@ signal score_changed(new_score: int)
 signal time_changed(new_time: float)
 signal xp_changed(new_xp: int)
 signal level_up(new_level: int)
+# Ostrzezenie przed pojawieniem sie mini-bossa.
+signal boss_incoming
 # Emitowany DOKLADNIE RAZ, gdy gra sie konczy (guard w trigger_game_over).
 signal game_over
 
@@ -58,6 +60,11 @@ func add_time(delta: float) -> void:
 func add_score(amount: int) -> void:
 	score += amount
 	score_changed.emit(score)
+
+# Wymuszony awans (nagroda za pokonanie bossa) - zwieksza poziom i emituje level_up.
+func grant_level_up() -> void:
+	level += 1
+	level_up.emit(level)
 
 func add_xp(amount: int) -> void:
 	xp += amount

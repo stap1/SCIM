@@ -10,8 +10,15 @@ extends Node
 const JellyfishScene := preload("res://scenes/enemies/enemy.tscn")
 const BarracudaScene := preload("res://scenes/enemies/barracuda.tscn")
 const SharkScene := preload("res://scenes/enemies/shark.tscn")
+const MotorBoatScene := preload("res://scenes/enemies/motor_boat.tscn")
 const DeathBurstScene := preload("res://scenes/death_burst.tscn")
 const XpOrbScene := preload("res://scenes/xp_orb.tscn")
+
+const BOSS_TIME: float = 270.0
+const BOSS_WARNING: float = 2.0
+
+var _boss_warned: bool = false
+var _boss_spawned: bool = false
 
 # Balans edytowalny w jednym miejscu - bez dotykania logiki.
 var difficulty_curve := {
@@ -33,6 +40,9 @@ func _ready() -> void:
 func _on_timeout() -> void:
 	if GameState.is_paused or GameState.is_game_over:
 		return
+
+	_check_boss()
+
 	if get_tree().get_nodes_in_group("enemies").size() >= max_enemies:
 		return
 
@@ -77,6 +87,39 @@ func _on_enemy_died(pos: Vector2) -> void:
 	var orb := XpOrbScene.instantiate()
 	get_parent().add_child(orb)
 	orb.global_position = pos
+
+# --- Mini-boss ---
+
+# Czysta funkcja: czas na bossa (dokladnie raz po BOSS_TIME).
+static func should_spawn_boss(time: float, already_spawned: bool) -> bool:
+	return time >= BOSS_TIME and not already_spawned
+
+func _check_boss() -> void:
+	if not _boss_warned and GameState.time >= BOSS_TIME - BOSS_WARNING:
+		_boss_warned = true
+		GameState.boss_incoming.emit()
+	if should_spawn_boss(GameState.time, _boss_spawned):
+		_boss_spawned = true
+		_spawn_boss()
+
+func _spawn_boss() -> void:
+	var player := get_tree().get_first_node_in_group("player")
+	var boss := MotorBoatScene.instantiate()
+	get_parent().add_child(boss)
+	if player != null:
+		boss.global_position = player.global_position + Vector2(0, -350)
+		if boss.has_method("set_target"):
+			boss.set_target(player)
+	if boss.has_signal("boss_defeated"):
+		boss.boss_defeated.connect(_on_boss_defeated)
+
+func _on_boss_defeated(pos: Vector2) -> void:
+	GameState.miniboss_defeated = true
+	var burst := DeathBurstScene.instantiate()
+	get_parent().add_child(burst)
+	burst.global_position = pos
+	# Gwarantowany awans (nagroda) - pokazuje ekran wyboru ulepszenia.
+	GameState.grant_level_up()
 
 # Czysta funkcja: najwyzszy klucz krzywej <= aktualnej minucie (floor(time/60)).
 static func current_tier(time_seconds: float, curve_keys: Array[int]) -> int:

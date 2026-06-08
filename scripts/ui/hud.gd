@@ -6,11 +6,15 @@ extends CanvasLayer
 @onready var health_bar: ProgressBar = $HealthBar
 @onready var time_label: Label = $TimeLabel
 @onready var score_label: Label = $ScoreLabel
+@onready var boss_warning: Label = get_node_or_null("BossWarning")
 
 func _ready() -> void:
 	GameState.health_changed.connect(_on_health_changed)
 	GameState.time_changed.connect(_on_time_changed)
 	GameState.score_changed.connect(_on_score_changed)
+	GameState.boss_incoming.connect(_on_boss_incoming)
+	if boss_warning:
+		boss_warning.hide()
 
 	# Inicjalizacja z aktualnego stanu (niezalezna od kolejnosci _ready scen).
 	if health_bar:
@@ -30,6 +34,14 @@ func _on_time_changed(new_time: float) -> void:
 func _on_score_changed(new_score: int) -> void:
 	if score_label:
 		score_label.text = "Wynik: " + str(new_score)
+
+func _on_boss_incoming() -> void:
+	if not boss_warning:
+		return
+	boss_warning.show()
+	await get_tree().create_timer(3.0).timeout
+	if is_instance_valid(boss_warning):
+		boss_warning.hide()
 
 # Czysta funkcja: sekundy -> "mm:ss". format_time(75.0) == "01:15".
 static func format_time(seconds: float) -> String:
