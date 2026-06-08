@@ -8,6 +8,7 @@ extends Node
 
 const EnemyScene := preload("res://scenes/enemies/enemy.tscn")
 const DeathBurstScene := preload("res://scenes/death_burst.tscn")
+const XpOrbScene := preload("res://scenes/xp_orb.tscn")
 
 var _timer: Timer
 
@@ -45,6 +46,10 @@ func _on_enemy_died(pos: Vector2) -> void:
 	var burst := DeathBurstScene.instantiate()
 	get_parent().add_child(burst)
 	burst.global_position = pos
+
+	var orb := XpOrbScene.instantiate()
+	get_parent().add_child(orb)
+	orb.global_position = pos
 
 # Czysta funkcja (bez zaleznosci od drzewa): pozycja tuz poza prostokatem widoku.
 # edge: 0=gora, 1=prawo, 2=dol, 3=lewo. Zawsze zwraca punkt poza [0, viewport_size].

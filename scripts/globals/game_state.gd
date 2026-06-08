@@ -7,6 +7,7 @@ extends Node
 signal health_changed(new_health: float)
 signal score_changed(new_score: int)
 signal time_changed(new_time: float)
+signal xp_changed(new_xp: int)
 signal level_up(new_level: int)
 # Emitowany DOKLADNIE RAZ, gdy gra sie konczy (guard w trigger_game_over).
 signal game_over
@@ -54,6 +55,10 @@ func add_time(delta: float) -> void:
 func add_score(amount: int) -> void:
 	score += amount
 	score_changed.emit(score)
+
+func add_xp(amount: int) -> void:
+	xp += amount
+	xp_changed.emit(xp)
 
 func take_damage(amount: float) -> void:
 	health = maxf(0.0, health - amount)
