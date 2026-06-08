@@ -37,21 +37,7 @@ func test_load_missing_returns_defaults() -> void:
 	assert_eq(int(s["session_length"]), 15, "domyslna sesja 15")
 	assert_false(bool(s["reduce_shake"]), "domyslnie bez redukcji shake")
 
-# --- apply_saved zapisuje accessibility/sesje do GameState ---
-
-func test_apply_saved_writes_game_state() -> void:
-	var path := SettingsStore.SETTINGS_PATH
-	SettingsStore.save_settings(path, 1.0, 1.0, 20, true, true)
-	GameState.session_length = 0
-	GameState.reduce_shake = false
-	GameState.reduce_flashing = false
-	SettingsStore.apply_saved()
-	assert_eq(GameState.session_length, 20, "apply_saved ustawia session_length z dysku")
-	assert_true(GameState.reduce_shake, "apply_saved ustawia reduce_shake")
-	assert_true(GameState.reduce_flashing, "apply_saved ustawia reduce_flashing")
-	# Sprzatanie: przywroc neutralny config, by nie zaburzyc innych testow.
-	SettingsStore.save_settings(path, 1.0, 1.0, 15, false, false)
-	SettingsStore.apply_saved()
+# apply_saved zapisuje ustawienia do SettingsStore - patrz test_state_separation.gd (P1.6).
 
 # --- REGRESJA P1.5: brak couplingu gameplay/audio -> skrypt ekranu UI ---
 

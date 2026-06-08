@@ -26,15 +26,11 @@ var health: float = GameConfig.PLAYER_MAX_HP
 var max_health: float = GameConfig.PLAYER_MAX_HP
 
 # --- Pola pomocnicze uzywane przez pozostale systemy gry ---
+# UWAGA: GameState trzyma WYLACZNIE stan sesji. Ustawienia gracza (dlugosc sesji,
+# accessibility) zyja w autoloadzie SettingsStore - tu ich celowo nie ma (P1.6).
 var xp_to_next: int = 0
 # Mnoznik zasiegu zbierania XP (upgrade resource_magnet). Czytany przez XpOrb na spawnie.
 var magnet_range_mult: float = 1.0
-# Dlugosc sesji w minutach (ustawienie gracza, ladowane z configu - nie resetowane).
-var session_length: int = 15
-# Accessibility (ustawienia gracza) - czytane przez kod efektow (shake/flash).
-var reduce_shake: bool = false
-var reduce_flashing: bool = false
-var eco_score: int = 0
 var enemies_killed: int = 0
 var miniboss_defeated: bool = false
 var is_paused: bool = false

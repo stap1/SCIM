@@ -12,18 +12,26 @@ extends Node
 
 const SETTINGS_PATH := "user://settings.cfg"
 
+# --- Zywe ustawienia gracza (NIE stan sesji) - jedyne zrodlo prawdy o ustawieniach (P1.6).
+# Dlugosc sesji trzymana w MINUTACH (jednostka czytelna dla gracza); przeliczenie na
+# sekundy rozgrywki przez czysta funkcje session_seconds() - jeden punkt konwersji.
+var session_length_min: int = 15
+# Accessibility - czytane przez kod efektow (shake/flash) via should_apply_shake/should_flash.
+var reduce_shake: bool = false
+var reduce_flashing: bool = false
+
 func _ready() -> void:
 	# Na starcie gry: wczytaj zapisane ustawienia i zastosuj do swiata.
 	apply_saved()
 
-# Wczytaj z dysku i zastosuj: glosnosc busow audio + sesja/accessibility do GameState.
+# Wczytaj z dysku i zastosuj: glosnosc busow audio + sesja/accessibility (do SettingsStore).
 func apply_saved() -> void:
 	var s := load_settings(SETTINGS_PATH)
 	apply_bus("Music", s["music_vol"])
 	apply_bus("SFX", s["sfx_vol"])
-	GameState.session_length = int(s["session_length"])
-	GameState.reduce_shake = bool(s["reduce_shake"])
-	GameState.reduce_flashing = bool(s["reduce_flashing"])
+	session_length_min = int(s["session_length"])
+	reduce_shake = bool(s["reduce_shake"])
+	reduce_flashing = bool(s["reduce_flashing"])
 
 # Ustaw glosnosc busa audio z wartosci suwaka [0,1].
 func apply_bus(bus_name: String, value: float) -> void:
@@ -36,6 +44,11 @@ func apply_bus(bus_name: String, value: float) -> void:
 # 0.0 -> -80 db (cisza), 1.0 -> 0 db. Liniowa interpolacja w db.
 static func slider_to_db(value_0_1: float) -> float:
 	return -80.0 + clampf(value_0_1, 0.0, 1.0) * 80.0
+
+# Jedyny punkt konwersji dlugosci sesji: minuty (ustawienie) -> sekundy (czas rozgrywki).
+# 0 lub mniej = brak limitu czasu (zwraca 0).
+static func session_seconds(minutes: int) -> int:
+	return maxi(0, minutes) * 60
 
 # Accessibility: efekt grany tylko gdy redukcja wylaczona.
 static func should_apply_shake(reduce_shake_enabled: bool) -> bool:

@@ -50,7 +50,7 @@ func _flash() -> void:
 	var flash := get_node_or_null("Flash")
 	if flash == null:
 		return
-	if not SettingsStore.should_flash(GameState.reduce_flashing):
+	if not SettingsStore.should_flash(SettingsStore.reduce_flashing):
 		return
 	flash.color = Color(1, 1, 1, 0.7)
 	var t := create_tween()

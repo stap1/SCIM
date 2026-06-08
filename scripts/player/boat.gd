@@ -99,7 +99,7 @@ func try_take_enemy_hit() -> void:
 func _do_shake() -> void:
 	if camera == null:
 		return
-	if not SettingsStore.should_apply_shake(GameState.reduce_shake):
+	if not SettingsStore.should_apply_shake(SettingsStore.reduce_shake):
 		return
 	var t := create_tween()
 	camera.offset = Vector2(randf_range(-6.0, 6.0), randf_range(-6.0, 6.0))
