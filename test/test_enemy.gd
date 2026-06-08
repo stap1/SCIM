@@ -4,6 +4,7 @@ extends GutTest
 
 const EnemyScene := preload("res://scenes/enemies/enemy.tscn")
 const SpawnerScript := preload("res://scripts/systems/enemy_spawner.gd")
+const HarpoonScene := preload("res://scenes/weapons/harpoon.tscn")
 
 func test_enemy_starts_with_full_health() -> void:
 	var enemy = EnemyScene.instantiate()
@@ -42,3 +43,12 @@ func test_spawn_position_for_edge_is_outside_viewport() -> void:
 	assert_gt(bottom.y, vp.y, "dol: y > wysokosc")
 	var left: Vector2 = SpawnerScript.spawn_position_for_edge(3, vp)
 	assert_lt(left.x, 0.0, "lewo: x < 0")
+
+func test_harpoon_mask_covers_enemy_layer() -> void:
+	# Straznik warstw: po przejsciu wroga na CharacterBody2D (layer 2) harpun musi go widziec.
+	var harpoon = HarpoonScene.instantiate()
+	var enemy = EnemyScene.instantiate()
+	assert_ne(harpoon.collision_mask & enemy.collision_layer, 0,
+		"maska harpuna musi obejmowac warstwe ciala wroga (inaczej harpun przeleci przez wroga)")
+	harpoon.free()
+	enemy.free()

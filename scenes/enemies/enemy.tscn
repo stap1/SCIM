@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=3 uid="uid://djphki8cb53y5"]
+[gd_scene load_steps=6 format=3 uid="uid://djphki8cb53y5"]
 
 [ext_resource type="Script" uid="uid://dfe0lpyyf6k0f" path="res://scripts/systems/enemy.gd" id="1_55jtl"]
 [ext_resource type="Texture2D" uid="uid://cv3g65vi1x0l7" path="res://assets/meduza.svg.svg" id="2_fcftc"]
@@ -6,9 +6,6 @@
 [ext_resource type="AudioStream" uid="uid://cjyi7y5clel00" path="res://audio/sfx/enemy_death.wav" id="4_ft8do"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_body"]
-radius = 14.0
-
-[sub_resource type="CircleShape2D" id="CircleShape2D_dmg"]
 radius = 14.0
 
 [node name="Jellyfish" type="CharacterBody2D" groups=["enemies"]]
@@ -21,13 +18,6 @@ texture = ExtResource("2_fcftc")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("CircleShape2D_body")
-
-[node name="DamageArea" type="Area2D" parent="."]
-collision_layer = 1
-collision_mask = 1
-
-[node name="DamageShape" type="CollisionShape2D" parent="DamageArea"]
-shape = SubResource("CircleShape2D_dmg")
 
 [node name="DeathSound" type="AudioStreamPlayer2D" parent="."]
 stream = ExtResource("4_ft8do")

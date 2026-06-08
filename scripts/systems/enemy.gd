@@ -14,11 +14,6 @@ func _ready() -> void:
 	if has_node("SpawnSound"):
 		$SpawnSound.play()
 
-	# Kontakt-damage do gracza: CharacterBody2D nie emituje body_entered,
-	# wiec wykrywamy kontakt dzieckiem Area2D "DamageArea".
-	if has_node("DamageArea"):
-		$DamageArea.body_entered.connect(_on_damage_area_body_entered)
-
 func set_target(t: Node2D) -> void:
 	target = t
 
@@ -47,14 +42,15 @@ func die() -> void:
 
 	set_physics_process(false)
 
+	# Martwy wrog znika z kolizji: nie jest juz trafiany przez harpun ani wykrywany przez Hurtbox lodzi
+	# (warstwa 0 = poza maskami), wiec przez 1s animacji czasteczek nie zadaje obrazen.
+	set_deferred("collision_layer", 0)
+	if has_node("CollisionShape2D"):
+		$CollisionShape2D.set_deferred("disabled", true)
+
 	# Chowamy tylko grafike, by czasteczki dokonczyly animacje.
 	if has_node("Sprite2D"):
 		$Sprite2D.hide()
-
-	# Wylaczamy wykrywanie kontaktu, by martwa meduza nie zadawala obrazen ani nie byla ponownie trafiana.
-	if has_node("DamageArea"):
-		$DamageArea.set_deferred("monitoring", false)
-		$DamageArea.set_deferred("monitorable", false)
 
 	if has_node("DeathParticles"):
 		$DeathParticles.emitting = true
@@ -65,9 +61,3 @@ func die() -> void:
 	# Czekamy az czasteczki opadna, dopiero potem niszczymy obiekt.
 	await get_tree().create_timer(1.0).timeout
 	queue_free()
-
-# --- Kontakt z lodzia (kamikaze) ---
-func _on_damage_area_body_entered(body: Node2D) -> void:
-	if body.is_in_group("player") and body.has_method("take_damage"):
-		body.take_damage(20.0)
-		die()
