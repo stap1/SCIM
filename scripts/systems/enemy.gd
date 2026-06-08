@@ -1,11 +1,14 @@
 extends CharacterBody2D
 
-signal died(position: Vector2)
+# Sygnal niesie pozycje (dla efektu) ORAZ xp_value (ile warty jest zrzucony orb).
+signal died(position: Vector2, xp_value: int)
 
 # Wartosci bazowe (meduza) z GameConfig; barracuda/rekin nadpisuja w scenach .tscn.
 @export var speed: float = GameConfig.ENEMY_JELLYFISH_SPEED
 @export var max_health: float = GameConfig.ENEMY_JELLYFISH_HP
 @export var kill_score: int = GameConfig.ENEMY_JELLYFISH_SCORE
+# Wartosc orba XP zrzucanego po smierci (mocniejsi wrogowie = wiecej).
+@export var xp_value: int = GameConfig.XP_ORB_VALUE
 
 var health: float
 var is_dying: bool = false
@@ -46,6 +49,6 @@ func die() -> void:
 
 	GameState.enemies_killed += 1
 	GameState.add_score(kill_score)
-	# Sygnal niesie pozycje ZANIM wezel zniknie - DeathBurst spawnuje sie niezaleznie w current_scene.
-	died.emit(global_position)
+	# Sygnal niesie pozycje + wartosc orba ZANIM wezel zniknie - spawner reaguje niezaleznie.
+	died.emit(global_position, xp_value)
 	queue_free()
