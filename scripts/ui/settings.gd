@@ -48,9 +48,9 @@ func _ready() -> void:
 
 	SettingsStore.apply_bus("Music", s["music_vol"])
 	SettingsStore.apply_bus("SFX", s["sfx_vol"])
-	GameState.session_length = int(s["session_length"])
-	GameState.reduce_shake = bool(s["reduce_shake"])
-	GameState.reduce_flashing = bool(s["reduce_flashing"])
+	SettingsStore.session_length_min = int(s["session_length"])
+	SettingsStore.reduce_shake = bool(s["reduce_shake"])
+	SettingsStore.reduce_flashing = bool(s["reduce_flashing"])
 
 func _on_music_changed(v: float) -> void:
 	SettingsStore.apply_bus("Music", v)
@@ -61,15 +61,15 @@ func _on_sfx_changed(v: float) -> void:
 	_save()
 
 func _on_session_selected(idx: int) -> void:
-	GameState.session_length = SESSION_LENGTHS[idx]
+	SettingsStore.session_length_min = SESSION_LENGTHS[idx]
 	_save()
 
 func _on_reduce_shake_toggled(pressed: bool) -> void:
-	GameState.reduce_shake = pressed
+	SettingsStore.reduce_shake = pressed
 	_save()
 
 func _on_reduce_flash_toggled(pressed: bool) -> void:
-	GameState.reduce_flashing = pressed
+	SettingsStore.reduce_flashing = pressed
 	_save()
 
 func _on_back() -> void:
@@ -78,5 +78,5 @@ func _on_back() -> void:
 func _save() -> void:
 	var mv: float = music_slider.value if music_slider else 1.0
 	var sv: float = sfx_slider.value if sfx_slider else 1.0
-	SettingsStore.save_settings(SettingsStore.SETTINGS_PATH, mv, sv, GameState.session_length,
-		GameState.reduce_shake, GameState.reduce_flashing)
+	SettingsStore.save_settings(SettingsStore.SETTINGS_PATH, mv, sv, SettingsStore.session_length_min,
+		SettingsStore.reduce_shake, SettingsStore.reduce_flashing)
