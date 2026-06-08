@@ -4,6 +4,7 @@ extends GutTest
 
 const XpOrbScene := preload("res://scenes/xp_orb.tscn")
 const XpOrbScript := preload("res://scripts/systems/xp_orb.gd")
+const BoatScene := preload("res://scenes/player/boat.tscn")
 
 func before_each() -> void:
 	GameState.reset()
@@ -37,3 +38,12 @@ func test_orb_despawns_after_lifetime() -> void:
 	add_child_autofree(orb)
 	await wait_physics_frames(8)
 	assert_false(is_instance_valid(orb), "niezebrany orb znika po uplywie lifetime")
+
+func test_orb_mask_covers_player_layer() -> void:
+	# P1.1: po nazwaniu/zmianie warstw orb musi nadal wykrywac cialo gracza (zbieranie).
+	var orb = XpOrbScene.instantiate()
+	var boat = BoatScene.instantiate()
+	assert_ne(orb.collision_mask & boat.collision_layer, 0,
+		"maska orba obejmuje warstwe gracza (inaczej orb nie zbierze sie kontaktem)")
+	orb.free()
+	boat.free()
