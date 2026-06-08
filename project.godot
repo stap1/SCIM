@@ -10,14 +10,18 @@ config_version=5
 
 [application]
 
-config/name="Nowy projekt gry"
-run/main_scene="uid://bgujj5qrm2th"
+config/name="SCIM"
+run/main_scene="res://scenes/Main.tscn"
 config/features=PackedStringArray("4.6", "Forward Plus")
 config/icon="res://icon.svg"
 
 [autoload]
 
 GameState="*uid://kguqub804fro"
+
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/gut/plugin.cfg")
 
 [physics]
 

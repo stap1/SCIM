@@ -1,17 +1,24 @@
 # Godot 4+ specific ignores
 .godot/
-.nomedia
-
-# Godot-specific ignores
 .import/
+
+# Imported translations (automatically generated)
 export.cfg
-export_credentials.cfg
-*.tmp
+export_presets.cfg
 
-# Imported translations (automatically generated from CSV files)
-*.translation
-
-# Mono-specific ignores
+# Mono-specific ignores (jeśli używasz .NET)
 .mono/
 data_*/
-mono_crash.*.json
+
+# System / IDE
+*.tmp
+.DS_Store
+Thumbs.db
+
+# Editor-specific
+*.csproj.user
+*.sln.user
+
+# Build output (later)
+builds/
+exports/

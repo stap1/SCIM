@@ -2,6 +2,7 @@ extends Area2D
 
 var speed = 150.0
 var player_node = null
+var is_dying: bool = false
 
 func _ready():
 	add_to_group("enemies")
@@ -27,6 +28,11 @@ func _process(delta):
 	position += direction * speed * delta
 
 func die():
+	# Death guard: pierwsza smierc wygrywa, kolejne wywolania sa ignorowane (brak podwojnego queue_free).
+	if is_dying:
+		return
+	is_dying = true
+
 	set_process(false)
 	
 	# ZAMIAST chować całą meduzę (co ukryłoby też cząsteczki), chowamy tylko jej grafikę!

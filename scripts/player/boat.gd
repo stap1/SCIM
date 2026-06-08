@@ -83,8 +83,8 @@ func take_damage(amount: float) -> void:
 		die()
 
 func die() -> void:
-	GameState.is_game_over = true
-	hide() 
+	GameState.trigger_game_over()
+	hide()
 	set_physics_process(false)
 	
 	if weapon_timer:
