@@ -58,6 +58,8 @@ func add_score(amount: int) -> void:
 func take_damage(amount: float) -> void:
 	health = maxf(0.0, health - amount)
 	health_changed.emit(health)
+	if health <= 0.0:
+		trigger_game_over()
 
 # Jedyne miejsce konczenia gry. Guard gwarantuje, ze sygnal game_over poleci dokladnie raz.
 func trigger_game_over() -> void:

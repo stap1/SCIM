@@ -121,7 +121,7 @@ func _on_health_changed(new_health: float) -> void:
 		die()
 
 func die() -> void:
-	GameState.trigger_game_over()
+	# Game over wyzwala GameState.take_damage przy HP<=0. Tu tylko reakcja wizualna lodzi.
 	hide()
 	set_physics_process(false)
 

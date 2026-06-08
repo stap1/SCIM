@@ -1,9 +1,10 @@
-[gd_scene load_steps=5 format=3 uid="uid://dkvg8apcfepju"]
+[gd_scene load_steps=6 format=3 uid="uid://dkvg8apcfepju"]
 
 [ext_resource type="Script" uid="uid://dojtumr0hthqr" path="res://scripts/systems/main.gd" id="1_elqb8"]
 [ext_resource type="PackedScene" uid="uid://df7rbwsa6d6ec" path="res://scenes/player/boat.tscn" id="3_sugp2"]
 [ext_resource type="Script" path="res://scripts/systems/enemy_spawner.gd" id="4_spawner"]
 [ext_resource type="PackedScene" uid="uid://bgujj5qrm2th" path="res://scenes/ui/hud.tscn" id="5_hud"]
+[ext_resource type="PackedScene" path="res://scenes/ui/game_over.tscn" id="6_gameover"]
 
 [node name="Main" type="Node2D" unique_id=1150465566]
 position = Vector2(210, 228)
@@ -25,31 +26,4 @@ script = ExtResource("4_spawner")
 
 [node name="HUD" parent="." instance=ExtResource("5_hud")]
 
-[node name="GameOverScreen" type="CanvasLayer" parent="." unique_id=883235372]
-
-[node name="ColorRect" type="ColorRect" parent="GameOverScreen" unique_id=307616514]
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-color = Color(0.09, 0.09, 0.09, 0.7058824)
-
-[node name="Label" type="Label" parent="GameOverScreen/ColorRect" unique_id=1579067598]
-layout_mode = 0
-offset_left = 365.0
-offset_top = 232.0
-offset_right = 777.0
-offset_bottom = 331.0
-theme_override_colors/font_color = Color(1, 0.41000003, 0.41000003, 1)
-theme_override_font_sizes/font_size = 72
-text = "GAME OVER"
-
-[node name="RestartButton" type="Button" parent="GameOverScreen/ColorRect" unique_id=722818110]
-layout_mode = 0
-offset_left = 219.0
-offset_top = 318.0
-offset_right = 955.0
-offset_bottom = 425.0
-theme_override_font_sizes/font_size = 28
-text = "SPRÓBUJ PONOWNIE"
+[node name="GameOver" parent="." instance=ExtResource("6_gameover")]

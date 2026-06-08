@@ -1,0 +1,45 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/game_over.gd" id="1_go"]
+
+[node name="GameOver" type="CanvasLayer"]
+layer = 10
+process_mode = 3
+script = ExtResource("1_go")
+
+[node name="Panel" type="Control" parent="."]
+visible = false
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="Background" type="ColorRect" parent="Panel"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0.09, 0.09, 0.09, 0.7058824)
+
+[node name="GameOverLabel" type="Label" parent="Panel"]
+offset_left = 380.0
+offset_top = 210.0
+offset_right = 800.0
+offset_bottom = 290.0
+theme_override_colors/font_color = Color(1, 0.41, 0.41, 1)
+theme_override_font_sizes/font_size = 72
+text = "GAME OVER"
+
+[node name="FinalScoreLabel" type="Label" parent="Panel"]
+offset_left = 380.0
+offset_top = 300.0
+offset_right = 800.0
+offset_bottom = 344.0
+theme_override_font_sizes/font_size = 32
+text = "Wynik: 0"
+
+[node name="RestartButton" type="Button" parent="Panel"]
+offset_left = 400.0
+offset_top = 372.0
+offset_right = 770.0
+offset_bottom = 432.0
+theme_override_font_sizes/font_size = 28
+text = "SPRÓBUJ PONOWNIE"
