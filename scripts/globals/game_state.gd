@@ -58,7 +58,17 @@ func add_score(amount: int) -> void:
 
 func add_xp(amount: int) -> void:
 	xp += amount
+	# Wiele awansow naraz: while (nie if) - duza wartosc nie gubi poziomow.
+	while xp >= xp_threshold(level):
+		xp -= xp_threshold(level)
+		level += 1
+		level_up.emit(level)
+	xp_to_next = xp_threshold(level)
 	xp_changed.emit(xp)
+
+# Czysta funkcja: ile XP potrzeba na dany poziom. Wzor: level*10 + (level-1)^2 * 5.
+static func xp_threshold(level_value: int) -> int:
+	return level_value * 10 + (level_value - 1) * (level_value - 1) * 5
 
 func take_damage(amount: float) -> void:
 	health = maxf(0.0, health - amount)
