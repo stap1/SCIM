@@ -8,6 +8,13 @@ extends CanvasLayer
 @onready var score_label: Label = $ScoreLabel
 @onready var boss_warning: Label = get_node_or_null("BossWarning")
 
+# Pasek HP jako drewniany kadlub: im nizsze HP, tym bardziej "spekany" (etap 0 = caly).
+# Docelowo etap -> klatka hull_hp_<stage>.png; do czasu artu placeholder = barwa wypelnienia.
+const HULL_STAGES: int = 5
+const HULL_HEALTHY := Color(0.55, 0.36, 0.18)  # zdrowe drewno
+const HULL_CRITICAL := Color(0.66, 0.13, 0.10)  # roztrzaskany - czerwien alarmu
+var _hull_fill: StyleBoxFlat
+
 func _ready() -> void:
 	GameState.health_changed.connect(_on_health_changed)
 	GameState.time_changed.connect(_on_time_changed)
@@ -19,13 +26,24 @@ func _ready() -> void:
 	# Inicjalizacja z aktualnego stanu (niezalezna od kolejnosci _ready scen).
 	if health_bar:
 		health_bar.max_value = GameState.max_health
+		# Wlasna kopia wypelnienia - barwa "kadluba" zmieniana wg etapu zniszczenia.
+		var fill := health_bar.get_theme_stylebox("fill")
+		if fill:
+			_hull_fill = fill.duplicate()
+			health_bar.add_theme_stylebox_override("fill", _hull_fill)
 	_on_health_changed(GameState.health)
 	_on_time_changed(GameState.time)
 	_on_score_changed(GameState.score)
 
 func _on_health_changed(new_health: float) -> void:
-	if health_bar:
-		health_bar.value = new_health
+	if health_bar == null:
+		return
+	health_bar.value = new_health
+	# Etap zniszczenia kadluba -> barwa wypelnienia (placeholder do czasu klatek artu).
+	if _hull_fill:
+		var stage := hull_stage(new_health, health_bar.max_value, HULL_STAGES)
+		var t := float(stage) / float(HULL_STAGES - 1)
+		_hull_fill.bg_color = HULL_HEALTHY.lerp(HULL_CRITICAL, t)
 
 func _on_time_changed(new_time: float) -> void:
 	if time_label:
@@ -42,6 +60,15 @@ func _on_boss_incoming() -> void:
 	await get_tree().create_timer(3.0).timeout
 	if is_instance_valid(boss_warning):
 		boss_warning.hide()
+
+# Czysta funkcja: etap zniszczenia kadluba wg HP (0 = caly, stages-1 = roztrzaskany).
+# Etap 0 = 80-100% HP, kolejne co ~20%; uzywane do doboru klatki hull_hp_<stage>.
+static func hull_stage(health: float, max_health: float, stages: int) -> int:
+	if max_health <= 0.0 or stages <= 1:
+		return 0
+	var frac := clampf(health / max_health, 0.0, 1.0)
+	var stage := int((1.0 - frac) * float(stages))
+	return clampi(stage, 0, stages - 1)
 
 # Czysta funkcja: sekundy -> "mm:ss". format_time(75.0) == "01:15".
 static func format_time(seconds: float) -> String:
