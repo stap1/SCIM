@@ -5,7 +5,7 @@ extends Node
 
 const HarpoonScene := preload("res://scenes/weapons/harpoon.tscn")
 
-@export var pool_size: int = 20
+@export var pool_size: int = GameConfig.HARPOON_POOL_SIZE
 
 var _pool: Array = []
 

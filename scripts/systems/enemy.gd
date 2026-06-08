@@ -2,9 +2,10 @@ extends CharacterBody2D
 
 signal died(position: Vector2)
 
-@export var speed: float = 80.0
-@export var max_health: float = 10.0
-@export var kill_score: int = 1
+# Wartosci bazowe (meduza) z GameConfig; barracuda/rekin nadpisuja w scenach .tscn.
+@export var speed: float = GameConfig.ENEMY_JELLYFISH_SPEED
+@export var max_health: float = GameConfig.ENEMY_JELLYFISH_HP
+@export var kill_score: int = GameConfig.ENEMY_JELLYFISH_SCORE
 
 var health: float
 var is_dying: bool = false

@@ -1,14 +1,15 @@
 extends CharacterBody2D
 
-@export var max_speed: float = 200.0
-@export var acceleration: float = 600.0
-@export var friction: float = 700.0
-@export var rotation_speed: float = 5.0
+# Wartosci startowe z GameConfig (jedyne zrodlo balansu); @export pozwala na tweak w scenie.
+@export var max_speed: float = GameConfig.PLAYER_MAX_SPEED
+@export var acceleration: float = GameConfig.PLAYER_ACCELERATION
+@export var friction: float = GameConfig.PLAYER_FRICTION
+@export var rotation_speed: float = GameConfig.PLAYER_ROTATION_SPEED
 
 # --- Obrazenia od kontaktu z wrogiem ---
 # Zasada: HP gracza zyje WYLACZNIE w GameState. Lodz tylko wykrywa kontakt.
-@export var damage_per_hit: float = 10.0
-@export var hit_cooldown: float = 0.5
+@export var damage_per_hit: float = GameConfig.PLAYER_CONTACT_DAMAGE
+@export var hit_cooldown: float = GameConfig.PLAYER_HIT_COOLDOWN
 var time_since_last_hit: float = 999.0
 
 # --- ZMIENNA DO ANIMACJI FAL (JUICE) ---

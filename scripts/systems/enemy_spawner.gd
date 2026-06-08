@@ -5,7 +5,7 @@ extends Node
 # aktualny tier (current_tier), dostosowuje interval Timera i losuje typ z dozwolonej listy.
 # Wszystkie typy uzywaja enemy.gd (jedna baza).
 
-@export var max_enemies: int = 30
+@export var max_enemies: int = GameConfig.ENEMY_MAX_COUNT
 
 const JellyfishScene := preload("res://scenes/enemies/enemy.tscn")
 const BarracudaScene := preload("res://scenes/enemies/barracuda.tscn")
@@ -13,9 +13,6 @@ const SharkScene := preload("res://scenes/enemies/shark.tscn")
 const MotorBoatScene := preload("res://scenes/enemies/motor_boat.tscn")
 const DeathBurstScene := preload("res://scenes/death_burst.tscn")
 const XpOrbScene := preload("res://scenes/xp_orb.tscn")
-
-const BOSS_TIME: float = 270.0
-const BOSS_WARNING: float = 2.0
 
 var _boss_warned: bool = false
 var _boss_spawned: bool = false
@@ -91,12 +88,12 @@ func _on_enemy_died(pos: Vector2) -> void:
 
 # --- Mini-boss ---
 
-# Czysta funkcja: czas na bossa (dokladnie raz po BOSS_TIME).
+# Czysta funkcja: czas na bossa (dokladnie raz po MINIBOSS_SPAWN_TIME).
 static func should_spawn_boss(time: float, already_spawned: bool) -> bool:
-	return time >= BOSS_TIME and not already_spawned
+	return time >= GameConfig.MINIBOSS_SPAWN_TIME and not already_spawned
 
 func _check_boss() -> void:
-	if not _boss_warned and GameState.time >= BOSS_TIME - BOSS_WARNING:
+	if not _boss_warned and GameState.time >= GameConfig.MINIBOSS_SPAWN_TIME - GameConfig.MINIBOSS_WARNING:
 		_boss_warned = true
 		GameState.boss_incoming.emit()
 	if should_spawn_boss(GameState.time, _boss_spawned):

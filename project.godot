@@ -17,6 +17,7 @@ config/icon="res://icon.svg"
 
 [autoload]
 
+GameConfig="*res://scripts/globals/game_config.gd"
 GameState="*uid://kguqub804fro"
 Upgrades="*res://scripts/systems/upgrades.gd"
 AudioManager="*res://scripts/systems/audio_manager.gd"

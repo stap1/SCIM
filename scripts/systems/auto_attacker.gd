@@ -4,8 +4,9 @@ extends Node
 # pobiera harpuny z HarpoonPool i strzela z pozycji lodzi. Liczba pociskow na atak
 # (1 lub 2 po double_harpoon) okresla, ilu najblizszych wrogow zostanie ostrzelanych.
 
-@export var attack_interval: float = 0.8
-@export var attack_range: float = 350.0
+# Wartosci startowe z GameConfig (jedyne zrodlo balansu).
+@export var attack_interval: float = GameConfig.HARPOON_BASE_INTERVAL
+@export var attack_range: float = GameConfig.HARPOON_BASE_RANGE
 var projectiles_per_attack: int = 1
 
 var _timer: Timer

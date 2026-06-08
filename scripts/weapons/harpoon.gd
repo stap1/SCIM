@@ -1,12 +1,12 @@
 extends Area2D
 
-@export var speed: float = 400.0
-@export var damage: float = 5.0
+# Wartosci startowe z GameConfig (jedyne zrodlo balansu).
+@export var speed: float = GameConfig.HARPOON_SPEED
+@export var damage: float = GameConfig.HARPOON_DAMAGE
 
 var direction: Vector2 = Vector2.ZERO
 var active: bool = false
 var lifetime: float = 0.0
-const MAX_LIFETIME: float = 3.0
 
 func _ready() -> void:
 	area_entered.connect(_on_any_collision)
@@ -25,7 +25,7 @@ func _physics_process(delta: float) -> void:
 
 	# Reczny licznik czasu zycia (bezpieczny dla Object Poolingu).
 	lifetime += delta
-	if lifetime >= MAX_LIFETIME:
+	if lifetime >= GameConfig.HARPOON_LIFETIME:
 		deactivate()
 
 # --- Wybudzenie z puli ---
