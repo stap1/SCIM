@@ -14,6 +14,15 @@ bg_color = Color(0.74, 0.1554, 0.1554, 1)
 position = Vector2(210, 228)
 script = ExtResource("1_elqb8")
 
+[node name="WaterBackground" type="ColorRect" parent="."]
+z_index = -100
+offset_left = -1000.0
+offset_top = -1000.0
+offset_right = 1000.0
+offset_bottom = 1000.0
+color = Color(0.16470589, 0.2901961, 0.41960785, 1)
+mouse_filter = 2
+
 [node name="Timer" type="Timer" parent="." unique_id=840186147]
 autostart = true
 

@@ -18,8 +18,9 @@ texture = ExtResource("2_webh6")
 shape = SubResource("CircleShape2D_webh6")
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=1395656772]
-visible = false
-enabled = false
+enabled = true
+position_smoothing_enabled = true
+position_smoothing_speed = 5.0
 
 [node name="WeaponTimer" type="Timer" parent="." unique_id=1529080301]
 wait_time = 1.5
