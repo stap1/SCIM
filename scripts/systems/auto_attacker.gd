@@ -8,6 +8,8 @@ extends Node
 @export var attack_interval: float = GameConfig.HARPOON_BASE_INTERVAL
 @export var attack_range: float = GameConfig.HARPOON_BASE_RANGE
 var projectiles_per_attack: int = 1
+# Przebijanie z power-upow milestone: przez ilu dodatkowych wrogow przelatuje kazdy harpun.
+var pierce_bonus: int = 0
 
 var _timer: Timer
 
@@ -54,7 +56,7 @@ func _on_timeout() -> void:
 		if harpoon == null:
 			break
 		var dir: Vector2 = (target.global_position - player.global_position).normalized()
-		harpoon.fire(player.global_position, dir)
+		harpoon.fire(player.global_position, dir, pierce_bonus)
 		if player.has_method("play_shoot_sound"):
 			player.play_shoot_sound()
 		remaining[idx] = Vector2(INF, INF) # wyklucz tego wroga z kolejnego strzalu

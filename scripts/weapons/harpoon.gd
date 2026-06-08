@@ -7,6 +7,10 @@ extends Area2D
 var direction: Vector2 = Vector2.ZERO
 var active: bool = false
 var lifetime: float = 0.0
+# Przebijanie: przez ilu DODATKOWYCH wrogow harpun przelatuje zanim zniknie (0 = jak dotad).
+var pierce: int = 0
+# Wrogowie juz trafieni w tym locie - anty-podwojne trafienie tego samego celu.
+var _hit_ids: Array[int] = []
 
 func _ready() -> void:
 	area_entered.connect(_on_any_collision)
@@ -29,12 +33,14 @@ func _physics_process(delta: float) -> void:
 		deactivate()
 
 # --- Wybudzenie z puli ---
-func fire(start_pos: Vector2, shoot_dir: Vector2) -> void:
+func fire(start_pos: Vector2, shoot_dir: Vector2, pierce_count: int = 0) -> void:
 	global_position = start_pos
 	direction = shoot_dir
 	rotation = direction.angle() + PI / 2
 
 	lifetime = 0.0
+	pierce = pierce_count
+	_hit_ids.clear()
 	active = true
 	visible = true
 	set_deferred("monitoring", true)
@@ -45,6 +51,8 @@ func deactivate() -> void:
 	active = false
 	visible = false
 	direction = Vector2.ZERO
+	pierce = 0
+	_hit_ids.clear()
 	set_deferred("monitoring", false)
 	set_deferred("monitorable", false)
 
@@ -60,6 +68,14 @@ func _on_any_collision(something: Node) -> void:
 		enemy_node = something.get_parent()
 
 	if enemy_node:
+		var eid: int = enemy_node.get_instance_id()
+		if _hit_ids.has(eid):
+			return # ten wrog juz trafiony w tym locie
+		_hit_ids.append(eid)
 		AudioManager.play_sfx("hit")
 		enemy_node.take_damage(damage)
-		deactivate()
+		# Przebijanie: leci dalej dopoki ma zapas przebic, inaczej zasypia.
+		if pierce > 0:
+			pierce -= 1
+		else:
+			deactivate()

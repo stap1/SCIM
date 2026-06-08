@@ -42,6 +42,21 @@ const UPGRADES := {
 	},
 }
 
+# Specjalne power-upy milestone (co MILESTONE_LEVEL_INTERVAL poziomow, ZAMIAST zwyklej karty).
+# Bez max_level - kumuluja sie bez limitu (kazdy wybor +1).
+const MILESTONE_UPGRADES := {
+	"extra_harpoon": {
+		"id": "extra_harpoon",
+		"name": "Dodatkowy harpun",
+		"description": "+1 jednoczesny pocisk",
+	},
+	"piercing": {
+		"id": "piercing",
+		"name": "Przebijanie",
+		"description": "Harpun przebija +1 wroga",
+	},
+}
+
 # Aktualne poziomy wybranych ulepszen (id -> ile razy wzieto). Resetowane na nowa sesje.
 var _levels: Dictionary = {}
 
@@ -61,6 +76,21 @@ func available_ids() -> Array[String]:
 		if level_of(id) < int(UPGRADES[id]["max_level"]):
 			out.append(id)
 	return out
+
+# Lista id power-upow milestone (do ekranu specjalnego co 5 poziomow).
+func milestone_ids() -> Array[String]:
+	var out: Array[String] = []
+	for id in MILESTONE_UPGRADES:
+		out.append(id)
+	return out
+
+# Metadane karty (name/description) - dziala dla ulepszen zwyklych i milestone.
+func info(id: String) -> Dictionary:
+	if UPGRADES.has(id):
+		return UPGRADES[id]
+	if MILESTONE_UPGRADES.has(id):
+		return MILESTONE_UPGRADES[id]
+	return {}
 
 # --- Czyste funkcje (bez zaleznosci od drzewa, testowalne) ---
 static func apply_faster_attack(interval: float) -> float:
@@ -83,6 +113,17 @@ static func apply_double_harpoon() -> int:
 
 # --- Aplikacja efektu do wezlow gry (luzne powiazanie przez grupy) ---
 func apply(id: String) -> void:
+	# Power-upy milestone (bez _levels - kumuluja sie bez limitu).
+	if MILESTONE_UPGRADES.has(id):
+		var aa_m := _auto_attacker()
+		if aa_m == null:
+			return
+		match id:
+			"extra_harpoon":
+				aa_m.projectiles_per_attack += 1
+			"piercing":
+				aa_m.pierce_bonus += 1
+		return
 	if not UPGRADES.has(id):
 		return
 	# Liczymy wybor (cap stackowania). Robimy to przed efektem - wybor zaszedl niezaleznie.
@@ -109,7 +150,8 @@ func apply(id: String) -> void:
 		"double_harpoon":
 			var aa := _auto_attacker()
 			if aa:
-				aa.projectiles_per_attack = apply_double_harpoon()
+				# maxi - nie cofa stackow z power-upow milestone (extra_harpoon).
+				aa.projectiles_per_attack = maxi(aa.projectiles_per_attack, apply_double_harpoon())
 
 func _auto_attacker() -> Node:
 	return get_tree().get_first_node_in_group("auto_attacker")
