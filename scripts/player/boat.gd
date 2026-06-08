@@ -14,12 +14,6 @@ var time_since_last_hit: float = 999.0
 # --- ZMIENNA DO ANIMACJI FAL (JUICE) ---
 var wave_time: float = 0.0
 
-var harpoon_scene = preload("res://scenes/weapons/harpoon.tscn")
-
-# --- ZMIENNE DO PULI HARPUNÓW ---
-var harpoon_pool: Array = []
-const POOL_SIZE: int = 20
-
 @onready var weapon_timer: Timer = $WeaponTimer
 @onready var shoot_sound: AudioStreamPlayer2D = $ShootSound
 @onready var hurtbox: Area2D = $Hurtbox
@@ -41,12 +35,6 @@ func _ready() -> void:
 		if weapon_timer.timeout.is_connected(_on_weapon_timer_timeout):
 			weapon_timer.timeout.disconnect(_on_weapon_timer_timeout)
 		weapon_timer.timeout.connect(_on_weapon_timer_timeout)
-
-	# --- TWORZENIE PULI HARPUNÓW ---
-	for i in range(POOL_SIZE):
-		var harpoon = harpoon_scene.instantiate()
-		get_parent().call_deferred("add_child", harpoon)
-		harpoon_pool.append(harpoon)
 
 func _physics_process(delta: float) -> void:
 	_handle_movement(delta)
@@ -145,20 +133,17 @@ func _on_weapon_timer_timeout() -> void:
 	_shoot_at(closest_enemy.global_position)
 
 func _shoot_at(target_position: Vector2) -> void:
-	var available_harpoon = null
-	for harpoon in harpoon_pool:
-		if not harpoon.is_active:
-			available_harpoon = harpoon
-			break
+	var pool = get_tree().get_first_node_in_group("harpoon_pool")
+	if pool == null:
+		return
 
-	if available_harpoon:
+	var harpoon = pool.get_harpoon()
+	if harpoon:
 		var shoot_dir = (target_position - global_position).normalized()
-		available_harpoon.fire(global_position, shoot_dir)
+		harpoon.fire(global_position, shoot_dir)
 
 		if shoot_sound:
 			shoot_sound.play()
-	else:
-		print("Brak wolnych harpunów w puli!")
 
 # --- ODŚWIEŻANIE WIZUALNE I LICZNIK ---
 func _process(delta: float) -> void:
@@ -174,9 +159,6 @@ func _process(delta: float) -> void:
 	# Pancerne aktualizowanie licznika przez Grupy
 	var ui_labels = get_tree().get_nodes_in_group("ammo_ui")
 	if ui_labels.size() > 0:
-		var available_count = 0
-		for harpoon in harpoon_pool:
-			if not harpoon.is_active:
-				available_count += 1
-
-		ui_labels[0].text = str(available_count) + " / " + str(POOL_SIZE)
+		var pool = get_tree().get_first_node_in_group("harpoon_pool")
+		if pool:
+			ui_labels[0].text = str(pool.available_count()) + " / " + str(pool.total_count())

@@ -1,10 +1,10 @@
 extends Area2D
 
 @export var speed: float = 400.0
-@export var damage: float = 1.0
+@export var damage: float = 5.0
 
 var direction: Vector2 = Vector2.ZERO
-var is_active: bool = false
+var active: bool = false
 var lifetime: float = 0.0
 const MAX_LIFETIME: float = 3.0
 
@@ -13,65 +13,56 @@ const MAX_LIFETIME: float = 3.0
 func _ready() -> void:
 	area_entered.connect(_on_any_collision)
 	body_entered.connect(_on_any_collision)
-	
-	# Na samym starcie gry harpun usypia samego siebie i czeka w magazynku
+
+	# Na starcie harpun usypia samego siebie i czeka w puli.
 	deactivate()
 
 func _physics_process(delta: float) -> void:
-	# Jeśli harpun jest uśpiony, całkowicie ignorujemy jego fizykę
-	if not is_active:
+	# Uspiony harpun calkowicie ignoruje fizyke.
+	if not active:
 		return
-		
+
 	if direction != Vector2.ZERO:
 		position += direction * speed * delta
-		
-	# Ręczny licznik czasu (bezpieczny dla Object Poolingu)
+
+	# Reczny licznik czasu zycia (bezpieczny dla Object Poolingu).
 	lifetime += delta
 	if lifetime >= MAX_LIFETIME:
 		deactivate()
 
-# --- FUNKCJA WYBUDZAJĄCA Z PULI ---
+# --- Wybudzenie z puli ---
 func fire(start_pos: Vector2, shoot_dir: Vector2) -> void:
 	global_position = start_pos
 	direction = shoot_dir
-	rotation = direction.angle() + PI/2
-	
+	rotation = direction.angle() + PI / 2
+
 	lifetime = 0.0
-	is_active = true
+	active = true
 	visible = true
 	set_deferred("monitoring", true)
 	set_deferred("monitorable", true)
 
-# --- FUNKCJA USYPIAJĄCA (ZAMIAST queue_free) ---
+# --- Uspienie (ZAMIAST queue_free - pooling, brak wyciekow) ---
 func deactivate() -> void:
-	is_active = false
+	active = false
 	visible = false
 	direction = Vector2.ZERO
 	set_deferred("monitoring", false)
 	set_deferred("monitorable", false)
 
-# --- KOLIZJE ---
+# --- Kolizje ---
 func _on_any_collision(something: Node) -> void:
-	if not is_active:
+	if not active:
 		return
-		
+
 	var enemy_node = null
-	
-	if something.is_in_group("enemies") and something.has_method("die"):
+	if something.is_in_group("enemies") and something.has_method("take_damage"):
 		enemy_node = something
-	elif something.get_parent() and something.get_parent().is_in_group("enemies") and something.get_parent().has_method("die"):
+	elif something.get_parent() and something.get_parent().is_in_group("enemies") and something.get_parent().has_method("take_damage"):
 		enemy_node = something.get_parent()
-		
+
 	if enemy_node:
 		if hit_sound:
 			hit_sound.play()
-		
-		enemy_node.die()
-		
-		# Wyłączamy fizykę i ukrywamy harpun, ale pozwalamy dźwiękowi grać
-		is_active = false
-		visible = false
-		set_deferred("monitoring", false)
-		set_deferred("monitorable", false)
-		
-		# W Puli Obiektów NIE używamy queue_free()! Harpun po prostu zostaje uśpiony w tle.
+		enemy_node.take_damage(damage)
+		deactivate()
