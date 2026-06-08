@@ -1,0 +1,39 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+# Audyt P0.2: twardy error-scan. GUT lapie padniete testy (exit != 0), a grep logow
+# lapie runtime SCRIPT ERROR (Godot konczy z exit 0 mimo bledow w _process - smoke GUT ich nie lapie).
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Pobierz Godota 4.6.3 (headless)
+        run: |
+          set -e
+          URL="https://github.com/godotengine/godot-builds/releases/download/4.6.3-stable/Godot_v4.6.3-stable_linux.x86_64.zip"
+          wget -q "$URL" -O godot.zip
+          unzip -q godot.zip
+          mv Godot_v4.6.3-stable_linux.x86_64 godot
+          chmod +x godot
+
+      - name: Import zasobow
+        run: ./godot --headless --import 2>&1 | tee import.log || true
+
+      - name: Testy GUT
+        run: |
+          set -o pipefail
+          ./godot --headless -s res://addons/gut/gut_cmdln.gd -gdir=res://test -gexit 2>&1 | tee gut.log
+
+      - name: Smoke + error-scan
+        run: |
+          ./godot --headless --quit-after 600 2>&1 | tee smoke.log || true
+          if grep -nE "SCRIPT ERROR|Parse Error|Nonexistent|Invalid (get|set|call)|null instance" import.log gut.log smoke.log; then
+            echo "::error::Wykryto runtime/script errors"
+            exit 1
+          fi
+          echo "Brak runtime errors."
