@@ -3,13 +3,14 @@ extends Area2D
 # Orb XP wypadajacy z wroga. W zasiegu magnesu leci ku graczowi; przy kontakcie
 # lub w promieniu pickup_radius zostaje zebrany (raz - guard is_collected).
 
-@export var xp_value: int = 1
-@export var pickup_radius: float = 30.0
-@export var magnet_speed: float = 250.0
-@export var magnet_range: float = 120.0
+# Wartosci startowe z GameConfig (jedyne zrodlo balansu).
+@export var xp_value: int = GameConfig.XP_ORB_VALUE
+@export var pickup_radius: float = GameConfig.XP_PICKUP_RADIUS
+@export var magnet_speed: float = GameConfig.XP_MAGNET_SPEED
+@export var magnet_range: float = GameConfig.XP_MAGNET_RANGE
 # Po tylu sekundach aktywnej gry niezebrany orb znika - zapobiega kumulacji orbow
 # spoza zasiegu magnesu (audyt P0.1: orby nie mialy capa/lifetime).
-@export var lifetime: float = 12.0
+@export var lifetime: float = GameConfig.XP_ORB_LIFETIME
 
 var is_collected: bool = false
 var _age: float = 0.0

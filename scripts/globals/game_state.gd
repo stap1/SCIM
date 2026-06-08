@@ -16,16 +16,14 @@ signal boss_incoming
 # Emitowany DOKLADNIE RAZ, gdy gra sie konczy (guard w trigger_game_over).
 signal game_over
 
-# --- Wartosci startowe (uzywane przez reset) ---
-const START_HEALTH: float = 100.0
-
 # --- Stan sesji ---
+# HP startowe pochodzi z GameConfig (jedyne zrodlo balansu, pierwszy autoload).
 var time: float = 0.0
 var score: int = 0
 var level: int = 1
 var xp: int = 0
-var health: float = 100.0
-var max_health: float = 100.0
+var health: float = GameConfig.PLAYER_MAX_HP
+var max_health: float = GameConfig.PLAYER_MAX_HP
 
 # --- Pola pomocnicze uzywane przez pozostale systemy gry ---
 var xp_to_next: int = 0
@@ -49,7 +47,7 @@ func reset() -> void:
 	score = 0
 	level = 1
 	xp = 0
-	max_health = START_HEALTH
+	max_health = GameConfig.PLAYER_MAX_HP
 	health = max_health
 	enemies_killed = 0
 	miniboss_defeated = false

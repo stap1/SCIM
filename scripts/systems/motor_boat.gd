@@ -5,11 +5,12 @@ extends CharacterBody2D
 
 signal boss_defeated(position: Vector2)
 
-@export var max_health: float = 300.0
-@export var kill_score: int = 500
-@export var track_speed: float = 60.0
-@export var charge_interval: float = 3.0
-@export var charge_duration: float = 0.45
+# Wartosci startowe z GameConfig (jedyne zrodlo balansu).
+@export var max_health: float = GameConfig.MINIBOSS_HP
+@export var kill_score: int = GameConfig.MINIBOSS_SCORE
+@export var track_speed: float = GameConfig.MINIBOSS_TRACK_SPEED
+@export var charge_interval: float = GameConfig.MINIBOSS_CHARGE_INTERVAL
+@export var charge_duration: float = GameConfig.MINIBOSS_CHARGE_DURATION
 
 var health: float
 var is_dying: bool = false
