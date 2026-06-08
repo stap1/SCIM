@@ -80,6 +80,7 @@ func spawn_enemy(scene: PackedScene) -> Node:
 	return enemy
 
 func _on_enemy_died(pos: Vector2) -> void:
+	AudioManager.play_sfx("enemy_death")
 	var burst := DeathBurstScene.instantiate()
 	get_parent().add_child(burst)
 	burst.global_position = pos
@@ -115,6 +116,7 @@ func _spawn_boss() -> void:
 
 func _on_boss_defeated(pos: Vector2) -> void:
 	GameState.miniboss_defeated = true
+	AudioManager.play_sfx("enemy_death")
 	var burst := DeathBurstScene.instantiate()
 	get_parent().add_child(burst)
 	burst.global_position = pos

@@ -19,6 +19,11 @@ config/icon="res://icon.svg"
 
 GameState="*uid://kguqub804fro"
 Upgrades="*res://scripts/systems/upgrades.gd"
+AudioManager="*res://scripts/systems/audio_manager.gd"
+
+[audio]
+
+buses/default_bus_layout="res://default_bus_layout.tres"
 
 [editor_plugins]
 

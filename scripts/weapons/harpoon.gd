@@ -8,8 +8,6 @@ var active: bool = false
 var lifetime: float = 0.0
 const MAX_LIFETIME: float = 3.0
 
-@onready var hit_sound: AudioStreamPlayer2D = $HitSound
-
 func _ready() -> void:
 	area_entered.connect(_on_any_collision)
 	body_entered.connect(_on_any_collision)
@@ -62,7 +60,6 @@ func _on_any_collision(something: Node) -> void:
 		enemy_node = something.get_parent()
 
 	if enemy_node:
-		if hit_sound:
-			hit_sound.play()
+		AudioManager.play_sfx("hit")
 		enemy_node.take_damage(damage)
 		deactivate()

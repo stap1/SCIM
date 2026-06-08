@@ -1,7 +1,6 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene load_steps=2 format=3]
 
 [ext_resource type="Script" path="res://scripts/systems/death_burst.gd" id="1_db"]
-[ext_resource type="AudioStream" uid="uid://cjyi7y5clel00" path="res://audio/sfx/enemy_death.wav" id="2_snd"]
 
 [node name="DeathBurst" type="CPUParticles2D"]
 z_index = 5
@@ -17,9 +16,3 @@ scale_amount_min = 3.0
 scale_amount_max = 6.0
 color = Color(0.94400704, 0.21400005, 0.6292439, 1)
 script = ExtResource("1_db")
-
-[node name="DeathSound" type="AudioStreamPlayer2D" parent="."]
-stream = ExtResource("2_snd")
-volume_db = -19.925
-pitch_scale = 0.53
-autoplay = true

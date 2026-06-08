@@ -14,7 +14,6 @@ var time_since_last_hit: float = 999.0
 # --- ZMIENNA DO ANIMACJI FAL (JUICE) ---
 var wave_time: float = 0.0
 
-@onready var shoot_sound: AudioStreamPlayer2D = $ShootSound
 @onready var hurtbox: Area2D = $Hurtbox
 
 func _ready() -> void:
@@ -107,10 +106,9 @@ func die() -> void:
 	hide()
 	set_physics_process(false)
 
-# Dzwiek strzalu - publiczne API dla AutoAttacker (strzela harpunami przez pule).
+# Dzwiek strzalu - publiczne API dla AutoAttacker (SFX centralnie przez AudioManager).
 func play_shoot_sound() -> void:
-	if shoot_sound:
-		shoot_sound.play()
+	AudioManager.play_sfx("harpoon_shot")
 
 # --- ODŚWIEŻANIE WIZUALNE I LICZNIK ---
 func _process(delta: float) -> void:
