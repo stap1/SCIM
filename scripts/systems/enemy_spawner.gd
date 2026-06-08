@@ -13,6 +13,7 @@ const SharkScene := preload("res://scenes/enemies/shark.tscn")
 const MotorBoatScene := preload("res://scenes/enemies/motor_boat.tscn")
 const DeathBurstScene := preload("res://scenes/death_burst.tscn")
 const XpOrbScene := preload("res://scenes/xp_orb.tscn")
+const HealPlankScene := preload("res://scenes/heal_plank.tscn")
 
 var _boss_warned: bool = false
 var _boss_spawned: bool = false
@@ -26,6 +27,7 @@ var difficulty_curve := {
 }
 
 var _timer: Timer
+var _heal_timer: Timer
 
 func _ready() -> void:
 	_timer = Timer.new()
@@ -33,6 +35,13 @@ func _ready() -> void:
 	_timer.autostart = true
 	_timer.timeout.connect(_on_timeout)
 	add_child(_timer)
+
+	# Osobny timer leczniczych desek (co HEAL_PLANK_INTERVAL, po karencji startowej).
+	_heal_timer = Timer.new()
+	_heal_timer.wait_time = GameConfig.HEAL_PLANK_INTERVAL
+	_heal_timer.autostart = true
+	_heal_timer.timeout.connect(_on_heal_timeout)
+	add_child(_heal_timer)
 
 func _on_timeout() -> void:
 	if GameState.is_paused or GameState.is_game_over:
@@ -90,6 +99,26 @@ func _on_enemy_died(pos: Vector2, xp_value: int) -> void:
 	orb.xp_value = xp_value # mocniejszy wrog = wartosciowszy orb
 	get_parent().add_child(orb)
 	orb.global_position = pos
+
+# --- Lecznicze deski ---
+
+func _on_heal_timeout() -> void:
+	if GameState.is_paused or GameState.is_game_over:
+		return
+	if is_in_grace(GameState.time, GameConfig.SPAWN_GRACE_SECONDS):
+		return
+	_spawn_heal_plank()
+
+func _spawn_heal_plank() -> void:
+	var player := get_tree().get_first_node_in_group("player")
+	if player == null:
+		return
+	# W zasiegu gracza (catchable): losowy kierunek, 200-400 px od lodzi.
+	var angle := randf() * TAU
+	var dist := randf_range(200.0, 400.0)
+	var plank := HealPlankScene.instantiate()
+	get_parent().add_child(plank)
+	plank.global_position = player.global_position + Vector2(dist, 0.0).rotated(angle)
 
 # --- Mini-boss ---
 

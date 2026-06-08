@@ -35,6 +35,7 @@
 | `miniboss_motorboat.png` | 128x256 | 256x512 | Mini-boss "Motorówka kłusownika" - duża, groźna jednostka z silnikiem. Widok z góry, dziób ku górze. Dziś: przeskalowana łódź gracza (rażące). | Wysoki | Raz na sesję (~4:30) | brak |
 | `xp_orb.png` | 24x24 | 48x48 | Świecący orb XP wypadający z wroga. Mały, jasny, "do zebrania" (np. perła/bąbel energii). Dziś: ikona aplikacji `icon.svg`. | Wysoki | Bardzo częsta (drop z każdego wroga) | wymiana |
 | `harpoon.png` | 16x64 | 32x128 | Harpun - pocisk auto-ataku. Cienki, ostry grot na lince, czytelny w locie. Zastępuje `harpun.svg.svg`. | Wysoki | Bardzo częsta (pula 20, ostrzał co ~0.8 s) | wymiana |
+| `heal_plank.png` | 48x24 | 96x48 | Dryfująca deska do łatania kadłuba (heal pickup, +25 HP). Drewniana, lekko spękana, czytelnie "do złapania". Dziś placeholder Polygon2D (brązowy prostokąt). | Wysoki | Co ~25 s (jedna naraz) | brak |
 
 ## B. UI - ikony
 
