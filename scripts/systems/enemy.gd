@@ -1,58 +1,50 @@
-extends Area2D
+extends CharacterBody2D
 
-var speed = 150.0
-var player_node = null
+signal died(position: Vector2)
 
-func _ready():
+@export var speed: float = 80.0
+@export var max_health: float = 10.0
+@export var kill_score: int = 1
+
+var health: float
+var is_dying: bool = false
+var target: Node2D = null
+
+func _ready() -> void:
+	health = max_health
 	add_to_group("enemies")
-	player_node = get_tree().get_first_node_in_group("player")
-	
+
 	if has_node("SpawnSound"):
 		$SpawnSound.play()
-		
-	# Nasłuchujemy, czy meduza fizycznie wpadła na ciało gracza (łódź)
-	body_entered.connect(_on_body_entered)
 
-func _process(delta):
+func set_target(t: Node2D) -> void:
+	target = t
+
+func _physics_process(_delta: float) -> void:
 	if GameState.is_paused or GameState.is_game_over:
 		return
 
-	if player_node == null or not is_instance_valid(player_node):
-		player_node = get_tree().get_first_node_in_group("player")
-	
-	if player_node == null:
+	if target == null or not is_instance_valid(target):
+		target = get_tree().get_first_node_in_group("player")
+	if target == null:
 		return
-		
-	var direction = (player_node.global_position - global_position).normalized()
-	position += direction * speed * delta
 
-func die():
-	set_process(false)
-	
-	# ZAMIAST chować całą meduzę (co ukryłoby też cząsteczki), chowamy tylko jej grafikę!
-	if has_node("Sprite2D"):
-		$Sprite2D.hide()
-		
-	# Wyłączamy kolizję natychmiast, żeby harpuny przez nią przelatywały po jej śmierci
-	set_deferred("monitoring", false)
-	set_deferred("monitorable", false)
-	
-	# --- ODPALAMY WYBUCH (JUICE) ---
-	if has_node("DeathParticles"):
-		$DeathParticles.emitting = true
-	
-	# Odpalamy dźwięk
-	if has_node("DeathSound"):
-		$DeathSound.play()
-		
-	# Czekamy równą 1 sekundę, aby cząsteczki na spokojnie opadły, zanim zniszczymy obiekt
-	await get_tree().create_timer(1.0).timeout
-	
+	velocity = (target.global_position - global_position).normalized() * speed
+	move_and_slide()
+
+func take_damage(amount: float) -> void:
+	health -= amount
+	if health <= 0.0:
+		die()
+
+func die() -> void:
+	# Death guard: pierwsza smierc wygrywa, kolejne wywolania ignorowane (brak podwojnego score/queue_free).
+	if is_dying:
+		return
+	is_dying = true
+
+	GameState.enemies_killed += 1
+	GameState.add_score(kill_score)
+	# Sygnal niesie pozycje ZANIM wezel zniknie - DeathBurst spawnuje sie niezaleznie w current_scene.
+	died.emit(global_position)
 	queue_free()
-
-# --- ZADAWANIE OBRAŻEŃ ---
-func _on_body_entered(body: Node2D) -> void:
-	# Sprawdzamy, czy obiekt z którym się zderzyliśmy to łódź gracza
-	if body.is_in_group("player") and body.has_method("take_damage"):
-		body.take_damage(20.0) # Zadajemy 20 pkt obrażeń
-		die() # Meduza wybucha po ugryzieniu (styl kamikadze)

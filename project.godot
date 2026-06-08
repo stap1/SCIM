@@ -10,14 +10,24 @@ config_version=5
 
 [application]
 
-config/name="Nowy projekt gry"
-run/main_scene="uid://bgujj5qrm2th"
+config/name="SCIM"
+run/main_scene="res://scenes/MainMenu.tscn"
 config/features=PackedStringArray("4.6", "Forward Plus")
 config/icon="res://icon.svg"
 
 [autoload]
 
 GameState="*uid://kguqub804fro"
+Upgrades="*res://scripts/systems/upgrades.gd"
+AudioManager="*res://scripts/systems/audio_manager.gd"
+
+[audio]
+
+buses/default_bus_layout="res://default_bus_layout.tres"
+
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/gut/plugin.cfg")
 
 [physics]
 

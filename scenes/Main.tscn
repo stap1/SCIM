@@ -1,80 +1,41 @@
-[gd_scene format=3 uid="uid://dkvg8apcfepju"]
+[gd_scene load_steps=10 format=3 uid="uid://dkvg8apcfepju"]
 
 [ext_resource type="Script" uid="uid://dojtumr0hthqr" path="res://scripts/systems/main.gd" id="1_elqb8"]
-[ext_resource type="Texture2D" uid="uid://dwav8pccjvlxl" path="res://assets/harpun.svg.svg" id="3_jyhfs"]
 [ext_resource type="PackedScene" uid="uid://df7rbwsa6d6ec" path="res://scenes/player/boat.tscn" id="3_sugp2"]
+[ext_resource type="Script" path="res://scripts/systems/enemy_spawner.gd" id="4_spawner"]
+[ext_resource type="PackedScene" uid="uid://bgujj5qrm2th" path="res://scenes/ui/hud.tscn" id="5_hud"]
+[ext_resource type="PackedScene" path="res://scenes/ui/game_over.tscn" id="6_gameover"]
+[ext_resource type="Script" path="res://scripts/weapons/harpoon_pool.gd" id="7_pool"]
+[ext_resource type="PackedScene" path="res://scenes/ui/level_up.tscn" id="8_levelup"]
+[ext_resource type="Shader" path="res://shaders/water.gdshader" id="9_water"]
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_0wfyh"]
-bg_color = Color(0.06, 0.06, 0.06, 1)
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_sugp2"]
-bg_color = Color(0.74, 0.1554, 0.1554, 1)
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_water"]
+shader = ExtResource("9_water")
 
 [node name="Main" type="Node2D" unique_id=1150465566]
 position = Vector2(210, 228)
 script = ExtResource("1_elqb8")
 
-[node name="Timer" type="Timer" parent="." unique_id=840186147]
-autostart = true
+[node name="WaterBackground" type="ColorRect" parent="."]
+z_index = -100
+material = SubResource("ShaderMaterial_water")
+offset_left = -1000.0
+offset_top = -1000.0
+offset_right = 1000.0
+offset_bottom = 1000.0
+color = Color(0.16470589, 0.2901961, 0.41960785, 1)
+mouse_filter = 2
 
 [node name="Boat" parent="." unique_id=1889304063 instance=ExtResource("3_sugp2")]
 
-[node name="TimeLabel" type="Label" parent="." unique_id=76601758]
-offset_left = -210.0
-offset_top = -226.0
-offset_right = -170.0
-offset_bottom = -203.0
-text = "Czas: 0s"
+[node name="EnemySpawner" type="Node" parent="."]
+script = ExtResource("4_spawner")
 
-[node name="HealthBar" type="ProgressBar" parent="." unique_id=569739484]
-offset_left = 640.0
-offset_top = -226.0
-offset_right = 940.0
-offset_bottom = -196.0
-theme_override_styles/background = SubResource("StyleBoxFlat_0wfyh")
-theme_override_styles/fill = SubResource("StyleBoxFlat_sugp2")
-show_percentage = false
+[node name="HarpoonPool" type="Node" parent="."]
+script = ExtResource("7_pool")
 
-[node name="GameOverScreen" type="CanvasLayer" parent="." unique_id=883235372]
+[node name="HUD" parent="." instance=ExtResource("5_hud")]
 
-[node name="ColorRect" type="ColorRect" parent="GameOverScreen" unique_id=307616514]
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-color = Color(0.09, 0.09, 0.09, 0.7058824)
+[node name="LevelUp" parent="." instance=ExtResource("8_levelup")]
 
-[node name="Label" type="Label" parent="GameOverScreen/ColorRect" unique_id=1579067598]
-layout_mode = 0
-offset_left = 365.0
-offset_top = 232.0
-offset_right = 777.0
-offset_bottom = 331.0
-theme_override_colors/font_color = Color(1, 0.41000003, 0.41000003, 1)
-theme_override_font_sizes/font_size = 72
-text = "GAME OVER"
-
-[node name="RestartButton" type="Button" parent="GameOverScreen/ColorRect" unique_id=722818110]
-layout_mode = 0
-offset_left = 219.0
-offset_top = 318.0
-offset_right = 955.0
-offset_bottom = 425.0
-theme_override_font_sizes/font_size = 28
-text = "SPRÓBUJ PONOWNIE"
-
-[node name="AmmoIcon" type="TextureRect" parent="." unique_id=28247662]
-offset_left = 582.0
-offset_top = -227.0
-offset_right = 600.0
-offset_bottom = -194.0
-texture = ExtResource("3_jyhfs")
-expand_mode = 1
-
-[node name="AmmoLabel" type="Label" parent="." unique_id=2142640378 groups=["ammo_ui"]]
-offset_left = 533.0
-offset_top = -223.0
-offset_right = 576.0
-offset_bottom = -200.0
-text = "20/20"
+[node name="GameOver" parent="." instance=ExtResource("6_gameover")]

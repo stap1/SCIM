@@ -1,44 +1,22 @@
-[gd_scene format=3 uid="uid://djphki8cb53y5"]
+[gd_scene load_steps=5 format=3 uid="uid://djphki8cb53y5"]
 
 [ext_resource type="Script" uid="uid://dfe0lpyyf6k0f" path="res://scripts/systems/enemy.gd" id="1_55jtl"]
 [ext_resource type="Texture2D" uid="uid://cv3g65vi1x0l7" path="res://assets/meduza.svg.svg" id="2_fcftc"]
 [ext_resource type="AudioStream" uid="uid://diwck84uylbh6" path="res://audio/sfx/FSFoley_Water_Drop_fx_BANDLAB.wav" id="4_fcftc"]
-[ext_resource type="AudioStream" uid="uid://cjyi7y5clel00" path="res://audio/sfx/enemy_death.wav" id="4_ft8do"]
 
-[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_fcftc"]
-height = 48.015015
+[sub_resource type="CircleShape2D" id="CircleShape2D_body"]
+radius = 14.0
 
-[node name="Enemy" type="Area2D" unique_id=1292791154]
-position = Vector2(583, 340)
+[node name="Jellyfish" type="CharacterBody2D" groups=["enemies"]]
+collision_layer = 2
+collision_mask = 0
 script = ExtResource("1_55jtl")
 
-[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1647845648]
+[node name="Sprite2D" type="Sprite2D" parent="."]
 texture = ExtResource("2_fcftc")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1471852766]
-position = Vector2(-1, -3)
-rotation = -1.5952309
-skew = 0.034906585
-shape = SubResource("CapsuleShape2D_fcftc")
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_body")
 
-[node name="DeathSound" type="AudioStreamPlayer2D" parent="." unique_id=1348671678]
-stream = ExtResource("4_ft8do")
-volume_db = -19.925
-pitch_scale = 0.53
-
-[node name="SpawnSound" type="AudioStreamPlayer2D" parent="." unique_id=904171346]
+[node name="SpawnSound" type="AudioStreamPlayer2D" parent="."]
 stream = ExtResource("4_fcftc")
-
-[node name="DeathParticles" type="CPUParticles2D" parent="." unique_id=1528726450]
-z_index = 5
-emitting = false
-amount = 25
-one_shot = true
-explosiveness = 1.0
-spread = 180.0
-gravity = Vector2(0, 0)
-initial_velocity_min = 80.0
-initial_velocity_max = 150.0
-scale_amount_min = 3.0
-scale_amount_max = 6.0
-color = Color(0.94400704, 0.21400005, 0.6292439, 1)
