@@ -1,6 +1,6 @@
 extends CharacterBody2D
 
-@export var max_speed: float = 220.0
+@export var max_speed: float = 200.0
 @export var acceleration: float = 600.0
 @export var friction: float = 700.0
 @export var rotation_speed: float = 5.0
@@ -51,8 +51,9 @@ func _physics_process(delta: float) -> void:
 		var target_angle = velocity.angle() + PI/2
 		rotation = rotate_toward(rotation, target_angle, rotation_speed * delta)
 
-func _handle_movement(delta: float) -> void:
-	var input_dir = Vector2.ZERO
+# Znormalizowany kierunek wejscia (WSAD + strzalki). Wydzielone dla testowalnosci.
+func get_input_direction() -> Vector2:
+	var input_dir := Vector2.ZERO
 	if Input.is_key_pressed(KEY_RIGHT) or Input.is_key_pressed(KEY_D):
 		input_dir.x += 1
 	if Input.is_key_pressed(KEY_LEFT) or Input.is_key_pressed(KEY_A):
@@ -61,9 +62,15 @@ func _handle_movement(delta: float) -> void:
 		input_dir.y += 1
 	if Input.is_key_pressed(KEY_UP) or Input.is_key_pressed(KEY_W):
 		input_dir.y -= 1
-		
-	input_dir = input_dir.normalized()
-	
+	return input_dir.normalized()
+
+# Czysta funkcja bez zaleznosci od drzewa scen: docelowa predkosc dla danego kierunku.
+# Normalizacja gwarantuje, ze ruch ukosny nie jest szybszy niz prosty.
+static func compute_velocity(direction: Vector2, speed: float) -> Vector2:
+	return direction.normalized() * speed
+
+func _handle_movement(delta: float) -> void:
+	var input_dir := get_input_direction()
 	if input_dir.length() > 0:
 		velocity = velocity.move_toward(input_dir * max_speed, acceleration * delta)
 	else:
