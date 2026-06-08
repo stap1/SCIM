@@ -58,7 +58,10 @@ const MINIBOSS_SPAWN_TIME: float = 270.0
 const MINIBOSS_WARNING: float = 2.0
 
 # --- XP / orby ---
+# Wartosc bazowa orba (meduza). Mocniejsze typy zrzucaja wiecej: barakuda x2, rekin x5
+# (nadpisane jako xp_value w ich scenach .tscn - jak speed/hp/score), mini-boss = ponizej.
 const XP_ORB_VALUE: int = 1
+const XP_ORB_MINIBOSS: int = 10
 const XP_PICKUP_RADIUS: float = 30.0
 const XP_MAGNET_SPEED: float = 250.0
 const XP_MAGNET_RANGE: float = 120.0

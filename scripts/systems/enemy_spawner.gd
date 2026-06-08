@@ -80,13 +80,14 @@ func spawn_enemy(scene: PackedScene) -> Node:
 		enemy.died.connect(_on_enemy_died)
 	return enemy
 
-func _on_enemy_died(pos: Vector2) -> void:
+func _on_enemy_died(pos: Vector2, xp_value: int) -> void:
 	AudioManager.play_sfx("enemy_death")
 	var burst := DeathBurstScene.instantiate()
 	get_parent().add_child(burst)
 	burst.global_position = pos
 
 	var orb := XpOrbScene.instantiate()
+	orb.xp_value = xp_value # mocniejszy wrog = wartosciowszy orb
 	get_parent().add_child(orb)
 	orb.global_position = pos
 
@@ -125,6 +126,13 @@ func _on_boss_defeated(pos: Vector2) -> void:
 	var burst := DeathBurstScene.instantiate()
 	get_parent().add_child(burst)
 	burst.global_position = pos
+
+	# Boss zrzuca najwartosciowszy orb (oprocz gwarantowanego awansu nizej).
+	var orb := XpOrbScene.instantiate()
+	orb.xp_value = GameConfig.XP_ORB_MINIBOSS
+	get_parent().add_child(orb)
+	orb.global_position = pos
+
 	# Gwarantowany awans (nagroda) - pokazuje ekran wyboru ulepszenia.
 	GameState.grant_level_up()
 
