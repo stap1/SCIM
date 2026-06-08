@@ -25,6 +25,13 @@ AudioManager="*res://scripts/systems/audio_manager.gd"
 
 buses/default_bus_layout="res://default_bus_layout.tres"
 
+[layer_names]
+
+2d_physics/layer_1="player"
+2d_physics/layer_2="enemy"
+2d_physics/layer_3="harpoon"
+2d_physics/layer_4="pickup"
+
 [editor_plugins]
 
 enabled=PackedStringArray("res://addons/gut/plugin.cfg")
