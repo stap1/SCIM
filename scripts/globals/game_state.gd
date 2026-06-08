@@ -74,6 +74,7 @@ func grant_level_up() -> void:
 		return
 	level += 1
 	level_up.emit(level)
+	heal_to_full() # awans = pelne HP
 
 func add_xp(amount: int) -> void:
 	# Cap poziomu (GameConfig.MAX_LEVEL): na maksie XP nie ma juz dokad rosnac.
@@ -83,16 +84,20 @@ func add_xp(amount: int) -> void:
 		xp_changed.emit(xp)
 		return
 	xp += amount
+	var leveled := false
 	# Wiele awansow naraz: while (nie if) - duza wartosc nie gubi poziomow; stop na capie.
 	while level < GameConfig.MAX_LEVEL and xp >= xp_threshold(level):
 		xp -= xp_threshold(level)
 		level += 1
+		leveled = true
 		level_up.emit(level)
 	if level >= GameConfig.MAX_LEVEL:
 		xp = 0
 		xp_to_next = 0
 	else:
 		xp_to_next = xp_threshold(level)
+	if leveled:
+		heal_to_full() # awans = pelne HP
 	xp_changed.emit(xp)
 
 # Czysta funkcja: ile XP potrzeba na dany poziom. Wzor: level*10 + (level-1)^2 * 5.
@@ -104,6 +109,16 @@ func take_damage(amount: float) -> void:
 	health_changed.emit(health)
 	if health <= 0.0:
 		trigger_game_over()
+
+# Przywraca HP (zebrana deska), nigdy ponad max_health.
+func heal(amount: float) -> void:
+	health = minf(max_health, health + amount)
+	health_changed.emit(health)
+
+# Pelne HP (nagroda za awans poziomu).
+func heal_to_full() -> void:
+	health = max_health
+	health_changed.emit(health)
 
 # Jedyne miejsce konczenia gry. Guard gwarantuje, ze sygnal game_over poleci dokladnie raz.
 func trigger_game_over() -> void:

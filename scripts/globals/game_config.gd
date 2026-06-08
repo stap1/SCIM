@@ -71,3 +71,10 @@ const XP_ORB_LIFETIME: float = 12.0
 # --- Progresja ---
 # Maksymalny poziom gracza = wiek Ernesta Hemingwaya w chwili smierci.
 const MAX_LEVEL: int = 61
+
+# --- Leczenie ---
+# Dryfujaca deska (rybak lata nia kadlub): ile HP przywraca i jak czesto sie pojawia.
+const HEAL_PLANK_AMOUNT: float = 25.0
+const HEAL_PLANK_INTERVAL: float = 25.0
+# Po tylu sekundach niezebrana deska znika.
+const HEAL_PLANK_LIFETIME: float = 15.0
