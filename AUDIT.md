@@ -100,7 +100,7 @@ Metryki: ~1421 linii logiki (20 plików `.gd`) + 19 linii shadera; ~844 linii te
 | # | Zadanie | Etap | Właśc. | Prio (#) |
 |---|---|---|---|---|
 | ✅ P0.1 | ~~Cap/lifetime orbów XP~~ **WYKONANE** - `xp_orb.lifetime` (12 s, niezebrane orby znikają) + test | E3 | PROG | #4 #5 |
-| P0.2 | Twardy error-scan w CI (headless `--quit-after` + grep `SCRIPT ERROR`) | E8 | PROG | #5 |
+| ✅ P0.2 | ~~Twardy error-scan w CI~~ **WYKONANE** - `tools/run_checks.ps1` (lokalnie) + `.github/workflows/ci.yml` (GUT + grep runtime errors, fail na `SCRIPT ERROR`) | E8 | PROG | #5 |
 
 **P1 - wysoka wartość (hybryda + balans + czytelność)**
 | # | Zadanie | Etap | Właśc. | Prio |
@@ -138,7 +138,7 @@ Metryki: ~1421 linii logiki (20 plików `.gd`) + 19 linii shadera; ~844 linii te
 
 - **Stan ogólny: zdrowy.** Kompletny, działający, web-build OK, 87 testów + 4 regresje zielone. **Zero błędów krytycznych.**
 - **Najmocniejsze:** rdzeń `GameState` (single source), HUD read-only, pooling/targeting, obsługa błędów audio/persystencji (lepsza niż spec), warstwa efektów web-friendly, dyscyplina czystych funkcji + testów.
-- **Najważniejszy dług:** (1) kumulacja orbów XP (P0.1), (2) smoke nie łapie runtime errors w CI (P0.2), (3) nienazwane warstwy kolizji (P1.1), (4) brak `max_level` (P1.2).
+- **Najważniejszy dług:** (1) ✅ kumulacja orbów XP (P0.1 - wykonane), (2) ✅ error-scan w CI (P0.2 - wykonane), (3) nienazwane warstwy kolizji (P1.1), (4) brak `max_level` (P1.2). Pozostaje P1+ .
 - **Dokumentacja:** pogodzić TECH_SPEC z rzeczywistością (wdrożyć GameConfig/EnemyBase/named-layers/max_level/OGG/InputMap; resztę zaktualizować do as-built; EventBus odrzucić).
 - **Kolejność prac:** P0 → P1 → P2 → P3, każda zmiana z testem, utrzymać 4 testy regresji, po każdej GUT + error-scan zielone.
 
