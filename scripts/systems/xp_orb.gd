@@ -7,8 +7,12 @@ extends Area2D
 @export var pickup_radius: float = 30.0
 @export var magnet_speed: float = 250.0
 @export var magnet_range: float = 120.0
+# Po tylu sekundach aktywnej gry niezebrany orb znika - zapobiega kumulacji orbow
+# spoza zasiegu magnesu (audyt P0.1: orby nie mialy capa/lifetime).
+@export var lifetime: float = 12.0
 
 var is_collected: bool = false
+var _age: float = 0.0
 var _player: Node2D = null
 
 func _ready() -> void:
@@ -21,6 +25,12 @@ func _physics_process(delta: float) -> void:
 	if is_collected:
 		return
 	if GameState.is_paused or GameState.is_game_over:
+		return
+
+	# Lifetime liczony tylko podczas aktywnej gry (pauza/koniec gry wstrzymuja starzenie).
+	_age += delta
+	if _age >= lifetime:
+		_despawn()
 		return
 
 	if _player == null or not is_instance_valid(_player):
@@ -45,6 +55,13 @@ func _collect() -> void:
 		return
 	is_collected = true
 	GameState.add_xp(xp_value)
+	queue_free()
+
+# Niezebrany orb po uplywie lifetime - znika bez przyznania XP (is_collected jako guard "orb zniknal").
+func _despawn() -> void:
+	if is_collected:
+		return
+	is_collected = true
 	queue_free()
 
 # Czysta funkcja: czy orb powinien leciec ku graczowi.
