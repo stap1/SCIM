@@ -14,7 +14,6 @@ var time_since_last_hit: float = 999.0
 # --- ZMIENNA DO ANIMACJI FAL (JUICE) ---
 var wave_time: float = 0.0
 
-@onready var weapon_timer: Timer = $WeaponTimer
 @onready var shoot_sound: AudioStreamPlayer2D = $ShootSound
 @onready var hurtbox: Area2D = $Hurtbox
 
@@ -30,11 +29,6 @@ func _ready() -> void:
 	# a polling w _physics_process zapewnia obrazenia ciagle (oba bramkowane cooldownem).
 	if hurtbox:
 		hurtbox.body_entered.connect(_on_hurtbox_body_entered)
-
-	if weapon_timer:
-		if weapon_timer.timeout.is_connected(_on_weapon_timer_timeout):
-			weapon_timer.timeout.disconnect(_on_weapon_timer_timeout)
-		weapon_timer.timeout.connect(_on_weapon_timer_timeout)
 
 func _physics_process(delta: float) -> void:
 	_handle_movement(delta)
@@ -113,37 +107,10 @@ func die() -> void:
 	hide()
 	set_physics_process(false)
 
-	if weapon_timer:
-		weapon_timer.stop()
-
-func _on_weapon_timer_timeout() -> void:
-	var enemies = get_tree().get_nodes_in_group("enemies")
-	if enemies.size() == 0:
-		return
-
-	var closest_enemy = enemies[0]
-	var min_distance = global_position.distance_to(closest_enemy.global_position)
-
-	for enemy in enemies:
-		var dist = global_position.distance_to(enemy.global_position)
-		if dist < min_distance:
-			min_distance = dist
-			closest_enemy = enemy
-
-	_shoot_at(closest_enemy.global_position)
-
-func _shoot_at(target_position: Vector2) -> void:
-	var pool = get_tree().get_first_node_in_group("harpoon_pool")
-	if pool == null:
-		return
-
-	var harpoon = pool.get_harpoon()
-	if harpoon:
-		var shoot_dir = (target_position - global_position).normalized()
-		harpoon.fire(global_position, shoot_dir)
-
-		if shoot_sound:
-			shoot_sound.play()
+# Dzwiek strzalu - publiczne API dla AutoAttacker (strzela harpunami przez pule).
+func play_shoot_sound() -> void:
+	if shoot_sound:
+		shoot_sound.play()
 
 # --- ODŚWIEŻANIE WIZUALNE I LICZNIK ---
 func _process(delta: float) -> void:

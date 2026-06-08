@@ -3,6 +3,7 @@
 [ext_resource type="Script" uid="uid://cb28khn2ubxbc" path="res://scripts/player/boat.gd" id="1_webh6"]
 [ext_resource type="Texture2D" uid="uid://blsotf7ntv08v" path="res://assets/lodz.svg.svg" id="2_webh6"]
 [ext_resource type="AudioStream" uid="uid://bdatr0e725hkj" path="res://audio/sfx/GameFX_Shoot_01_fx_BANDLAB.wav" id="3_km2v0"]
+[ext_resource type="Script" path="res://scripts/systems/auto_attacker.gd" id="4_autoatk"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_webh6"]
 radius = 16.0
@@ -25,10 +26,6 @@ enabled = true
 position_smoothing_enabled = true
 position_smoothing_speed = 5.0
 
-[node name="WeaponTimer" type="Timer" parent="." unique_id=1529080301]
-wait_time = 1.5
-autostart = true
-
 [node name="ShootSound" type="AudioStreamPlayer2D" parent="." unique_id=1704533202]
 stream = ExtResource("3_km2v0")
 
@@ -39,4 +36,5 @@ collision_mask = 2
 [node name="HurtboxShape" type="CollisionShape2D" parent="Hurtbox"]
 shape = SubResource("CircleShape2D_hurtbox")
 
-[connection signal="timeout" from="WeaponTimer" to="." method="_on_weapon_timer_timeout"]
+[node name="AutoAttacker" type="Node" parent="."]
+script = ExtResource("4_autoatk")
