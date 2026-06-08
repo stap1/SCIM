@@ -1,29 +1,28 @@
-extends CharacterBody2D
+extends EnemyBase
 
 # Mini-boss "Motorowka klusownika". Sledzi gracza i co charge_interval wykonuje szarze
-# (Tween ku ostatniej pozycji gracza). HP bar nad bossem. Guard is_dying jak w enemy.gd.
+# (Tween ku ostatniej pozycji gracza). HP bar nad bossem.
+# Wspolna logika (health/is_dying/die/take_damage/set_target/grupa) w EnemyBase.
 
 signal boss_defeated(position: Vector2)
 
-# Wartosci startowe z GameConfig (jedyne zrodlo balansu).
-@export var max_health: float = GameConfig.MINIBOSS_HP
-@export var kill_score: int = GameConfig.MINIBOSS_SCORE
+# Eksporty specyficzne dla bossa (track_speed zamiast speed, parametry szarzy).
 @export var track_speed: float = GameConfig.MINIBOSS_TRACK_SPEED
 @export var charge_interval: float = GameConfig.MINIBOSS_CHARGE_INTERVAL
 @export var charge_duration: float = GameConfig.MINIBOSS_CHARGE_DURATION
-
-var health: float
-var is_dying: bool = false
-var target: Node2D = null
 
 var _charging: bool = false
 var _charge_timer: Timer
 
 @onready var hp_bar: ProgressBar = get_node_or_null("HpBar")
 
+func _init() -> void:
+	# Wartosci startowe bossa z GameConfig (jedyne zrodlo balansu).
+	max_health = GameConfig.MINIBOSS_HP
+	kill_score = GameConfig.MINIBOSS_SCORE
+
 func _ready() -> void:
-	health = max_health
-	add_to_group("enemies")
+	super._ready()
 	if hp_bar:
 		hp_bar.max_value = max_health
 		hp_bar.value = health
@@ -34,18 +33,13 @@ func _ready() -> void:
 	_charge_timer.timeout.connect(_on_charge)
 	add_child(_charge_timer)
 
-func set_target(t: Node2D) -> void:
-	target = t
-
 func _physics_process(_delta: float) -> void:
 	if GameState.is_paused or GameState.is_game_over:
 		return
 	# W trakcie szarzy pozycja jest sterowana Tweenem - nie nadpisujemy ruchem.
 	if _charging:
 		return
-	if target == null or not is_instance_valid(target):
-		target = get_tree().get_first_node_in_group("player")
-	if target == null:
+	if not acquire_target():
 		return
 	velocity = (target.global_position - global_position).normalized() * track_speed
 	move_and_slide()
@@ -64,21 +58,9 @@ func _on_charge() -> void:
 func _end_charge() -> void:
 	_charging = false
 
-func take_damage(amount: float) -> void:
-	if is_dying:
-		return
-	health -= amount
+func _on_health_changed() -> void:
 	if hp_bar:
 		hp_bar.value = health
-	if health <= 0.0:
-		die()
 
-func die() -> void:
-	# Death guard (jak w enemy.gd) - przeciw podwojnemu queue_free / podwojnemu score.
-	if is_dying:
-		return
-	is_dying = true
-	GameState.enemies_killed += 1
-	GameState.add_score(kill_score)
+func _on_death() -> void:
 	boss_defeated.emit(global_position)
-	queue_free()
