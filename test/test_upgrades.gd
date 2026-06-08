@@ -28,3 +28,18 @@ func test_apply_resource_magnet_increases_multiplier() -> void:
 	var before: float = GameState.magnet_range_mult
 	Upgrades.apply("resource_magnet")
 	assert_almost_eq(GameState.magnet_range_mult, before * 1.4, 0.001, "resource_magnet: mnoznik *1.4")
+
+func test_upgrade_respects_max_level() -> void:
+	var id := "faster_attack"
+	var maxl: int = Upgrades.UPGRADES[id]["max_level"]
+	for i in maxl:
+		assert_true(id in Upgrades.available_ids(), "przed wyczerpaniem ulepszenie dostepne (i=%d)" % i)
+		Upgrades.apply(id)
+	assert_false(id in Upgrades.available_ids(), "po max_level ulepszenie znika z puli")
+	assert_eq(Upgrades.level_of(id), maxl, "poziom == max_level")
+
+func test_session_reset_clears_levels() -> void:
+	Upgrades.apply("tougher_hull")
+	assert_eq(Upgrades.level_of("tougher_hull"), 1, "po wyborze poziom 1")
+	GameState.reset() # emituje session_reset -> Upgrades.reset_levels
+	assert_eq(Upgrades.level_of("tougher_hull"), 0, "session_reset czysci poziomy")

@@ -106,7 +106,7 @@ Metryki: ~1421 linii logiki (20 plików `.gd`) + 19 linii shadera; ~844 linii te
 | # | Zadanie | Etap | Właśc. | Prio |
 |---|---|---|---|---|
 | ✅ P1.1 | ~~Nazwane warstwy kolizji~~ **WYKONANE** - `[layer_names]` (player/enemy/harpoon/pickup) + harpun/orb na własnych warstwach + strażniki testowe | E2 | PROG | #1 #4 |
-| P1.2 | `max_level` ulepszeń + filtr `pick_three` | E4 | PROG | #6 |
+| ✅ P1.2 | ~~`max_level` ulepszeń + filtr `pick_three`~~ **WYKONANE** - `max_level` per ulepszenie, `available_ids()` filtruje wyczerpane, reset na `session_reset`, anty-softlock | E4 | PROG | #6 |
 | P1.3 | `GameConfig` (jedno źródło balansu) | E1 | PROG | #3 |
 | P1.4 | `EnemyBase` (usuń duplikację enemy↔boss) | E3 | PROG | #1 #6 |
 | P1.5 | Neutralny `SettingsStore`/accessibility (usuń coupling gameplay/audio→UI) | E5 E6 | PROG | #1 #6 |
@@ -138,7 +138,7 @@ Metryki: ~1421 linii logiki (20 plików `.gd`) + 19 linii shadera; ~844 linii te
 
 - **Stan ogólny: zdrowy.** Kompletny, działający, web-build OK, 87 testów + 4 regresje zielone. **Zero błędów krytycznych.**
 - **Najmocniejsze:** rdzeń `GameState` (single source), HUD read-only, pooling/targeting, obsługa błędów audio/persystencji (lepsza niż spec), warstwa efektów web-friendly, dyscyplina czystych funkcji + testów.
-- **Najważniejszy dług:** (1) ✅ kumulacja orbów XP (P0.1), (2) ✅ error-scan w CI (P0.2), (3) ✅ nienazwane warstwy kolizji (P1.1), (4) brak `max_level` (P1.2 - następne). Pozostaje P1.2-P1.6 + P2/P3.
+- **Najważniejszy dług:** (1) ✅ orby XP (P0.1), (2) ✅ error-scan CI (P0.2), (3) ✅ warstwy kolizji (P1.1), (4) ✅ `max_level` (P1.2) - **wszystkie 4 zamknięte**. Pozostaje P1.3-P1.6 (GameConfig, EnemyBase, SettingsStore, czytelność stanu) + P2/P3.
 - **Dokumentacja:** pogodzić TECH_SPEC z rzeczywistością (wdrożyć GameConfig/EnemyBase/named-layers/max_level/OGG/InputMap; resztę zaktualizować do as-built; EventBus odrzucić).
 - **Kolejność prac:** P0 → P1 → P2 → P3, każda zmiana z testem, utrzymać 4 testy regresji, po każdej GUT + error-scan zielone.
 

@@ -9,6 +9,8 @@ signal score_changed(new_score: int)
 signal time_changed(new_time: float)
 signal xp_changed(new_xp: int)
 signal level_up(new_level: int)
+# Nowa sesja (reset) - systemy resetuja swoj stan per-run (np. poziomy ulepszen).
+signal session_reset
 # Ostrzezenie przed pojawieniem sie mini-bossa.
 signal boss_incoming
 # Emitowany DOKLADNIE RAZ, gdy gra sie konczy (guard w trigger_game_over).
@@ -57,6 +59,7 @@ func reset() -> void:
 	health_changed.emit(health)
 	score_changed.emit(score)
 	time_changed.emit(time)
+	session_reset.emit()
 
 func add_time(delta: float) -> void:
 	time += delta
