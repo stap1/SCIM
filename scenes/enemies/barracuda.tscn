@@ -1,0 +1,27 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scripts/systems/enemy.gd" id="1_enemy"]
+[ext_resource type="Texture2D" path="res://assets/meduza.svg.svg" id="2_tex"]
+[ext_resource type="AudioStream" path="res://audio/sfx/FSFoley_Water_Drop_fx_BANDLAB.wav" id="3_spawn"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_body"]
+radius = 14.0
+
+[node name="Barracuda" type="CharacterBody2D" groups=["enemies"]]
+collision_layer = 2
+collision_mask = 0
+script = ExtResource("1_enemy")
+speed = 160.0
+max_health = 8.0
+kill_score = 2
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+modulate = Color(1, 0.85, 0.2, 1)
+scale = Vector2(0.85, 0.85)
+texture = ExtResource("2_tex")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_body")
+
+[node name="SpawnSound" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("3_spawn")

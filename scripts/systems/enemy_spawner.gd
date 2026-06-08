@@ -1,14 +1,18 @@
 extends Node
 
-# Spawner wrogow. Co spawn_interval tworzy Jellyfish na obrzezu widoku
-# i ustawia cel na lodz (grupa "player").
+# Spawner wrogow. Co spawn_interval tworzy losowy typ wroga na obrzezu widoku
+# i ustawia cel na lodz (grupa "player"). Wszystkie typy uzywaja enemy.gd (jedna baza).
 
 @export var spawn_interval: float = 1.0
 @export var max_enemies: int = 30
 
-const EnemyScene := preload("res://scenes/enemies/enemy.tscn")
+const JellyfishScene := preload("res://scenes/enemies/enemy.tscn")
+const BarracudaScene := preload("res://scenes/enemies/barracuda.tscn")
+const SharkScene := preload("res://scenes/enemies/shark.tscn")
 const DeathBurstScene := preload("res://scenes/death_burst.tscn")
 const XpOrbScene := preload("res://scenes/xp_orb.tscn")
+
+var _enemy_scenes: Array[PackedScene] = [JellyfishScene, BarracudaScene, SharkScene]
 
 var _timer: Timer
 
@@ -24,23 +28,26 @@ func _on_timeout() -> void:
 		return
 	if get_tree().get_nodes_in_group("enemies").size() >= max_enemies:
 		return
+	# Tymczasowo: losowy typ z trzech (krok 17 zastapi to krzywa trudnosci).
+	spawn_enemy(_enemy_scenes[randi() % _enemy_scenes.size()])
 
+func spawn_enemy(scene: PackedScene) -> Node:
 	var player := get_tree().get_first_node_in_group("player")
 	var vp_size := get_viewport().get_visible_rect().size
-	var edge := randi() % 4
-	var pos := spawn_position_for_edge(edge, vp_size)
+	var pos := spawn_position_for_edge(randi() % 4, vp_size)
 
 	# Spawn wzgledem widoku gracza (kamera sledzi lodz).
 	if player != null:
 		pos += player.global_position - vp_size / 2.0
 
-	var enemy := EnemyScene.instantiate()
+	var enemy := scene.instantiate()
 	get_parent().add_child(enemy)
 	enemy.global_position = pos
 	if player != null and enemy.has_method("set_target"):
 		enemy.set_target(player)
-	# Particle smierci spawnujemy do current_scene (nie do znikajacego wroga).
-	enemy.died.connect(_on_enemy_died)
+	if enemy.has_signal("died"):
+		enemy.died.connect(_on_enemy_died)
+	return enemy
 
 func _on_enemy_died(pos: Vector2) -> void:
 	var burst := DeathBurstScene.instantiate()
