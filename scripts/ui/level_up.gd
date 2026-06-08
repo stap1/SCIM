@@ -24,11 +24,15 @@ func _ready() -> void:
 		if card:
 			card.pressed.connect(_on_card_pressed.bind(i))
 
-func _on_level_up(_new_level: int) -> void:
-	_current_ids = pick_three(_upgrade_pool(), randi())
-	# Wszystkie ulepszenia wyczerpane (max_level) - nie pauzuj, by nie zablokowac gry.
-	if _current_ids.is_empty():
-		return
+func _on_level_up(new_level: int) -> void:
+	# Co MILESTONE_LEVEL_INTERVAL poziomow: specjalny power-up ZAMIAST zwyklej karty.
+	if is_milestone_level(new_level, GameConfig.MILESTONE_LEVEL_INTERVAL):
+		_current_ids = Upgrades.milestone_ids()
+	else:
+		_current_ids = pick_three(_upgrade_pool(), randi())
+		# Wszystkie ulepszenia wyczerpane (max_level) - nie pauzuj, by nie zablokowac gry.
+		if _current_ids.is_empty():
+			return
 	for i in cards.size():
 		var card = cards[i]
 		if card == null:
@@ -60,8 +64,9 @@ func _upgrade_pool() -> Array[String]:
 
 func _set_card_text(card: Node, id: String) -> void:
 	var text := id
-	if Upgrades.UPGRADES.has(id):
-		var u = Upgrades.UPGRADES[id]
+	# info() obejmuje ulepszenia zwykle i milestone.
+	var u := Upgrades.info(id)
+	if not u.is_empty():
 		text = str(u.get("name", id)) + "\n" + str(u.get("description", ""))
 	var label = card.get_node_or_null("Label")
 	if label:
@@ -75,6 +80,10 @@ func _on_card_pressed(index: int) -> void:
 		panel.hide()
 	get_tree().paused = false
 	upgrade_chosen.emit(id)
+
+# Czysta funkcja: czy dany poziom jest "milestone" (co interval -> ekran specjalny).
+static func is_milestone_level(level: int, interval: int) -> bool:
+	return interval > 0 and level > 0 and level % interval == 0
 
 # Czysta funkcja: 3 unikalne opcje z puli, deterministycznie wg seeda (tasowanie Fisher-Yates).
 static func pick_three(pool: Array[String], rng_seed: int) -> Array[String]:

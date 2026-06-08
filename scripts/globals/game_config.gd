@@ -71,6 +71,8 @@ const XP_ORB_LIFETIME: float = 12.0
 # --- Progresja ---
 # Maksymalny poziom gracza = wiek Ernesta Hemingwaya w chwili smierci.
 const MAX_LEVEL: int = 61
+# Co tyle poziomow zamiast zwyklej karty pojawia sie specjalny power-up (harpun/przebijanie).
+const MILESTONE_LEVEL_INTERVAL: int = 5
 
 # --- Leczenie ---
 # Dryfujaca deska (rybak lata nia kadlub): ile HP przywraca i jak czesto sie pojawia.
