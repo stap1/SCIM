@@ -1,5 +1,9 @@
 extends Area2D
 
+# Emitowany gdy zmienia sie stan active (wystrzal/uspienie) - pula nasluchuje, by
+# odswiezyc licznik amunicji event-driven (bez pollingu).
+signal availability_changed
+
 # Wartosci startowe z GameConfig (jedyne zrodlo balansu).
 @export var speed: float = GameConfig.HARPOON_SPEED
 @export var damage: float = GameConfig.HARPOON_DAMAGE
@@ -45,6 +49,7 @@ func fire(start_pos: Vector2, shoot_dir: Vector2, pierce_count: int = 0) -> void
 	visible = true
 	set_deferred("monitoring", true)
 	set_deferred("monitorable", true)
+	availability_changed.emit()
 
 # --- Uspienie (ZAMIAST queue_free - pooling, brak wyciekow) ---
 func deactivate() -> void:
@@ -55,6 +60,7 @@ func deactivate() -> void:
 	_hit_ids.clear()
 	set_deferred("monitoring", false)
 	set_deferred("monitorable", false)
+	availability_changed.emit()
 
 # --- Kolizje ---
 func _on_any_collision(something: Node) -> void:

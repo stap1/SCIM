@@ -7,6 +7,7 @@ extends CanvasLayer
 @onready var time_label: Label = $TimeLabel
 @onready var score_label: Label = $ScoreLabel
 @onready var boss_warning: Label = get_node_or_null("BossWarning")
+@onready var ammo_label: Label = get_node_or_null("AmmoLabel")
 
 # Pasek HP jako drewniany kadlub: im nizsze HP, tym bardziej "spekany" (etap 0 = caly).
 # Docelowo etap -> klatka hull_hp_<stage>.png; do czasu artu placeholder = barwa wypelnienia.
@@ -34,6 +35,17 @@ func _ready() -> void:
 	_on_health_changed(GameState.health)
 	_on_time_changed(GameState.time)
 	_on_score_changed(GameState.score)
+
+	# Licznik amunicji event-driven: sluchaj puli harpunow + synchronizacja poczatkowa
+	# (pula moze byc gotowa przed HUD - dlatego dociagamy biezacy stan).
+	var pool := get_tree().get_first_node_in_group("harpoon_pool")
+	if pool and pool.has_signal("ammo_changed"):
+		pool.ammo_changed.connect(_on_ammo_changed)
+		_on_ammo_changed(pool.available_count(), pool.total_count())
+
+func _on_ammo_changed(available: int, total: int) -> void:
+	if ammo_label:
+		ammo_label.text = "%d / %d" % [available, total]
 
 func _on_health_changed(new_health: float) -> void:
 	if health_bar == null:
