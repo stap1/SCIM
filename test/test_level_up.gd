@@ -1,6 +1,6 @@
 extends GutTest
 
-# KROK 14 (Prompt 14): levelup screen - 3 karty, pauza, pick_three.
+# KROK 14 (Prompt 14): levelup screen - 3 karty, pauza, pick_n.
 
 const LevelUpScene := preload("res://scenes/ui/level_up.tscn")
 const LevelUpScript := preload("res://scripts/ui/level_up.gd")
@@ -13,15 +13,15 @@ func after_each() -> void:
 	# Bezpiecznik: gdyby test zostawil zapauzowane drzewo.
 	get_tree().paused = false
 
-func test_pick_three_returns_three_unique() -> void:
+func test_pick_n_returns_three_unique() -> void:
 	var pool: Array[String] = ["a", "b", "c", "d", "e", "f"]
-	var r := LevelUpScript.pick_three(pool, 123)
-	assert_eq(r.size(), 3, "pick_three zwraca 3 opcje")
+	var r := LevelUpScript.pick_n(pool, 123, 3)
+	assert_eq(r.size(), 3, "pick_n(.., 3) zwraca 3 opcje")
 	assert_true(r[0] != r[1] and r[1] != r[2] and r[0] != r[2], "3 unikalne opcje")
 
-func test_pick_three_deterministic() -> void:
+func test_pick_n_deterministic() -> void:
 	var pool: Array[String] = ["a", "b", "c", "d", "e", "f"]
-	assert_eq(LevelUpScript.pick_three(pool, 42), LevelUpScript.pick_three(pool, 42),
+	assert_eq(LevelUpScript.pick_n(pool, 42, 3), LevelUpScript.pick_n(pool, 42, 3),
 		"ten sam seed -> ten sam wynik")
 
 func test_level_up_shows_and_pauses_then_resumes() -> void:
