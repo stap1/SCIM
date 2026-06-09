@@ -123,7 +123,7 @@ Metryki: ~1421 linii logiki (20 plików `.gd`) + 19 linii shadera; ~844 linii te
 | ✅ P2.6 | ~~Pokrycie testów: `game_over` kontroler, `scores`, `should_end_session`~~ **WYKONANE** - wydzielone czyste funkcje + testy: `main.should_end_session(time, limit_sec)` (`test_session_end.gd`); `game_over.is_new_record(score, best)` + `best_text(best, is_record)` + smoke/wiring sceny (`test_game_over_controller.gd`); `scores.format_scores(top)` + smoke sceny (`test_scores_screen.gd`); +10 testów | E8 | PROG | #2 |
 | ✅ P2.7 | ~~Wpięcie muzyki (`play_music`/`crossfade` na boss_incoming)~~ **WYKONANE** - `AudioManager` podpina muzykę pod sygnały GameState: `session_reset`→`play_music(MUSIC.gameplay)` (start sesji), `boss_incoming`→`crossfade_to(MUSIC.boss, 1.5)` (obok SFX boss_spawn); katalog `MUSIC` (placeholdery OGG, graceful fallback); `current_music_track` (intencja) ustawiany zawsze - testowalne bez plików audio; strażnik `test_music_wiring.gd` | E6 | PROG (←S3) | #1 |
 | ✅ P2.8 | ~~Boss: maszyna stanów + telegraf szarży (logika)~~ **WYKONANE** - `enum Phase { TRACK, TELEGRAPH, CHARGE }`; `_on_charge` (timer) startuje od fazy TELEGRAPH (wind-up `MINIBOSS_TELEGRAPH_DURATION`=0.6s) zamiast od razu szarżować, dopiero potem CHARGE (Tween) -> TRACK; sygnał `charge_telegraph(duration)` + placeholder błysku (`_flash_telegraph`) pod pełny efekt G4; czysta funkcja `is_locked(phase)` (ruch śledzący tylko w TRACK); guard re-entry (`phase != TRACK`) i `is_dying`; strażnik `test_boss_telegraph.gd` | E3 | PROG (+G4) | #1 #6 |
-| P2.9 | Walidacja wczytanych high scores (`is Array`) | E6 | PROG | #5 |
+| ✅ P2.9 | ~~Walidacja wczytanych high scores (`is Array`)~~ **WYKONANE** - czysta funkcja `sanitize_scores(raw)`: nie-`Array` -> `[]`, wpisy nieliczbowe (string nie-int, dict, null, bool) pomijane; `get_top` używa jej zamiast surowego `for v in stored` (uszkodzony/zewnętrzny config nie crashuje, `add_score` odbudowuje poprawną tablicę); strażnik `test_highscores_validation.gd` | E6 | PROG | #5 |
 
 **P3 - kosmetyka / dokumentacja**
 | # | Zadanie | Etap | Właśc. | Prio |
@@ -138,7 +138,7 @@ Metryki: ~1421 linii logiki (20 plików `.gd`) + 19 linii shadera; ~844 linii te
 
 - **Stan ogólny: zdrowy.** Kompletny, działający, web-build OK, 87 testów + 4 regresje zielone. **Zero błędów krytycznych.**
 - **Najmocniejsze:** rdzeń `GameState` (single source), HUD read-only, pooling/targeting, obsługa błędów audio/persystencji (lepsza niż spec), warstwa efektów web-friendly, dyscyplina czystych funkcji + testów.
-- **Najważniejszy dług:** (1) ✅ orby XP (P0.1), (2) ✅ error-scan CI (P0.2), (3) ✅ warstwy kolizji (P1.1), (4) ✅ `max_level` (P1.2) - **wszystkie 4 zamknięte**. Dodatkowo ✅ `GameConfig` (P1.3), ✅ `EnemyBase` (P1.4), ✅ `SettingsStore` (P1.5) i ✅ czytelność stanu (P1.6). **Całe P1 zamknięte** - pozostaje P2/P3.
+- **Najważniejszy dług:** (1) ✅ orby XP (P0.1), (2) ✅ error-scan CI (P0.2), (3) ✅ warstwy kolizji (P1.1), (4) ✅ `max_level` (P1.2) - **wszystkie 4 zamknięte**. Dodatkowo ✅ `GameConfig` (P1.3), ✅ `EnemyBase` (P1.4), ✅ `SettingsStore` (P1.5) i ✅ czytelność stanu (P1.6). **Całe P1 i całe P2 (P2.1-P2.9) zamknięte** - pozostaje już tylko P3 (kosmetyka / dokumentacja).
 - **Dokumentacja:** pogodzić TECH_SPEC z rzeczywistością (wdrożyć GameConfig/EnemyBase/named-layers/max_level/OGG/InputMap; resztę zaktualizować do as-built; EventBus odrzucić).
 - **Kolejność prac:** P0 → P1 → P2 → P3, każda zmiana z testem, utrzymać 4 testy regresji, po każdej GUT + error-scan zielone.
 
