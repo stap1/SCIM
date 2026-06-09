@@ -19,6 +19,9 @@ signal charge_telegraph(duration: float)
 
 var phase: int = Phase.TRACK
 var _charge_timer: Timer
+## Barwa bazowa sprite'a bossa (czerwony kadlub), zapamietana w _ready, by telegraf
+## mial dokad wrocic po rozblysku.
+var _base_modulate: Color = Color.WHITE
 ## Pozycja szarzy zablokowana na poczatku telegrafu. Boss celuje w nia juz w wind-upie
 ## (obrot staje sie czescia telegrafu) i tam natrze - dlatego szarza jest do unikniecia:
 ## gracz, ktory odejdzie po rozpoczeciu telegrafu, nie zostanie trafiony.
@@ -37,6 +40,9 @@ func _ready() -> void:
 	if hp_bar:
 		hp_bar.max_value = max_health
 		hp_bar.value = health
+	var sprite := get_node_or_null("Sprite2D")
+	if sprite:
+		_base_modulate = sprite.modulate
 
 	_charge_timer = Timer.new()
 	_charge_timer.wait_time = charge_interval
@@ -109,11 +115,25 @@ func _begin_charge() -> void:
 func _end_charge() -> void:
 	phase = Phase.TRACK
 
-# Subtelny blysk wind-upu (placeholder telegrafu wizualnego; pelny efekt G4 pozniej).
+# Wizualny telegraf wind-upu: pulsujace rozjasnienie sprite'a, by gracz jednoznacznie
+# odczytal nadchodzaca szarze. Respektuje dostepnosc: przy wlaczonym "reduce flashing"
+# telegraf jest pojedynczy i lagodny (bez migotania).
 func _flash_telegraph() -> void:
-	modulate = Color(1.6, 1.4, 0.6)
+	var sprite := get_node_or_null("Sprite2D")
+	if sprite == null:
+		return
 	var tween := create_tween()
-	tween.tween_property(self, "modulate", Color(1, 1, 1), telegraph_duration)
+	if SettingsStore.should_flash(SettingsStore.reduce_flashing):
+		# Pelny telegraf: kilka pulsow bieli rownomiernie w czasie wind-upu.
+		var half := telegraph_duration / float(GameConfig.MINIBOSS_TELEGRAPH_PULSES * 2)
+		for _i in GameConfig.MINIBOSS_TELEGRAPH_PULSES:
+			tween.tween_property(sprite, "modulate", GameConfig.MINIBOSS_TELEGRAPH_COLOR, half)
+			tween.tween_property(sprite, "modulate", _base_modulate, half)
+	else:
+		# Wariant dostepny: jedno lagodne rozjasnienie tam i z powrotem.
+		var half := telegraph_duration * 0.5
+		tween.tween_property(sprite, "modulate", GameConfig.MINIBOSS_TELEGRAPH_COLOR, half)
+		tween.tween_property(sprite, "modulate", _base_modulate, half)
 
 # Czysta funkcja: czy w danej fazie ruch sledzacy jest zablokowany (telegraf/szarza).
 static func is_locked(p: int) -> bool:
