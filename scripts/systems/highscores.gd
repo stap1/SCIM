@@ -24,14 +24,26 @@ static func get_top(n: int, path: String = PATH) -> Array[int]:
 	var cfg := ConfigFile.new()
 	var list: Array[int] = []
 	if cfg.load(path) == OK:
-		var stored = cfg.get_value("scores", "top", [])
-		for v in stored:
-			list.append(int(v))
+		# Plik moze byc uszkodzony lub edytowany z zewnatrz - waliduj zawartosc.
+		list = sanitize_scores(cfg.get_value("scores", "top", []))
 	list.sort()
 	list.reverse()
 	if list.size() > n:
 		list = list.slice(0, n)
 	return list
+
+# Czysta funkcja: z dowolnej wartosci configu wyciaga liste liczb. Nie-Array -> [];
+# wpisy nieliczbowe (string nie-int, dict, null, bool) pomijane - brak crasha na smieciach.
+static func sanitize_scores(raw) -> Array[int]:
+	var out: Array[int] = []
+	if not (raw is Array):
+		return out
+	for v in raw:
+		if v is int or v is float:
+			out.append(int(v))
+		elif v is String and v.is_valid_int():
+			out.append(int(v))
+	return out
 
 static func clear(path: String = PATH) -> void:
 	_save([] as Array[int], path)
