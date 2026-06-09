@@ -508,6 +508,18 @@ func test_aim_rotation_shortest_path_no_wrap_jump() -> void:
 
 # Checklista Wdrozeniowa
 
+> **STATUS: ZREALIZOWANE (2026-06-09).** Wszystkie 5 zgloszen wdrozone i scalone do `main`, kazde osobnym PR z testami regresji (TDD). Etap 0 (stale/akcje/display) zostal wlaczony do PR-ow funkcji, ktore z nich korzystaja.
+>
+> | Zgloszenie | PR | Testy |
+> |---|---|---|
+> | QA #3 - izolacja pul | #29 | `test_upgrade_pools_disjoint.gd` |
+> | QA #5 - obrot bossa | #30 | `test_boss_rotation.gd` |
+> | QA #4 - telegraf bossa | #31 | `test_boss_telegraph_visual.gd` |
+> | QA #2 - kotwice HUD | #32 | `test_hud_anchors.gd` |
+> | QA #1 - menu pauzy | #33 | `test_pause_menu.gd` |
+>
+> Stan testow po wdrozeniu: **259 testow / 648 asercji** zielone, import + smoke + error-scan OK.
+
 Kolejnosc od najnizszego ryzyka (czyste funkcje, dane) do integracji UI i logiki bossa. Po kazdym kroku: `tools/run_checks.ps1` zielone (import + GUT + smoke + error-scan).
 
 ### Etap 0 - Konfiguracja i stale
