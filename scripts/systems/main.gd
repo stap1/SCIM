@@ -13,5 +13,9 @@ func _process(delta: float) -> void:
 		GameState.add_time(delta)
 		# Koniec gry po uplywie ustawionej dlugosci sesji (limit w sekundach z SettingsStore).
 		var limit_sec := SettingsStore.session_seconds(SettingsStore.session_length_min)
-		if limit_sec > 0 and GameState.time >= limit_sec:
+		if should_end_session(GameState.time, limit_sec):
 			GameState.trigger_game_over()
+
+# Czysta funkcja: czy sesja powinna sie zakonczyc wg czasu. limit_sec <= 0 = brak limitu.
+static func should_end_session(time: float, limit_sec: int) -> bool:
+	return limit_sec > 0 and time >= float(limit_sec)
