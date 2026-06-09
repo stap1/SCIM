@@ -13,7 +13,7 @@ const SFX_PATHS := {
 	"boss_spawn": "",
 }
 
-const SFX_POOL_SIZE := 8
+const SFX_POOL_SIZE := 16
 
 # Utwory muzyczne (placeholdery - realne OGG wejda pozniej; graceful fallback gdy brak pliku).
 const MUSIC := {
