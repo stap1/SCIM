@@ -21,7 +21,8 @@ const PLAYER_MAX_SPEED: float = 200.0
 const PLAYER_ACCELERATION: float = 600.0
 const PLAYER_FRICTION: float = 700.0
 const PLAYER_ROTATION_SPEED: float = 5.0
-# Obrazenia, ktore gracz przyjmuje na pojedynczy kontakt z wrogiem.
+# Obrazenia gracza na kontakt - FALLBACK, gdy zrodlo nie niesie wlasnej wartosci.
+# Wlasciwe obrazenia sa PER-WROG (contact_damage w EnemyBase) - patrz nizej.
 const PLAYER_CONTACT_DAMAGE: float = 10.0
 # i-frames: minimalny odstep miedzy kolejnymi trafieniami gracza.
 const PLAYER_HIT_COOLDOWN: float = 0.5
@@ -41,6 +42,8 @@ const HARPOON_POOL_SIZE: int = 20
 const ENEMY_JELLYFISH_SPEED: float = 80.0
 const ENEMY_JELLYFISH_HP: float = 10.0
 const ENEMY_JELLYFISH_SCORE: int = 1
+# Obrazenia kontaktowe zwyklego wroga (baza EnemyBase). Rowne legacy PLAYER_CONTACT_DAMAGE.
+const ENEMY_CONTACT_DAMAGE: float = PLAYER_CONTACT_DAMAGE
 # Cap jednoczesnych wrogow (wydajnosc + Web).
 const ENEMY_MAX_COUNT: int = 30
 # Karencja startowa: przez tyle sekund od startu sesji spawner nie wypuszcza
@@ -50,6 +53,8 @@ const SPAWN_GRACE_SECONDS: float = 5.0
 # --- Mini-boss (MotorBoat) ---
 const MINIBOSS_HP: float = 300.0
 const MINIBOSS_SCORE: int = 500
+# Mini-boss rani gracza na kontakt mocniej niz zwykly wrog.
+const MINIBOSS_CONTACT_DAMAGE: float = 25.0
 const MINIBOSS_TRACK_SPEED: float = 60.0
 const MINIBOSS_CHARGE_INTERVAL: float = 3.0
 const MINIBOSS_CHARGE_DURATION: float = 0.45

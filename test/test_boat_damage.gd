@@ -18,7 +18,7 @@ func test_single_hit_reduces_health_through_gamestate() -> void:
 	var boat = BoatScene.instantiate()
 	GameState.health = 100.0
 	boat.time_since_last_hit = 1.0 # poza cooldownem
-	boat.try_take_enemy_hit()
+	boat.try_take_enemy_hit(10.0)
 	assert_almost_eq(GameState.health, 90.0, 0.001, "jedno trafienie: GameState.health 100 -> 90")
 	boat.free()
 
@@ -26,8 +26,8 @@ func test_cooldown_blocks_second_hit() -> void:
 	var boat = BoatScene.instantiate()
 	GameState.health = 100.0
 	boat.time_since_last_hit = 1.0
-	boat.try_take_enemy_hit() # 100 -> 90, reset cooldownu
-	boat.try_take_enemy_hit() # zablokowane (0 < 0.5)
+	boat.try_take_enemy_hit(10.0) # 100 -> 90, reset cooldownu
+	boat.try_take_enemy_hit(10.0) # zablokowane (0 < 0.5)
 	assert_almost_eq(GameState.health, 90.0, 0.001, "drugie trafienie w cooldownie nie zmniejsza HP")
 	boat.free()
 

@@ -14,6 +14,9 @@ extends CharacterBody2D
 
 @export var max_health: float = 0.0
 @export var kill_score: int = 0
+# Obrazenia, ktore ten wrog zadaje graczowi na kontakt (per-wrog). Baza = zwykly wrog;
+# boss nadpisuje w _init, warianty moga nadpisac w .tscn.
+@export var contact_damage: float = GameConfig.ENEMY_CONTACT_DAMAGE
 
 var health: float
 var is_dying: bool = false
