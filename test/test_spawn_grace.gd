@@ -9,19 +9,19 @@ func before_each() -> void:
 	GameState.reset()
 
 func test_is_in_grace_pure() -> void:
-	assert_true(SpawnerScript.is_in_grace(0.0, 5.0), "t=0 -> w karencji")
-	assert_true(SpawnerScript.is_in_grace(4.9, 5.0), "t<grace -> w karencji")
-	assert_false(SpawnerScript.is_in_grace(5.0, 5.0), "t=grace -> koniec karencji")
-	assert_false(SpawnerScript.is_in_grace(10.0, 5.0), "t>grace -> brak karencji")
+	assert_true(SpawnerScript.is_in_grace(0.0, 2.0), "t=0 -> w karencji")
+	assert_true(SpawnerScript.is_in_grace(1.9, 2.0), "t<grace -> w karencji")
+	assert_false(SpawnerScript.is_in_grace(2.0, 2.0), "t=grace -> koniec karencji")
+	assert_false(SpawnerScript.is_in_grace(10.0, 2.0), "t>grace -> brak karencji")
 
-func test_grace_default_is_five_seconds() -> void:
-	assert_almost_eq(GameConfig.SPAWN_GRACE_SECONDS, 5.0, 0.001, "domyslna karencja 5 s")
+func test_grace_default_is_two_seconds() -> void:
+	assert_almost_eq(GameConfig.SPAWN_GRACE_SECONDS, 2.0, 0.001, "domyslna karencja 2 s")
 
 func test_no_regular_spawn_during_grace() -> void:
 	var spawner = SpawnerScript.new()
 	add_child_autofree(spawner)
 	await wait_physics_frames(1)
-	GameState.time = 2.0 # w karencji
+	GameState.time = 1.0 # w karencji (< 2 s)
 	var before: int = get_tree().get_nodes_in_group("enemies").size()
 	spawner._on_timeout()
 	assert_eq(get_tree().get_nodes_in_group("enemies").size(), before,
