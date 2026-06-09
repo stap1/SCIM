@@ -87,3 +87,7 @@ const HEAL_PLANK_AMOUNT: float = 25.0
 const HEAL_PLANK_INTERVAL: float = 25.0
 # Po tylu sekundach niezebrana deska znika.
 const HEAL_PLANK_LIFETIME: float = 15.0
+
+# --- Efekty ---
+# Czas zycia bursta smierci wroga (CPUParticles2D) zanim sam sie zwolni.
+const DEATH_BURST_LIFETIME: float = 1.5

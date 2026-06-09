@@ -107,12 +107,9 @@ static func hull_stage(health: float, max_health: float, stages: int) -> int:
 	var stage := int((1.0 - frac) * float(stages))
 	return clampi(stage, 0, stages - 1)
 
-# Czysta funkcja: sekundy -> "mm:ss". format_time(75.0) == "01:15".
+# Sekundy -> "mm:ss". Deleguje do wspolnego TimeFormat (jedno zrodlo formatu).
 static func format_time(seconds: float) -> String:
-	var total := int(seconds)
-	var minutes := total / 60
-	var secs := total % 60
-	return "%02d:%02d" % [minutes, secs]
+	return TimeFormat.mmss(seconds)
 
 # Czysta funkcja: (value, max) paska XP. Na maksie (xp_to_next<=0) pasek pelny, bez
 # dzielenia przez zero. Zwraca Vector2i(value, max_value).

@@ -1,7 +1,7 @@
 extends Area2D
 
-# Orb XP wypadajacy z wroga. W zasiegu magnesu leci ku graczowi; przy kontakcie
-# lub w promieniu pickup_radius zostaje zebrany (raz - guard is_collected).
+# Orb XP wypadajacy z wroga. W zasiegu magnesu leci ku graczowi; w promieniu
+# pickup_radius zostaje zebrany (jedna sciezka: dystans w _physics_process, raz - guard is_collected).
 
 # Wartosci startowe z GameConfig (jedyne zrodlo balansu).
 @export var xp_value: int = GameConfig.XP_ORB_VALUE
@@ -19,8 +19,6 @@ var _player: Node2D = null
 func _ready() -> void:
 	# Upgrade resource_magnet zwieksza zasieg zbierania nowo powstalych orbow.
 	magnet_range *= GameState.magnet_range_mult
-	# Orb (mask=1) wykrywa cialo gracza (layer 1) i zbiera sie przy kontakcie.
-	body_entered.connect(_on_body_entered)
 
 func _physics_process(delta: float) -> void:
 	if is_collected:
@@ -46,10 +44,6 @@ func _physics_process(delta: float) -> void:
 	if should_magnetize(dist, magnet_range):
 		var dir := (_player.global_position - global_position).normalized()
 		global_position += dir * magnet_speed * delta
-
-func _on_body_entered(body: Node2D) -> void:
-	if body.is_in_group("player"):
-		_collect()
 
 func _collect() -> void:
 	if is_collected:

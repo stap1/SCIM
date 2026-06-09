@@ -18,7 +18,7 @@ func _show_scores() -> void:
 	list_label.text = format_scores(HighScores.get_top(5))
 
 func _on_back() -> void:
-	get_tree().change_scene_to_file("res://scenes/MainMenu.tscn")
+	get_tree().change_scene_to_file(ScenePaths.MAIN_MENU)
 
 # Czysta funkcja: tekst listy wynikow (numerowany, malejaco) lub komunikat gdy pusto.
 static func format_scores(top: Array[int]) -> String:
