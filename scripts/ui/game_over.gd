@@ -29,7 +29,7 @@ func _on_game_over() -> void:
 	HighScores.add_score(GameState.score)
 	var top := HighScores.get_top(1)
 	var best: int = top[0] if top.size() > 0 else 0
-	var is_record: bool = GameState.score > 0 and GameState.score >= best
+	var is_record := is_new_record(GameState.score, best)
 
 	if time_label:
 		time_label.text = "Czas: " + _format_time(GameState.time)
@@ -38,7 +38,7 @@ func _on_game_over() -> void:
 	if boss_label:
 		boss_label.text = "Klusownik pokonany: " + ("TAK" if GameState.miniboss_defeated else "nie")
 	if best_label:
-		best_label.text = "Najlepszy wynik: " + str(best) + ("  (NOWY REKORD!)" if is_record else "")
+		best_label.text = best_text(best, is_record)
 
 	if panel:
 		panel.show()
@@ -58,6 +58,14 @@ func _set_score_text(v: float) -> void:
 func _format_time(seconds: float) -> String:
 	var total := int(seconds)
 	return "%02d:%02d" % [total / 60, total % 60]
+
+# Czysta funkcja: czy biezacy wynik to nowy rekord (>= najlepszego, pomijajac pusty przebieg 0).
+static func is_new_record(score: int, best: int) -> bool:
+	return score > 0 and score >= best
+
+# Czysta funkcja: etykieta najlepszego wyniku z oznaczeniem rekordu.
+static func best_text(best: int, is_record: bool) -> String:
+	return "Najlepszy wynik: " + str(best) + ("  (NOWY REKORD!)" if is_record else "")
 
 func _on_restart_pressed() -> void:
 	get_tree().paused = false

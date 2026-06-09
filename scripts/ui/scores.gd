@@ -15,14 +15,16 @@ func _ready() -> void:
 func _show_scores() -> void:
 	if list_label == null:
 		return
-	var top := HighScores.get_top(5)
-	if top.is_empty():
-		list_label.text = "Brak wynikow"
-		return
-	var text := ""
-	for i in top.size():
-		text += "%d.   %d\n" % [i + 1, top[i]]
-	list_label.text = text
+	list_label.text = format_scores(HighScores.get_top(5))
 
 func _on_back() -> void:
 	get_tree().change_scene_to_file("res://scenes/MainMenu.tscn")
+
+# Czysta funkcja: tekst listy wynikow (numerowany, malejaco) lub komunikat gdy pusto.
+static func format_scores(top: Array[int]) -> String:
+	if top.is_empty():
+		return "Brak wynikow"
+	var text := ""
+	for i in top.size():
+		text += "%d.   %d\n" % [i + 1, top[i]]
+	return text
