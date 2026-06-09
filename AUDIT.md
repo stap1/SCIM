@@ -129,7 +129,7 @@ Metryki: ~1421 linii logiki (20 plików `.gd`) + 19 linii shadera; ~844 linii te
 | # | Zadanie | Etap | Właśc. | Prio |
 |---|---|---|---|---|
 | ✅ P3.1 | ~~Porządki: martwa gałąź harpuna, dual-collect orba, dedup `format_time`, `const` ścieżek scen, `death_burst` lifetime~~ **WYKONANE** - usunięta martwa gałąź `get_parent` w `harpoon._on_any_collision`; orb zbiera JEDNĄ ścieżką (dystans w `_physics_process`, usunięty `body_entered`/`_on_body_entered`); dedup `format_time` -> `class_name TimeFormat.mmss` (hud deleguje, game_over używa); `class_name ScenePaths` (MAIN_MENU/MAIN/SCORES/SETTINGS) zamiast rozsianych literałów; `death_burst` czyta `GameConfig.DEATH_BURST_LIFETIME`; strażnik `test_cleanup_p31.gd` | E2 E5 E7 | PROG | #1 |
-| P3.2 | Aktualizacja `SCIM_TECH_SPEC.md` do as-built (brak EventBus/eco/Trash, health API, dict upgrade'y, OGG-plan) | wszystkie | PROG-doc | #2 #3 |
+| ✅ P3.2 | ~~Aktualizacja `SCIM_TECH_SPEC.md` do as-built (brak EventBus/eco/Trash, health API, dict upgrade'y, OGG-plan)~~ **WYKONANE** - wersja 2.0 (as-built); nowa sekcja 0.1 "mapa rzeczywistości" (autoloady, API GameState/health, dict-ulepszenia + rejestr efektów, boss 3-fazowy, OGG-plan, systemy dodane: SettingsStore/pauza/heal/cap/InputMap) + 10 callout-ów "🔧 AS-BUILT" przy zdezaktualizowanych sekcjach (EventBus odrzucony, eco/Trash usunięte, warstwy 4, .tres->słownik). Plik w `SCIM_Project_docs/` (poza gitem) | wszystkie | PROG-doc | #2 #3 |
 | ✅ P3.3 | ~~Drobne liczby: pool 20→30, SFX pool 8→16~~ **WYKONANE** - `GameConfig.HARPOON_POOL_SIZE` 20→30 (zapas na stackowanie ulepszeń), `AudioManager.SFX_POOL_SIZE` 8→16 (mniej ucinania SFX); asercje w `test_game_config`/`test_audio` | E2 E6 | PROG | #3 |
 
 ---
@@ -138,8 +138,8 @@ Metryki: ~1421 linii logiki (20 plików `.gd`) + 19 linii shadera; ~844 linii te
 
 - **Stan ogólny: zdrowy.** Kompletny, działający, web-build OK, 87 testów + 4 regresje zielone. **Zero błędów krytycznych.**
 - **Najmocniejsze:** rdzeń `GameState` (single source), HUD read-only, pooling/targeting, obsługa błędów audio/persystencji (lepsza niż spec), warstwa efektów web-friendly, dyscyplina czystych funkcji + testów.
-- **Najważniejszy dług:** (1) ✅ orby XP (P0.1), (2) ✅ error-scan CI (P0.2), (3) ✅ warstwy kolizji (P1.1), (4) ✅ `max_level` (P1.2) - **wszystkie 4 zamknięte**. Dodatkowo ✅ `GameConfig` (P1.3), ✅ `EnemyBase` (P1.4), ✅ `SettingsStore` (P1.5) i ✅ czytelność stanu (P1.6). **Całe P1 i całe P2 (P2.1-P2.9) zamknięte** - pozostaje już tylko P3 (kosmetyka / dokumentacja).
-- **Dokumentacja:** pogodzić TECH_SPEC z rzeczywistością (wdrożyć GameConfig/EnemyBase/named-layers/max_level/OGG/InputMap; resztę zaktualizować do as-built; EventBus odrzucić).
+- **Najważniejszy dług:** (1) ✅ orby XP (P0.1), (2) ✅ error-scan CI (P0.2), (3) ✅ warstwy kolizji (P1.1), (4) ✅ `max_level` (P1.2) - **wszystkie 4 zamknięte**. Dodatkowo ✅ `GameConfig` (P1.3), ✅ `EnemyBase` (P1.4), ✅ `SettingsStore` (P1.5) i ✅ czytelność stanu (P1.6). **Całe P1, P2 (P2.1-P2.9) i P3 (P3.1-P3.3) zamknięte - cały backlog audytu (P0-P3) zrealizowany.**
+- **Dokumentacja:** ✅ TECH_SPEC pogodzony z rzeczywistością (P3.2, wersja 2.0 as-built: GameConfig/EnemyBase/named-layers/max_level/OGG/InputMap udokumentowane, EventBus odrzucony, eco/Trash usunięte).
 - **Kolejność prac:** P0 → P1 → P2 → P3, każda zmiana z testem, utrzymać 4 testy regresji, po każdej GUT + error-scan zielone.
 
 ---
