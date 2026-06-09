@@ -6,6 +6,10 @@ extends CanvasLayer
 
 signal upgrade_chosen(id: String)
 
+## Ile kart pokazac na ekranie zwyklym i milestone (stale - bez magic numbers).
+const REGULAR_CHOICES: int = 3
+const MILESTONE_CHOICES: int = 3
+
 @onready var panel: Control = $Panel
 @onready var cards: Array = [$Panel/Card0, $Panel/Card1, $Panel/Card2]
 
@@ -23,14 +27,28 @@ func _ready() -> void:
 			card.pressed.connect(_on_card_pressed.bind(i))
 
 func _on_level_up(new_level: int) -> void:
-	# Co MILESTONE_LEVEL_INTERVAL poziomow: specjalny power-up ZAMIAST zwyklej karty.
-	if is_milestone_level(new_level, GameConfig.MILESTONE_LEVEL_INTERVAL):
-		_current_ids = Upgrades.milestone_ids()
-	else:
-		_current_ids = pick_three(_upgrade_pool(), randi())
-		# Wszystkie ulepszenia wyczerpane (max_level) - nie pauzuj, by nie zablokowac gry.
-		if _current_ids.is_empty():
-			return
+	_current_ids = _roll_choices(new_level)
+	# JEDNO wspolne zabezpieczenie anty-softlock dla obu typow level-upu: pusta oferta
+	# (wszystko wyczerpane) - nie pauzuj, by nie zablokowac gry.
+	if _current_ids.is_empty():
+		return
+	_present_cards()
+	if panel:
+		panel.show()
+	get_tree().paused = true
+	_flash()
+
+## Dobiera oferte kart dla danego poziomu. Na poziomach milestone (co
+## GameConfig.MILESTONE_LEVEL_INTERVAL) zwraca WYLACZNIE pule milestone, w przeciwnym
+## razie WYLACZNIE pule zwykla. Pule pochodza z rozlacznych katalogow Upgrades - to
+## strukturalnie gwarantuje, ze specjalne ulepszenia nie trafia do zwyklego losowania.
+func _roll_choices(level: int) -> Array[String]:
+	if is_milestone_level(level, GameConfig.MILESTONE_LEVEL_INTERVAL):
+		return pick_n(Upgrades.milestone_ids(), randi(), MILESTONE_CHOICES)
+	return pick_n(Upgrades.available_ids(), randi(), REGULAR_CHOICES)
+
+## Pokazuje karty dla biezacych _current_ids; nadmiarowe karty chowa.
+func _present_cards() -> void:
 	for i in cards.size():
 		var card = cards[i]
 		if card == null:
@@ -40,10 +58,6 @@ func _on_level_up(new_level: int) -> void:
 			_set_card_text(card, _current_ids[i])
 		else:
 			card.hide()
-	if panel:
-		panel.show()
-	get_tree().paused = true
-	_flash()
 
 # Krotki rozblysk przy awansie - pomijany gdy accessibility "reduce flashing" wlaczone.
 func _flash() -> void:
@@ -55,10 +69,6 @@ func _flash() -> void:
 	flash.color = Color(1, 1, 1, 0.7)
 	var t := create_tween()
 	t.tween_property(flash, "color:a", 0.0, 0.4)
-
-# Pula id ulepszen jeszcze niewyczerpanych (Upgrades pilnuje max_level).
-func _upgrade_pool() -> Array[String]:
-	return Upgrades.available_ids()
 
 func _set_card_text(card: Node, id: String) -> void:
 	var text := id
@@ -83,8 +93,9 @@ func _on_card_pressed(index: int) -> void:
 static func is_milestone_level(level: int, interval: int) -> bool:
 	return interval > 0 and level > 0 and level % interval == 0
 
-# Czysta funkcja: 3 unikalne opcje z puli, deterministycznie wg seeda (tasowanie Fisher-Yates).
-static func pick_three(pool: Array[String], rng_seed: int) -> Array[String]:
+# Czysta funkcja: count unikalnych opcji z puli, deterministycznie wg seeda
+# (tasowanie Fisher-Yates). Mniej niz count, gdy pula krotsza.
+static func pick_n(pool: Array[String], rng_seed: int, count: int) -> Array[String]:
 	var rng := RandomNumberGenerator.new()
 	rng.seed = rng_seed
 	var copy: Array[String] = pool.duplicate()
@@ -93,4 +104,4 @@ static func pick_three(pool: Array[String], rng_seed: int) -> Array[String]:
 		var tmp := copy[i]
 		copy[i] = copy[j]
 		copy[j] = tmp
-	return copy.slice(0, 3)
+	return copy.slice(0, count)
