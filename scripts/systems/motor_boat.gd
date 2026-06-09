@@ -19,6 +19,10 @@ signal charge_telegraph(duration: float)
 
 var phase: int = Phase.TRACK
 var _charge_timer: Timer
+## Pozycja szarzy zablokowana na poczatku telegrafu. Boss celuje w nia juz w wind-upie
+## (obrot staje sie czescia telegrafu) i tam natrze - dlatego szarza jest do unikniecia:
+## gracz, ktory odejdzie po rozpoczeciu telegrafu, nie zostanie trafiony.
+var _charge_target: Vector2 = Vector2.ZERO
 
 @onready var hp_bar: ProgressBar = get_node_or_null("HpBar")
 
@@ -40,9 +44,10 @@ func _ready() -> void:
 	_charge_timer.timeout.connect(_on_charge)
 	add_child(_charge_timer)
 
-func _physics_process(_delta: float) -> void:
+func _physics_process(delta: float) -> void:
 	if GameState.is_paused or GameState.is_game_over:
 		return
+	_face_aim(delta) # obrot dziala w KAZDEJ fazie (sledzenie i szarza)
 	# Swobodny ruch (sledzenie) tylko w fazie TRACK; telegraf zatrzymuje, szarza steruje Tweenem.
 	if is_locked(phase):
 		return
@@ -50,6 +55,24 @@ func _physics_process(_delta: float) -> void:
 		return
 	velocity = (target.global_position - global_position).normalized() * track_speed
 	move_and_slide()
+
+## Plynnie obraca bossa ku aktualnemu celowi. Tekstura lodzi wskazuje gore, stad +PI/2
+## (ta sama konwencja co gracz w boat.gd).
+func _face_aim(delta: float) -> void:
+	var aim: Vector2 = _aim_position()
+	if aim.is_equal_approx(global_position):
+		return # brak sensownego kierunku - nie obracaj
+	var desired: float = (aim - global_position).angle() + PI / 2.0
+	rotation = aim_rotation(rotation, desired, GameConfig.MINIBOSS_TURN_SPEED, delta)
+
+## Punkt, w ktory boss ma patrzec: w telegrafie/szarzy - zablokowana pozycja szarzy;
+## w fazie sledzenia - zywy gracz (lub wlasna pozycja, gdy gracza brak).
+func _aim_position() -> Vector2:
+	if is_locked(phase):
+		return _charge_target
+	if target != null and is_instance_valid(target):
+		return target.global_position
+	return global_position
 
 # Timer co charge_interval: rozpocznij sekwencje szarzy od fazy telegrafu (wind-up).
 func _on_charge() -> void:
@@ -61,26 +84,26 @@ func _on_charge() -> void:
 		return
 	_begin_telegraph()
 
-# Faza TELEGRAPH: boss zatrzymuje sie i sygnalizuje nadchodzaca szarze (czas na unik).
+# Faza TELEGRAPH: boss zatrzymuje sie, ZABLOKOWuje cel i sygnalizuje szarze (czas na unik).
 func _begin_telegraph() -> void:
 	phase = Phase.TELEGRAPH
+	# Zablokuj cel juz teraz: aim (obrot) i szarza ida w to samo miejsce, a gracz moze uciec.
+	if target != null and is_instance_valid(target):
+		_charge_target = target.global_position
 	charge_telegraph.emit(telegraph_duration)
 	_flash_telegraph()
 	var tween := create_tween()
 	tween.tween_interval(telegraph_duration)
 	tween.tween_callback(_begin_charge)
 
-# Faza CHARGE: zablokuj cel (pozycja gracza w chwili konca telegrafu) i ruszaj Tweenem.
+# Faza CHARGE: natarcie w ZABLOKOWANA pozycje (a nie biezaca gracza) - dlatego do unikniecia.
 func _begin_charge() -> void:
 	if is_dying:
 		phase = Phase.TRACK
 		return
 	phase = Phase.CHARGE
-	var dest := global_position
-	if target != null and is_instance_valid(target):
-		dest = target.global_position
 	var tween := create_tween()
-	tween.tween_property(self, "global_position", dest, charge_duration)
+	tween.tween_property(self, "global_position", _charge_target, charge_duration)
 	tween.tween_callback(_end_charge)
 
 func _end_charge() -> void:
@@ -95,6 +118,17 @@ func _flash_telegraph() -> void:
 # Czysta funkcja: czy w danej fazie ruch sledzacy jest zablokowany (telegraf/szarza).
 static func is_locked(p: int) -> bool:
 	return p == Phase.TELEGRAPH or p == Phase.CHARGE
+
+## Czysta funkcja: plynny obrot ku zadanemu katowi przez lerp_angle. Interpolacja
+## najkrotsza droga (poprawne owijanie 2*PI), waga przycieta do [0,1] - brak przeskoku
+## nawet przy duzym delta. Zwraca nowy kat w radianach.
+##
+## @param current    - biezacy kat (rad).
+## @param target     - docelowy kat (rad).
+## @param turn_speed - szybkosc obrotu (1/s); wieksza = szybsze dojscie.
+## @param delta      - czas klatki (s).
+static func aim_rotation(current: float, target: float, turn_speed: float, delta: float) -> float:
+	return lerp_angle(current, target, clampf(turn_speed * delta, 0.0, 1.0))
 
 func _on_health_changed() -> void:
 	if hp_bar:
