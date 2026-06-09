@@ -16,6 +16,11 @@ func test_play_sfx_missing_file_does_not_crash() -> void:
 	AudioManager.play_sfx("level_up")
 	pass_test("play_sfx z brakujacym plikiem nie crashuje")
 
+func test_sfx_pool_size() -> void:
+	# P3.3: wieksza pula SFX zapobiega ucinaniu przy wielu zdarzeniach naraz.
+	assert_eq(AudioManager.SFX_POOL_SIZE, 16, "SFX_POOL_SIZE 16")
+	assert_eq(AudioManager._sfx_players.size(), 16, "utworzono 16 odtwarzaczy SFX")
+
 func test_fade_volume_db_linear() -> void:
 	assert_almost_eq(AudioManager.fade_volume_db(0.0, -10.0, 0.0), -10.0, 0.001, "t=0 -> from")
 	assert_almost_eq(AudioManager.fade_volume_db(1.0, -10.0, 0.0), 0.0, 0.001, "t=1 -> to")

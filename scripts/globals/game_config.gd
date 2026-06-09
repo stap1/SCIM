@@ -35,8 +35,8 @@ const HARPOON_LIFETIME: float = 3.0
 # Auto-atak: odstep miedzy salwami i zasieg wykrywania wroga.
 const HARPOON_BASE_INTERVAL: float = 0.8
 const HARPOON_BASE_RANGE: float = 350.0
-# Rozmiar puli harpunow (Object Pooling).
-const HARPOON_POOL_SIZE: int = 20
+# Rozmiar puli harpunow (Object Pooling). Zapas na stackowanie ulepszen (wiele pociskow naraz).
+const HARPOON_POOL_SIZE: int = 30
 
 # --- Wrogowie (baza = meduza; barracuda/rekin nadpisuja w scenach .tscn) ---
 const ENEMY_JELLYFISH_SPEED: float = 80.0

@@ -39,7 +39,7 @@ func test_harpoon_constants() -> void:
 	assert_almost_eq(GameConfig.HARPOON_LIFETIME, 3.0, 0.001, "HARPOON_LIFETIME 3")
 	assert_almost_eq(GameConfig.HARPOON_BASE_INTERVAL, 0.8, 0.001, "HARPOON_BASE_INTERVAL 0.8")
 	assert_almost_eq(GameConfig.HARPOON_BASE_RANGE, 350.0, 0.001, "HARPOON_BASE_RANGE 350")
-	assert_eq(GameConfig.HARPOON_POOL_SIZE, 20, "HARPOON_POOL_SIZE 20")
+	assert_eq(GameConfig.HARPOON_POOL_SIZE, 30, "HARPOON_POOL_SIZE 30")
 
 func test_enemy_and_miniboss_constants() -> void:
 	assert_almost_eq(GameConfig.ENEMY_JELLYFISH_SPEED, 80.0, 0.001, "ENEMY_JELLYFISH_SPEED 80")
