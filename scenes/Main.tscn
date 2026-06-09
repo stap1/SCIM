@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://dkvg8apcfepju"]
+[gd_scene load_steps=11 format=3 uid="uid://dkvg8apcfepju"]
 
 [ext_resource type="Script" uid="uid://dojtumr0hthqr" path="res://scripts/systems/main.gd" id="1_elqb8"]
 [ext_resource type="PackedScene" uid="uid://df7rbwsa6d6ec" path="res://scenes/player/boat.tscn" id="3_sugp2"]
@@ -8,6 +8,7 @@
 [ext_resource type="Script" path="res://scripts/weapons/harpoon_pool.gd" id="7_pool"]
 [ext_resource type="PackedScene" path="res://scenes/ui/level_up.tscn" id="8_levelup"]
 [ext_resource type="Shader" path="res://shaders/water.gdshader" id="9_water"]
+[ext_resource type="PackedScene" path="res://scenes/ui/pause_menu.tscn" id="10_pause"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_water"]
 shader = ExtResource("9_water")
@@ -39,3 +40,5 @@ script = ExtResource("7_pool")
 [node name="LevelUp" parent="." instance=ExtResource("8_levelup")]
 
 [node name="GameOver" parent="." instance=ExtResource("6_gameover")]
+
+[node name="PauseMenu" parent="." instance=ExtResource("10_pause")]

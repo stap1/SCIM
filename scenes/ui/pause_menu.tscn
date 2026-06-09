@@ -1,0 +1,39 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/pause_menu.gd" id="1_pause"]
+
+[node name="PauseMenu" type="CanvasLayer"]
+layer = 10
+process_mode = 3
+script = ExtResource("1_pause")
+
+[node name="Dimmer" type="ColorRect" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0, 0, 0, 0.6)
+mouse_filter = 0
+
+[node name="Center" type="CenterContainer" parent="Dimmer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="Menu" type="VBoxContainer" parent="Dimmer/Center"]
+theme_override_constants/separation = 16
+
+[node name="Title" type="Label" parent="Dimmer/Center/Menu"]
+text = "PAUZA"
+horizontal_alignment = 1
+
+[node name="ResumeButton" type="Button" parent="Dimmer/Center/Menu"]
+custom_minimum_size = Vector2(260, 48)
+text = "Wznow"
+
+[node name="RestartButton" type="Button" parent="Dimmer/Center/Menu"]
+custom_minimum_size = Vector2(260, 48)
+text = "Restart"
+
+[node name="MenuButton" type="Button" parent="Dimmer/Center/Menu"]
+custom_minimum_size = Vector2(260, 48)
+text = "Menu glowne"
