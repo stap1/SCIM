@@ -48,7 +48,7 @@ const ENEMY_CONTACT_DAMAGE: float = PLAYER_CONTACT_DAMAGE
 const ENEMY_MAX_COUNT: int = 30
 # Karencja startowa: przez tyle sekund od startu sesji spawner nie wypuszcza
 # zwyklych wrogow (onboarding - gracz zdazy sie rozejrzec; fix obrazen na starcie).
-const SPAWN_GRACE_SECONDS: float = 5.0
+const SPAWN_GRACE_SECONDS: float = 2.0
 
 # --- Mini-boss (MotorBoat) ---
 const MINIBOSS_HP: float = 300.0
