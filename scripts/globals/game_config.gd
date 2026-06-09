@@ -58,6 +58,8 @@ const MINIBOSS_CONTACT_DAMAGE: float = 25.0
 const MINIBOSS_TRACK_SPEED: float = 60.0
 const MINIBOSS_CHARGE_INTERVAL: float = 3.0
 const MINIBOSS_CHARGE_DURATION: float = 0.45
+# Wind-up (telegraf) przed szarza - czas, ktory gracz ma na reakcje/unik.
+const MINIBOSS_TELEGRAPH_DURATION: float = 0.6
 # Czas (s) pojawienia bossa i wyprzedzenie ostrzezenia boss_incoming.
 const MINIBOSS_SPAWN_TIME: float = 270.0
 const MINIBOSS_WARNING: float = 2.0
