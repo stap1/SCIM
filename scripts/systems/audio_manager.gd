@@ -15,11 +15,21 @@ const SFX_PATHS := {
 
 const SFX_POOL_SIZE := 8
 
+# Utwory muzyczne (placeholdery - realne OGG wejda pozniej; graceful fallback gdy brak pliku).
+const MUSIC := {
+	"gameplay": "res://audio/music/gameplay.ogg",
+	"boss": "res://audio/music/boss.ogg",
+}
+const MUSIC_CROSSFADE := 1.5
+
 var _sfx_streams := {}
 var _sfx_players: Array[AudioStreamPlayer] = []
 var _sfx_index := 0
 var _music_player: AudioStreamPlayer
 var _ambient_player: AudioStreamPlayer
+# Ostatnio zazadany utwor (intencja) - ustawiany nawet gdy plik to placeholder.
+# Pozwala wpiac/testowac muzyke bez realnych plikow audio.
+var current_music_track: String = ""
 
 func _ready() -> void:
 	# Preload strumieni z graceful fallback (null = cichy placeholder).
@@ -49,6 +59,7 @@ func _ready() -> void:
 	GameState.level_up.connect(_on_level_up)
 	GameState.game_over.connect(_on_game_over)
 	GameState.boss_incoming.connect(_on_boss_incoming)
+	GameState.session_reset.connect(_on_session_reset)
 	# Glosnosc busow + sesja/accessibility ustawia SettingsStore (autoload przed AudioManager).
 
 func _on_level_up(_new_level: int) -> void:
@@ -59,6 +70,12 @@ func _on_game_over() -> void:
 
 func _on_boss_incoming() -> void:
 	play_sfx("boss_spawn")
+	# Muzyka napiecia: plynne przejscie na utwor bossa.
+	crossfade_to(MUSIC["boss"], MUSIC_CROSSFADE)
+
+# Start nowej sesji (reset) - wlacz muzyke rozgrywki.
+func _on_session_reset() -> void:
+	play_music(MUSIC["gameplay"])
 
 func play_sfx(sfx_name: String) -> void:
 	if not _sfx_streams.has(sfx_name):
@@ -74,6 +91,8 @@ func play_sfx(sfx_name: String) -> void:
 	player.play()
 
 func play_music(track: String) -> void:
+	# Zapisz intencje zawsze (takze dla placeholderow) - wpiecie testowalne bez plikow.
+	current_music_track = track
 	if _music_player == null:
 		return
 	if track != "" and ResourceLoader.exists(track):
@@ -81,6 +100,8 @@ func play_music(track: String) -> void:
 		_music_player.play()
 
 func crossfade_to(track: String, duration: float) -> void:
+	# Cel crossfade'u to docelowy utwor - zapisz intencje od razu (testowalne bez plikow).
+	current_music_track = track
 	# Wycisz Music, podmien utwor, wzmocnij z powrotem (Tween glosnosci busa).
 	var tween := create_tween()
 	tween.tween_method(_set_music_bus_db, 0.0, -40.0, duration * 0.5)
