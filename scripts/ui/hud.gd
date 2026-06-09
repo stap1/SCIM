@@ -8,6 +8,8 @@ extends CanvasLayer
 @onready var score_label: Label = $ScoreLabel
 @onready var boss_warning: Label = get_node_or_null("BossWarning")
 @onready var ammo_label: Label = get_node_or_null("AmmoLabel")
+@onready var xp_bar: ProgressBar = get_node_or_null("XPBar")
+@onready var level_label: Label = get_node_or_null("LevelLabel")
 
 # Pasek HP jako drewniany kadlub: im nizsze HP, tym bardziej "spekany" (etap 0 = caly).
 # Docelowo etap -> klatka hull_hp_<stage>.png; do czasu artu placeholder = barwa wypelnienia.
@@ -21,6 +23,8 @@ func _ready() -> void:
 	GameState.time_changed.connect(_on_time_changed)
 	GameState.score_changed.connect(_on_score_changed)
 	GameState.boss_incoming.connect(_on_boss_incoming)
+	GameState.xp_changed.connect(_on_xp_changed)
+	GameState.level_up.connect(_on_level_up)
 	if boss_warning:
 		boss_warning.hide()
 
@@ -35,6 +39,8 @@ func _ready() -> void:
 	_on_health_changed(GameState.health)
 	_on_time_changed(GameState.time)
 	_on_score_changed(GameState.score)
+	_refresh_xp()
+	_set_level(GameState.level)
 
 	# Licznik amunicji event-driven: sluchaj puli harpunow + synchronizacja poczatkowa
 	# (pula moze byc gotowa przed HUD - dlatego dociagamy biezacy stan).
@@ -65,6 +71,25 @@ func _on_score_changed(new_score: int) -> void:
 	if score_label:
 		score_label.text = "Wynik: " + str(new_score)
 
+func _on_xp_changed(_new_xp: int) -> void:
+	_refresh_xp()
+
+func _on_level_up(new_level: int) -> void:
+	_set_level(new_level)
+	_refresh_xp() # awans zmienia prog i zeruje xp - odswiez pasek
+
+# Pasek XP czyta GameState (read-only): wartosc = xp, skala = prog biezacego poziomu.
+func _refresh_xp() -> void:
+	if xp_bar == null:
+		return
+	var v := xp_bar_values(GameState.xp, GameState.xp_to_next)
+	xp_bar.max_value = v.y
+	xp_bar.value = v.x
+
+func _set_level(lvl: int) -> void:
+	if level_label:
+		level_label.text = level_text(lvl)
+
 func _on_boss_incoming() -> void:
 	if not boss_warning:
 		return
@@ -88,3 +113,14 @@ static func format_time(seconds: float) -> String:
 	var minutes := total / 60
 	var secs := total % 60
 	return "%02d:%02d" % [minutes, secs]
+
+# Czysta funkcja: (value, max) paska XP. Na maksie (xp_to_next<=0) pasek pelny, bez
+# dzielenia przez zero. Zwraca Vector2i(value, max_value).
+static func xp_bar_values(xp: int, xp_to_next: int) -> Vector2i:
+	if xp_to_next > 0:
+		return Vector2i(xp, xp_to_next)
+	return Vector2i(1, 1)
+
+# Czysta funkcja: etykieta poziomu. level_text(3) == "Poziom: 3".
+static func level_text(level: int) -> String:
+	return "Poziom: %d" % level

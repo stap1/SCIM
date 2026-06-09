@@ -43,6 +43,8 @@ func reset() -> void:
 	score = 0
 	level = 1
 	xp = 0
+	# Prog biezacego poziomu - by pasek XP na HUD mial sensowna skale od startu sesji.
+	xp_to_next = xp_threshold(level)
 	max_health = GameConfig.PLAYER_MAX_HP
 	health = max_health
 	enemies_killed = 0
@@ -53,6 +55,7 @@ func reset() -> void:
 	health_changed.emit(health)
 	score_changed.emit(score)
 	time_changed.emit(time)
+	xp_changed.emit(xp)
 	session_reset.emit()
 
 func add_time(delta: float) -> void:
