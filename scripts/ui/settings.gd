@@ -73,7 +73,7 @@ func _on_reduce_flash_toggled(pressed: bool) -> void:
 	_save()
 
 func _on_back() -> void:
-	get_tree().change_scene_to_file("res://scenes/MainMenu.tscn")
+	get_tree().change_scene_to_file(ScenePaths.MAIN_MENU)
 
 func _save() -> void:
 	var mv: float = music_slider.value if music_slider else 1.0

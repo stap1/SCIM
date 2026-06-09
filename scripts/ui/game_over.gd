@@ -32,7 +32,7 @@ func _on_game_over() -> void:
 	var is_record := is_new_record(GameState.score, best)
 
 	if time_label:
-		time_label.text = "Czas: " + _format_time(GameState.time)
+		time_label.text = "Czas: " + TimeFormat.mmss(GameState.time)
 	if kills_label:
 		kills_label.text = "Zatopione: " + str(GameState.enemies_killed)
 	if boss_label:
@@ -55,10 +55,6 @@ func _set_score_text(v: float) -> void:
 	if final_score_label:
 		final_score_label.text = "Wynik: " + str(int(v))
 
-func _format_time(seconds: float) -> String:
-	var total := int(seconds)
-	return "%02d:%02d" % [total / 60, total % 60]
-
 # Czysta funkcja: czy biezacy wynik to nowy rekord (>= najlepszego, pomijajac pusty przebieg 0).
 static func is_new_record(score: int, best: int) -> bool:
 	return score > 0 and score >= best
@@ -75,4 +71,4 @@ func _on_restart_pressed() -> void:
 func _on_menu_pressed() -> void:
 	get_tree().paused = false
 	GameState.reset()
-	get_tree().change_scene_to_file("res://scenes/MainMenu.tscn")
+	get_tree().change_scene_to_file(ScenePaths.MAIN_MENU)

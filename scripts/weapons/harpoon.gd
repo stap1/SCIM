@@ -67,11 +67,11 @@ func _on_any_collision(something: Node) -> void:
 	if not active:
 		return
 
+	# Wrogowie sa bezposrednio w grupie "enemies" (body/area_entered zwraca sam wezel wroga,
+	# nie ksztalt kolizji) - dlatego sprawdzamy tylko sam trafiony wezel.
 	var enemy_node = null
 	if something.is_in_group("enemies") and something.has_method("take_damage"):
 		enemy_node = something
-	elif something.get_parent() and something.get_parent().is_in_group("enemies") and something.get_parent().has_method("take_damage"):
-		enemy_node = something.get_parent()
 
 	if enemy_node:
 		var eid: int = enemy_node.get_instance_id()

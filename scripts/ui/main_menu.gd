@@ -26,15 +26,15 @@ func _animate_waves() -> void:
 
 func _on_start() -> void:
 	GameState.reset()
-	get_tree().change_scene_to_file("res://scenes/Main.tscn")
+	get_tree().change_scene_to_file(ScenePaths.MAIN)
 
 func _on_scores() -> void:
 	# Ekran wynikow - krok 21. Otwiera Scores.tscn, jesli juz istnieje.
-	if ResourceLoader.exists("res://scenes/Scores.tscn"):
-		get_tree().change_scene_to_file("res://scenes/Scores.tscn")
+	if ResourceLoader.exists(ScenePaths.SCORES):
+		get_tree().change_scene_to_file(ScenePaths.SCORES)
 
 func _on_settings() -> void:
-	get_tree().change_scene_to_file("res://scenes/Settings.tscn")
+	get_tree().change_scene_to_file(ScenePaths.SETTINGS)
 
 func _on_quit() -> void:
 	get_tree().quit()

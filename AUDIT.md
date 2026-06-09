@@ -128,7 +128,7 @@ Metryki: ~1421 linii logiki (20 plików `.gd`) + 19 linii shadera; ~844 linii te
 **P3 - kosmetyka / dokumentacja**
 | # | Zadanie | Etap | Właśc. | Prio |
 |---|---|---|---|---|
-| P3.1 | Porządki: martwa gałąź harpuna, dual-collect orba, dedup `format_time`, `const` ścieżek scen, `death_burst` lifetime | E2 E5 E7 | PROG | #1 |
+| ✅ P3.1 | ~~Porządki: martwa gałąź harpuna, dual-collect orba, dedup `format_time`, `const` ścieżek scen, `death_burst` lifetime~~ **WYKONANE** - usunięta martwa gałąź `get_parent` w `harpoon._on_any_collision`; orb zbiera JEDNĄ ścieżką (dystans w `_physics_process`, usunięty `body_entered`/`_on_body_entered`); dedup `format_time` -> `class_name TimeFormat.mmss` (hud deleguje, game_over używa); `class_name ScenePaths` (MAIN_MENU/MAIN/SCORES/SETTINGS) zamiast rozsianych literałów; `death_burst` czyta `GameConfig.DEATH_BURST_LIFETIME`; strażnik `test_cleanup_p31.gd` | E2 E5 E7 | PROG | #1 |
 | P3.2 | Aktualizacja `SCIM_TECH_SPEC.md` do as-built (brak EventBus/eco/Trash, health API, dict upgrade'y, OGG-plan) | wszystkie | PROG-doc | #2 #3 |
 | P3.3 | Drobne liczby: pool 20→30, SFX pool 8→16 | E2 E6 | PROG | #3 |
 

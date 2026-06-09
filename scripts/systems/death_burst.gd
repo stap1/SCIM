@@ -4,5 +4,5 @@ extends CPUParticles2D
 # i zwalnia sie po zakonczeniu animacji oraz dzwieku - nie zalezy od znikajacego wroga.
 
 func _ready() -> void:
-	await get_tree().create_timer(1.5).timeout
+	await get_tree().create_timer(GameConfig.DEATH_BURST_LIFETIME).timeout
 	queue_free()
