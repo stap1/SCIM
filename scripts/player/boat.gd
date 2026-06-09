@@ -7,7 +7,8 @@ extends CharacterBody2D
 @export var rotation_speed: float = GameConfig.PLAYER_ROTATION_SPEED
 
 # --- Obrazenia od kontaktu z wrogiem ---
-# Zasada: HP gracza zyje WYLACZNIE w GameState. Lodz tylko wykrywa kontakt.
+# Zasada: HP gracza zyje WYLACZNIE w GameState. Lodz tylko wykrywa kontakt i czyta
+# obrazenia z trafionego wroga (per-wrog contact_damage). damage_per_hit to fallback.
 @export var damage_per_hit: float = GameConfig.PLAYER_CONTACT_DAMAGE
 @export var hit_cooldown: float = GameConfig.PLAYER_HIT_COOLDOWN
 var time_since_last_hit: float = 999.0
@@ -37,8 +38,10 @@ func _physics_process(delta: float) -> void:
 	# Kontakt z wrogiem - JEDNA sciezka: polling Hurtboxa co klatke fizyki (pierwszy cios
 	# w obrebie klatki + obrazenia ciagle). Obrazenia WYLACZNIE przez GameState, z cooldownem (i-frames).
 	time_since_last_hit += delta
-	if not GameState.is_game_over and _enemy_in_hurtbox():
-		try_take_enemy_hit()
+	if not GameState.is_game_over:
+		var enemy := _first_enemy_in_hurtbox()
+		if enemy:
+			try_take_enemy_hit(contact_damage_of(enemy))
 
 # Znormalizowany kierunek wejscia z akcji InputMap (move_*). Akcje pozwalaja na
 # remapowanie i sterowanie mobilne (przyciski dotykowe emituja te same akcje).
@@ -79,19 +82,27 @@ func _handle_movement(delta: float) -> void:
 static func can_take_hit(time_since_last: float, cooldown: float) -> bool:
 	return time_since_last >= cooldown
 
-func _enemy_in_hurtbox() -> bool:
+# Pierwszy wrog nakladajacy sie na Hurtbox (lub null) - zrodlo obrazen kontaktowych.
+func _first_enemy_in_hurtbox() -> Node:
 	if hurtbox == null:
-		return false
+		return null
 	for body in hurtbox.get_overlapping_bodies():
 		if body.is_in_group("enemies"):
-			return true
-	return false
+			return body
+	return null
 
-# Logika trafienia gracza przez wroga - obrazenia tylko przez GameState, z cooldownem.
-func try_take_enemy_hit() -> void:
+# Obrazenia kontaktowe danego wroga (per-wrog). Fallback na damage_per_hit, gdy
+# zrodlo nie niesie wlasnej wartosci (defensywnie - kazdy wrog z EnemyBase ja ma).
+func contact_damage_of(enemy: Node) -> float:
+	if enemy and "contact_damage" in enemy:
+		return enemy.contact_damage
+	return damage_per_hit
+
+# Logika trafienia gracza przez wroga - obrazenia (per-wrog) tylko przez GameState, z cooldownem.
+func try_take_enemy_hit(damage: float) -> void:
 	if not can_take_hit(time_since_last_hit, hit_cooldown):
 		return
-	GameState.take_damage(damage_per_hit)
+	GameState.take_damage(damage)
 	time_since_last_hit = 0.0
 	if is_inside_tree():
 		_flash_hit()

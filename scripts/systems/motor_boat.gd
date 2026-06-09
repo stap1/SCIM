@@ -20,6 +20,7 @@ func _init() -> void:
 	# Wartosci startowe bossa z GameConfig (jedyne zrodlo balansu).
 	max_health = GameConfig.MINIBOSS_HP
 	kill_score = GameConfig.MINIBOSS_SCORE
+	contact_damage = GameConfig.MINIBOSS_CONTACT_DAMAGE
 
 func _ready() -> void:
 	super._ready()
