@@ -33,9 +33,11 @@ offset_bottom = 76.0
 text = "Wynik: 0"
 
 [node name="HealthBar" type="ProgressBar" parent="."]
-offset_left = 820.0
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -332.0
 offset_top = 16.0
-offset_right = 1120.0
+offset_right = -32.0
 offset_bottom = 46.0
 max_value = 100.0
 value = 100.0
@@ -59,17 +61,21 @@ offset_bottom = 118.0
 text = "20 / 20"
 
 [node name="LevelLabel" type="Label" parent="."]
-offset_left = 820.0
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -332.0
 offset_top = 50.0
-offset_right = 1120.0
+offset_right = -32.0
 offset_bottom = 78.0
 horizontal_alignment = 2
 text = "Poziom: 1"
 
 [node name="XPBar" type="ProgressBar" parent="."]
-offset_left = 820.0
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -332.0
 offset_top = 82.0
-offset_right = 1120.0
+offset_right = -32.0
 offset_bottom = 100.0
 max_value = 10.0
 value = 0.0
@@ -79,9 +85,11 @@ theme_override_styles/fill = SubResource("SB_xp_fill")
 
 [node name="BossWarning" type="Label" parent="."]
 visible = false
-offset_left = 300.0
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -275.0
 offset_top = 90.0
-offset_right = 850.0
+offset_right = 275.0
 offset_bottom = 150.0
 theme_override_colors/font_color = Color(1, 0.3, 0.2, 1)
 theme_override_font_sizes/font_size = 44
