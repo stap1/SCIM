@@ -1,25 +1,27 @@
 extends Node
 
-# Autoload "AudioManager": centralne SFX + muzyka. Graceful fallback gdy plik nie istnieje
-# (ciche placeholdery na tym etapie - realne OGG wejda pozniej). SFX pool (round-robin)
-# zapobiega ucinaniu przy wielu zdarzeniach naraz.
-
 const SFX_PATHS := {
-	"harpoon_shot": "res://audio/sfx/GameFX_Shoot_01_fx_BANDLAB.wav",
-	"hit": "",
+	"harpoon_shot": "res://audio/sfx/harpoon_shot.ogg",
+	"hit": "res://audio/sfx/hit.ogg",
 	"enemy_death": "res://audio/sfx/enemy_death.wav",
-	"level_up": "",
-	"game_over": "",
-	"boss_spawn": "",
+	"boss_spawn": "res://audio/sfx/boss_spawn.ogg",
+	"player_hit": "res://audio/sfx/player_hit.ogg",
+	"level_up": "res://audio/sfx/level_up.ogg",
+	"game_over": "res://audio/sfx/game_over.ogg",
+	"ui_click": "res://audio/sfx/ui_click.ogg",
+	"heal": "res://audio/sfx/heal.ogg",
 }
 
 const SFX_POOL_SIZE := 16
 
-# Utwory muzyczne (placeholdery - realne OGG wejda pozniej; graceful fallback gdy brak pliku).
 const MUSIC := {
-	"gameplay": "res://audio/music/gameplay.ogg",
-	"boss": "res://audio/music/boss.ogg",
+	"menu": "res://audio/music/music_menu.ogg",
+	"gameplay": "res://audio/music/music_game.ogg",
+	"boss": "res://audio/music/music_boss.ogg",
+	"gameover": "res://audio/music/music_gameover.ogg",
 }
+
+const AMBIENT_PATH := "res://audio/ambient/ambient_sea.ogg"
 const MUSIC_CROSSFADE := 1.5
 
 var _sfx_streams := {}
@@ -27,12 +29,12 @@ var _sfx_players: Array[AudioStreamPlayer] = []
 var _sfx_index := 0
 var _music_player: AudioStreamPlayer
 var _ambient_player: AudioStreamPlayer
-# Ostatnio zazadany utwor (intencja) - ustawiany nawet gdy plik to placeholder.
-# Pozwala wpiac/testowac muzyke bez realnych plikow audio.
 var current_music_track: String = ""
 
 func _ready() -> void:
-	# Preload strumieni z graceful fallback (null = cichy placeholder).
+	process_mode = Node.PROCESS_MODE_ALWAYS
+
+	# 1. Inicjalizacja SFX
 	for sfx_name in SFX_PATHS:
 		var path: String = SFX_PATHS[sfx_name]
 		if path != "" and ResourceLoader.exists(path):
@@ -40,82 +42,89 @@ func _ready() -> void:
 		else:
 			_sfx_streams[sfx_name] = null
 
-	# Pula odtwarzaczy SFX (round-robin).
 	for i in SFX_POOL_SIZE:
 		var p := AudioStreamPlayer.new()
 		p.bus = _bus_or_master("SFX")
 		add_child(p)
 		_sfx_players.append(p)
 
+	# 2. Inicjalizacja Muzyki
 	_music_player = AudioStreamPlayer.new()
 	_music_player.bus = _bus_or_master("Music")
 	add_child(_music_player)
 
+	# 3. Inicjalizacja Ambientu
 	_ambient_player = AudioStreamPlayer.new()
 	_ambient_player.bus = _bus_or_master("Ambient")
 	add_child(_ambient_player)
+	
+	if ResourceLoader.exists(AMBIENT_PATH):
+		_ambient_player.stream = load(AMBIENT_PATH)
+		_ambient_player.volume_db = -15.0 # Przyciszenie ambientu w tle
+		# Nie odpalamy `.play()` tutaj - funkcję tę przejmuje teraz play_music()
 
-	# Wyzwalacze globalne (sygnaly GameState).
+	# 4. Połączenie sygnałów gry
 	GameState.level_up.connect(_on_level_up)
 	GameState.game_over.connect(_on_game_over)
 	GameState.boss_incoming.connect(_on_boss_incoming)
 	GameState.session_reset.connect(_on_session_reset)
-	# Glosnosc busow + sesja/accessibility ustawia SettingsStore (autoload przed AudioManager).
+	
+	# Start muzyki menu po załadowaniu klatki
+	await get_tree().process_frame
+	play_music(MUSIC["menu"])
 
-func _on_level_up(_new_level: int) -> void:
-	play_sfx("level_up")
-
-func _on_game_over() -> void:
-	play_sfx("game_over")
-
-func _on_boss_incoming() -> void:
+# Reakcje na sygnały z GameState
+func _on_level_up(_new_level: int) -> void: play_sfx("level_up")
+func _on_game_over() -> void: play_music(MUSIC["gameover"])
+func _on_boss_incoming() -> void: 
 	play_sfx("boss_spawn")
-	# Muzyka napiecia: plynne przejscie na utwor bossa.
 	crossfade_to(MUSIC["boss"], MUSIC_CROSSFADE)
+func _on_session_reset() -> void: play_music(MUSIC["gameplay"])
 
-# Start nowej sesji (reset) - wlacz muzyke rozgrywki.
-func _on_session_reset() -> void:
-	play_music(MUSIC["gameplay"])
-
+# Odtwarzanie efektów dźwiękowych (SFX)
 func play_sfx(sfx_name: String) -> void:
-	if not _sfx_streams.has(sfx_name):
-		return
+	if not _sfx_streams.has(sfx_name): return
 	var stream = _sfx_streams[sfx_name]
-	if stream == null:
-		return # graceful fallback - cichy placeholder
-	if _sfx_players.is_empty():
-		return
+	if stream == null: return
 	var player := _sfx_players[_sfx_index]
 	_sfx_index = (_sfx_index + 1) % _sfx_players.size()
 	player.stream = stream
 	player.play()
 
+# Kontrola muzyki
+func stop_music() -> void:
+	if _music_player != null:
+		_music_player.stop()
+		_music_player.stream = null
+
 func play_music(track: String) -> void:
-	# Zapisz intencje zawsze (takze dla placeholderow) - wpiecie testowalne bez plikow.
+	if _music_player == null: return
+	
+	stop_music()
 	current_music_track = track
-	if _music_player == null:
-		return
+
 	if track != "" and ResourceLoader.exists(track):
 		_music_player.stream = load(track)
 		_music_player.play()
+	
+	# NOWOŚĆ: Kontrola szumu otoczenia (ambientu) w zależności od utworu
+	if _ambient_player != null and _ambient_player.stream != null:
+		if track == MUSIC["menu"]:
+			if not _ambient_player.playing:
+				_ambient_player.play()
+		else:
+			if _ambient_player.playing:
+				_ambient_player.stop()
 
 func crossfade_to(track: String, duration: float) -> void:
-	# Cel crossfade'u to docelowy utwor - zapisz intencje od razu (testowalne bez plikow).
-	current_music_track = track
-	# Wycisz Music, podmien utwor, wzmocnij z powrotem (Tween glosnosci busa).
 	var tween := create_tween()
 	tween.tween_method(_set_music_bus_db, 0.0, -40.0, duration * 0.5)
 	tween.tween_callback(func(): play_music(track))
-	tween.tween_method(_set_music_bus_db, -40.0, 0.0, duration * 0.5)
+	tween.tween_callback(func(): _set_music_bus_db(0.0))
 
 func _set_music_bus_db(db: float) -> void:
 	var idx := AudioServer.get_bus_index("Music")
-	if idx != -1:
-		AudioServer.set_bus_volume_db(idx, db)
+	if idx != -1: AudioServer.set_bus_volume_db(idx, db)
 
 func _bus_or_master(bus_name: String) -> String:
 	return bus_name if AudioServer.get_bus_index(bus_name) != -1 else "Master"
-
-# Czysta funkcja: liniowa interpolacja glosnosci (db) wg t in [0,1].
-static func fade_volume_db(t: float, from_db: float, to_db: float) -> float:
-	return from_db + (to_db - from_db) * t

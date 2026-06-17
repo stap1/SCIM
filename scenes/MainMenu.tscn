@@ -1,49 +1,56 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene format=3 uid="uid://cduhwog23coy7"]
 
-[ext_resource type="Script" path="res://scripts/ui/main_menu.gd" id="1_mm"]
-[ext_resource type="Texture2D" path="res://assets/lodz.svg.svg" id="2_boat"]
+[ext_resource type="Script" uid="uid://b12oqh3mydlaw" path="res://scripts/ui/main_menu.gd" id="1_mm"]
+[ext_resource type="Texture2D" uid="uid://blsotf7ntv08v" path="res://assets/lodz.svg.svg" id="2_boat"]
 
-[node name="MainMenu" type="Control"]
+[node name="MainMenu" type="Control" unique_id=330382259]
+layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 script = ExtResource("1_mm")
 
-[node name="Background" type="ColorRect" parent="."]
-anchors_preset = 15
+[node name="Background" type="ColorRect" parent="." unique_id=1693902433]
+layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
 color = Color(0.16470589, 0.2901961, 0.41960785, 1)
 
-[node name="BoatSprite" type="Sprite2D" parent="."]
+[node name="BoatSprite" type="Sprite2D" parent="." unique_id=1921974577]
 position = Vector2(576, 250)
 scale = Vector2(1.4, 1.4)
 texture = ExtResource("2_boat")
 
-[node name="Title" type="Label" parent="."]
+[node name="Title" type="Label" parent="." unique_id=217606132]
+layout_mode = 0
 offset_left = 176.0
 offset_top = 60.0
 offset_right = 976.0
 offset_bottom = 150.0
 theme_override_font_sizes/font_size = 56
-horizontal_alignment = 1
 text = "Stary czlowiek i morze"
+horizontal_alignment = 1
 
-[node name="Menu" type="VBoxContainer" parent="."]
+[node name="Menu" type="VBoxContainer" parent="." unique_id=387268898]
+layout_mode = 0
 offset_left = 456.0
 offset_top = 380.0
 offset_right = 696.0
 offset_bottom = 580.0
 theme_override_constants/separation = 14
 
-[node name="StartButton" type="Button" parent="Menu"]
+[node name="StartButton" type="Button" parent="Menu" unique_id=293119137]
+layout_mode = 2
 text = "Start"
 
-[node name="ScoresButton" type="Button" parent="Menu"]
+[node name="ScoresButton" type="Button" parent="Menu" unique_id=268270688]
+layout_mode = 2
 text = "Wyniki"
 
-[node name="SettingsButton" type="Button" parent="Menu"]
+[node name="SettingsButton" type="Button" parent="Menu" unique_id=1860144520]
+layout_mode = 2
 text = "Ustawienia"
 
-[node name="QuitButton" type="Button" parent="Menu"]
+[node name="QuitButton" type="Button" parent="Menu" unique_id=594421364]
+layout_mode = 2
 text = "Wyjscie"

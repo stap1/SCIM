@@ -1,28 +1,29 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene format=3 uid="uid://csrrolmwxegrs"]
 
-[ext_resource type="Script" path="res://scripts/systems/enemy.gd" id="1_enemy"]
-[ext_resource type="Texture2D" path="res://assets/meduza.svg.svg" id="2_tex"]
-[ext_resource type="AudioStream" path="res://audio/sfx/FSFoley_Water_Drop_fx_BANDLAB.wav" id="3_spawn"]
+[ext_resource type="Script" uid="uid://dfe0lpyyf6k0f" path="res://scripts/systems/enemy.gd" id="1_enemy"]
+[ext_resource type="Texture2D" uid="uid://cv3g65vi1x0l7" path="res://assets/meduza.svg.svg" id="2_tex"]
+[ext_resource type="AudioStream" uid="uid://kebj4lxu75wb" path="res://audio/sfx/enemy_spawn.ogg" id="3_04l7l"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_body"]
 radius = 20.0
 
-[node name="Shark" type="CharacterBody2D" groups=["enemies"]]
+[node name="Shark" type="CharacterBody2D" unique_id=1307350119 groups=["enemies"]]
 collision_layer = 2
 collision_mask = 0
 script = ExtResource("1_enemy")
 speed = 50.0
+xp_value = 5
 max_health = 40.0
 kill_score = 5
-xp_value = 5
 
-[node name="Sprite2D" type="Sprite2D" parent="."]
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1265466589]
 modulate = Color(0.5, 0.55, 0.62, 1)
 scale = Vector2(1.5, 1.5)
 texture = ExtResource("2_tex")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=426547600]
 shape = SubResource("CircleShape2D_body")
 
-[node name="SpawnSound" type="AudioStreamPlayer2D" parent="."]
-stream = ExtResource("3_spawn")
+[node name="SpawnSound" type="AudioStreamPlayer2D" parent="." unique_id=324359798]
+stream = ExtResource("3_04l7l")
+volume_db = 4.917

@@ -25,7 +25,6 @@ func _ready() -> void:
 		menu_button.pressed.connect(_on_menu_pressed)
 
 func _on_game_over() -> void:
-	# Zapis wyniku do tablicy rekordow, potem odczyt najlepszego.
 	HighScores.add_score(GameState.score)
 	var top := HighScores.get_top(1)
 	var best: int = top[0] if top.size() > 0 else 0
@@ -55,20 +54,22 @@ func _set_score_text(v: float) -> void:
 	if final_score_label:
 		final_score_label.text = "Wynik: " + str(int(v))
 
-# Czysta funkcja: czy biezacy wynik to nowy rekord (>= najlepszego, pomijajac pusty przebieg 0).
 static func is_new_record(score: int, best: int) -> bool:
 	return score > 0 and score >= best
 
-# Czysta funkcja: etykieta najlepszego wyniku z oznaczeniem rekordu.
 static func best_text(best: int, is_record: bool) -> String:
 	return "Najlepszy wynik: " + str(best) + ("  (NOWY REKORD!)" if is_record else "")
 
 func _on_restart_pressed() -> void:
+	AudioManager.play_sfx("ui_click") # ODPALA DŹWIĘK KLIKNIĘCIA
 	get_tree().paused = false
 	GameState.reset()
+	AudioManager.play_music(AudioManager.MUSIC["gameplay"]) # ZMIANA MUZYKI NA GRĘ
 	get_tree().reload_current_scene()
 
 func _on_menu_pressed() -> void:
+	AudioManager.play_sfx("ui_click") # ODPALA DŹWIĘK KLIKNIĘCIA
 	get_tree().paused = false
 	GameState.reset()
+	AudioManager.play_music(AudioManager.MUSIC["menu"]) # ZMIANA MUZYKI NA MENU
 	get_tree().change_scene_to_file(ScenePaths.MAIN_MENU)

@@ -14,6 +14,8 @@ func _connect_button(path: String, handler: Callable) -> void:
 	var b := get_node_or_null(path)
 	if b:
 		b.pressed.connect(handler)
+		# Ta jedna linijka sprawia, ze kazdy zdefiniowany wyzej przycisk wywola Twoj sfx!
+		b.pressed.connect(func(): AudioManager.play_sfx("ui_click"))
 
 func _animate_waves() -> void:
 	var boat := get_node_or_null("BoatSprite")

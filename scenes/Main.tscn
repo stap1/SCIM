@@ -1,44 +1,48 @@
-[gd_scene load_steps=11 format=3 uid="uid://dkvg8apcfepju"]
+[gd_scene format=3 uid="uid://dkvg8apcfepju"]
 
 [ext_resource type="Script" uid="uid://dojtumr0hthqr" path="res://scripts/systems/main.gd" id="1_elqb8"]
 [ext_resource type="PackedScene" uid="uid://df7rbwsa6d6ec" path="res://scenes/player/boat.tscn" id="3_sugp2"]
-[ext_resource type="Script" path="res://scripts/systems/enemy_spawner.gd" id="4_spawner"]
+[ext_resource type="Script" uid="uid://djnabqsdiljr1" path="res://scripts/systems/enemy_spawner.gd" id="4_spawner"]
 [ext_resource type="PackedScene" uid="uid://bgujj5qrm2th" path="res://scenes/ui/hud.tscn" id="5_hud"]
 [ext_resource type="PackedScene" path="res://scenes/ui/game_over.tscn" id="6_gameover"]
-[ext_resource type="Script" path="res://scripts/weapons/harpoon_pool.gd" id="7_pool"]
+[ext_resource type="Script" uid="uid://c88eo5v81df8q" path="res://scripts/weapons/harpoon_pool.gd" id="7_pool"]
 [ext_resource type="PackedScene" path="res://scenes/ui/level_up.tscn" id="8_levelup"]
-[ext_resource type="Shader" path="res://shaders/water.gdshader" id="9_water"]
+[ext_resource type="Shader" uid="uid://pv7vg0vu2tid" path="res://shaders/water.gdshader" id="9_water"]
 [ext_resource type="PackedScene" path="res://scenes/ui/pause_menu.tscn" id="10_pause"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_water"]
 shader = ExtResource("9_water")
+shader_parameter/water_color = Color(0.165, 0.29, 0.42, 1)
+shader_parameter/wave_color = Color(0.21, 0.37, 0.53, 1)
+shader_parameter/speed = 0.3
+shader_parameter/wave_scale = 10.0
 
 [node name="Main" type="Node2D" unique_id=1150465566]
 position = Vector2(210, 228)
 script = ExtResource("1_elqb8")
 
-[node name="WaterBackground" type="ColorRect" parent="."]
+[node name="WaterBackground" type="ColorRect" parent="." unique_id=1521975193]
 z_index = -100
 material = SubResource("ShaderMaterial_water")
 offset_left = -1000.0
 offset_top = -1000.0
 offset_right = 1000.0
 offset_bottom = 1000.0
-color = Color(0.16470589, 0.2901961, 0.41960785, 1)
 mouse_filter = 2
+color = Color(0.16470589, 0.2901961, 0.41960785, 1)
 
 [node name="Boat" parent="." unique_id=1889304063 instance=ExtResource("3_sugp2")]
 
-[node name="EnemySpawner" type="Node" parent="."]
+[node name="EnemySpawner" type="Node" parent="." unique_id=1676240714]
 script = ExtResource("4_spawner")
 
-[node name="HarpoonPool" type="Node" parent="."]
+[node name="HarpoonPool" type="Node" parent="." unique_id=1976289389]
 script = ExtResource("7_pool")
 
-[node name="HUD" parent="." instance=ExtResource("5_hud")]
+[node name="HUD" parent="." unique_id=756430914 instance=ExtResource("5_hud")]
 
-[node name="LevelUp" parent="." instance=ExtResource("8_levelup")]
+[node name="LevelUp" parent="." unique_id=1558941437 instance=ExtResource("8_levelup")]
 
-[node name="GameOver" parent="." instance=ExtResource("6_gameover")]
+[node name="GameOver" parent="." unique_id=76033415 instance=ExtResource("6_gameover")]
 
-[node name="PauseMenu" parent="." instance=ExtResource("10_pause")]
+[node name="PauseMenu" parent="." unique_id=811916830 instance=ExtResource("10_pause")]

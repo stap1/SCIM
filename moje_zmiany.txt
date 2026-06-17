@@ -1,0 +1,787 @@
+diff --git a/audio/sfx/FSFoley_Water_Drop_fx_BANDLAB.wav b/audio/sfx/FSFoley_Water_Drop_fx_BANDLAB.wav
+deleted file mode 100644
+index 25bf09b..0000000
+Binary files a/audio/sfx/FSFoley_Water_Drop_fx_BANDLAB.wav and /dev/null differ
+diff --git a/audio/sfx/FSFoley_Water_Drop_fx_BANDLAB.wav.import b/audio/sfx/FSFoley_Water_Drop_fx_BANDLAB.wav.import
+deleted file mode 100644
+index 07b00ad..0000000
+--- a/audio/sfx/FSFoley_Water_Drop_fx_BANDLAB.wav.import
++++ /dev/null
+@@ -1,24 +0,0 @@
+-[remap]
+-
+-importer="wav"
+-type="AudioStreamWAV"
+-uid="uid://diwck84uylbh6"
+-path="res://.godot/imported/FSFoley_Water_Drop_fx_BANDLAB.wav-c96d492c853ea82cdec68a0f54077998.sample"
+-
+-[deps]
+-
+-source_file="res://audio/sfx/FSFoley_Water_Drop_fx_BANDLAB.wav"
+-dest_files=["res://.godot/imported/FSFoley_Water_Drop_fx_BANDLAB.wav-c96d492c853ea82cdec68a0f54077998.sample"]
+-
+-[params]
+-
+-force/8_bit=false
+-force/mono=false
+-force/max_rate=false
+-force/max_rate_hz=44100
+-edit/trim=false
+-edit/normalize=false
+-edit/loop_mode=0
+-edit/loop_begin=0
+-edit/loop_end=-1
+-compress/mode=2
+diff --git a/audio/sfx/GameFX_Shoot_01_fx_BANDLAB.wav b/audio/sfx/GameFX_Shoot_01_fx_BANDLAB.wav
+deleted file mode 100644
+index 18e104e..0000000
+Binary files a/audio/sfx/GameFX_Shoot_01_fx_BANDLAB.wav and /dev/null differ
+diff --git a/audio/sfx/GameFX_Shoot_01_fx_BANDLAB.wav.import b/audio/sfx/GameFX_Shoot_01_fx_BANDLAB.wav.import
+deleted file mode 100644
+index fc36ba7..0000000
+--- a/audio/sfx/GameFX_Shoot_01_fx_BANDLAB.wav.import
++++ /dev/null
+@@ -1,24 +0,0 @@
+-[remap]
+-
+-importer="wav"
+-type="AudioStreamWAV"
+-uid="uid://bdatr0e725hkj"
+-path="res://.godot/imported/GameFX_Shoot_01_fx_BANDLAB.wav-f85f06f380b30843e6dd6f06ee742f23.sample"
+-
+-[deps]
+-
+-source_file="res://audio/sfx/GameFX_Shoot_01_fx_BANDLAB.wav"
+-dest_files=["res://.godot/imported/GameFX_Shoot_01_fx_BANDLAB.wav-f85f06f380b30843e6dd6f06ee742f23.sample"]
+-
+-[params]
+-
+-force/8_bit=false
+-force/mono=false
+-force/max_rate=false
+-force/max_rate_hz=44100
+-edit/trim=false
+-edit/normalize=false
+-edit/loop_mode=0
+-edit/loop_begin=0
+-edit/loop_end=-1
+-compress/mode=2
+diff --git a/default_bus_layout.tres b/default_bus_layout.tres
+index 3fbc71a..f8606c4 100644
+--- a/default_bus_layout.tres
++++ b/default_bus_layout.tres
+@@ -1,17 +1,11 @@
+-[gd_resource type="AudioBusLayout" format=3]
++[gd_resource type="AudioBusLayout" format=3 uid="uid://bbqct2t8sk1ek"]
+ 
+ [resource]
+-bus/0/name = &"Master"
+-bus/0/solo = false
+-bus/0/mute = false
+-bus/0/bypass_fx = false
+-bus/0/volume_db = 0.0
+-bus/0/send = &"Master"
+ bus/1/name = &"Music"
+ bus/1/solo = false
+ bus/1/mute = false
+ bus/1/bypass_fx = false
+-bus/1/volume_db = 0.0
++bus/1/volume_db = -0.13049698
+ bus/1/send = &"Master"
+ bus/2/name = &"SFX"
+ bus/2/solo = false
+@@ -23,5 +17,5 @@ bus/3/name = &"Ambient"
+ bus/3/solo = false
+ bus/3/mute = false
+ bus/3/bypass_fx = false
+-bus/3/volume_db = 0.0
++bus/3/volume_db = -3.653224
+ bus/3/send = &"Master"
+diff --git a/project.godot b/project.godot
+index 887628e..3406b21 100644
+--- a/project.godot
++++ b/project.godot
+@@ -15,12 +15,9 @@ run/main_scene="res://scenes/MainMenu.tscn"
+ config/features=PackedStringArray("4.6", "Forward Plus")
+ config/icon="res://icon.svg"
+ 
+-[display]
++[audio]
+ 
+-window/size/viewport_width=1152
+-window/size/viewport_height=648
+-window/stretch/mode="canvas_items"
+-window/stretch/aspect="expand"
++buses/default_bus_layout="uid://bbqct2t8sk1ek"
+ 
+ [autoload]
+ 
+@@ -30,6 +27,11 @@ SettingsStore="*res://scripts/globals/settings_store.gd"
+ Upgrades="*res://scripts/systems/upgrades.gd"
+ AudioManager="*res://scripts/systems/audio_manager.gd"
+ 
++[display]
++
++window/stretch/mode="canvas_items"
++window/stretch/aspect="expand"
++
+ [editor_plugins]
+ 
+ enabled=PackedStringArray("res://addons/gut/plugin.cfg")
+diff --git a/scenes/Main.tscn b/scenes/Main.tscn
+index 579d8b6..a3cb33c 100644
+--- a/scenes/Main.tscn
++++ b/scenes/Main.tscn
+@@ -1,44 +1,48 @@
+-[gd_scene load_steps=11 format=3 uid="uid://dkvg8apcfepju"]
++[gd_scene format=3 uid="uid://dkvg8apcfepju"]
+ 
+ [ext_resource type="Script" uid="uid://dojtumr0hthqr" path="res://scripts/systems/main.gd" id="1_elqb8"]
+ [ext_resource type="PackedScene" uid="uid://df7rbwsa6d6ec" path="res://scenes/player/boat.tscn" id="3_sugp2"]
+-[ext_resource type="Script" path="res://scripts/systems/enemy_spawner.gd" id="4_spawner"]
++[ext_resource type="Script" uid="uid://djnabqsdiljr1" path="res://scripts/systems/enemy_spawner.gd" id="4_spawner"]
+ [ext_resource type="PackedScene" uid="uid://bgujj5qrm2th" path="res://scenes/ui/hud.tscn" id="5_hud"]
+ [ext_resource type="PackedScene" path="res://scenes/ui/game_over.tscn" id="6_gameover"]
+-[ext_resource type="Script" path="res://scripts/weapons/harpoon_pool.gd" id="7_pool"]
++[ext_resource type="Script" uid="uid://c88eo5v81df8q" path="res://scripts/weapons/harpoon_pool.gd" id="7_pool"]
+ [ext_resource type="PackedScene" path="res://scenes/ui/level_up.tscn" id="8_levelup"]
+-[ext_resource type="Shader" path="res://shaders/water.gdshader" id="9_water"]
++[ext_resource type="Shader" uid="uid://pv7vg0vu2tid" path="res://shaders/water.gdshader" id="9_water"]
+ [ext_resource type="PackedScene" path="res://scenes/ui/pause_menu.tscn" id="10_pause"]
+ 
+ [sub_resource type="ShaderMaterial" id="ShaderMaterial_water"]
+ shader = ExtResource("9_water")
++shader_parameter/water_color = Color(0.165, 0.29, 0.42, 1)
++shader_parameter/wave_color = Color(0.21, 0.37, 0.53, 1)
++shader_parameter/speed = 0.3
++shader_parameter/wave_scale = 10.0
+ 
+ [node name="Main" type="Node2D" unique_id=1150465566]
+ position = Vector2(210, 228)
+ script = ExtResource("1_elqb8")
+ 
+-[node name="WaterBackground" type="ColorRect" parent="."]
++[node name="WaterBackground" type="ColorRect" parent="." unique_id=1521975193]
+ z_index = -100
+ material = SubResource("ShaderMaterial_water")
+ offset_left = -1000.0
+ offset_top = -1000.0
+ offset_right = 1000.0
+ offset_bottom = 1000.0
+-color = Color(0.16470589, 0.2901961, 0.41960785, 1)
+ mouse_filter = 2
++color = Color(0.16470589, 0.2901961, 0.41960785, 1)
+ 
+ [node name="Boat" parent="." unique_id=1889304063 instance=ExtResource("3_sugp2")]
+ 
+-[node name="EnemySpawner" type="Node" parent="."]
++[node name="EnemySpawner" type="Node" parent="." unique_id=1676240714]
+ script = ExtResource("4_spawner")
+ 
+-[node name="HarpoonPool" type="Node" parent="."]
++[node name="HarpoonPool" type="Node" parent="." unique_id=1976289389]
+ script = ExtResource("7_pool")
+ 
+-[node name="HUD" parent="." instance=ExtResource("5_hud")]
++[node name="HUD" parent="." unique_id=756430914 instance=ExtResource("5_hud")]
+ 
+-[node name="LevelUp" parent="." instance=ExtResource("8_levelup")]
++[node name="LevelUp" parent="." unique_id=1558941437 instance=ExtResource("8_levelup")]
+ 
+-[node name="GameOver" parent="." instance=ExtResource("6_gameover")]
++[node name="GameOver" parent="." unique_id=76033415 instance=ExtResource("6_gameover")]
+ 
+-[node name="PauseMenu" parent="." instance=ExtResource("10_pause")]
++[node name="PauseMenu" parent="." unique_id=811916830 instance=ExtResource("10_pause")]
+diff --git a/scenes/MainMenu.tscn b/scenes/MainMenu.tscn
+index 737c91c..4851132 100644
+--- a/scenes/MainMenu.tscn
++++ b/scenes/MainMenu.tscn
+@@ -1,49 +1,56 @@
+-[gd_scene load_steps=3 format=3]
++[gd_scene format=3 uid="uid://cduhwog23coy7"]
+ 
+-[ext_resource type="Script" path="res://scripts/ui/main_menu.gd" id="1_mm"]
+-[ext_resource type="Texture2D" path="res://assets/lodz.svg.svg" id="2_boat"]
++[ext_resource type="Script" uid="uid://b12oqh3mydlaw" path="res://scripts/ui/main_menu.gd" id="1_mm"]
++[ext_resource type="Texture2D" uid="uid://blsotf7ntv08v" path="res://assets/lodz.svg.svg" id="2_boat"]
+ 
+-[node name="MainMenu" type="Control"]
++[node name="MainMenu" type="Control" unique_id=330382259]
++layout_mode = 3
+ anchors_preset = 15
+ anchor_right = 1.0
+ anchor_bottom = 1.0
+ script = ExtResource("1_mm")
+ 
+-[node name="Background" type="ColorRect" parent="."]
+-anchors_preset = 15
++[node name="Background" type="ColorRect" parent="." unique_id=1693902433]
++layout_mode = 0
+ anchor_right = 1.0
+ anchor_bottom = 1.0
+ color = Color(0.16470589, 0.2901961, 0.41960785, 1)
+ 
+-[node name="BoatSprite" type="Sprite2D" parent="."]
++[node name="BoatSprite" type="Sprite2D" parent="." unique_id=1921974577]
+ position = Vector2(576, 250)
+ scale = Vector2(1.4, 1.4)
+ texture = ExtResource("2_boat")
+ 
+-[node name="Title" type="Label" parent="."]
++[node name="Title" type="Label" parent="." unique_id=217606132]
++layout_mode = 0
+ offset_left = 176.0
+ offset_top = 60.0
+ offset_right = 976.0
+ offset_bottom = 150.0
+ theme_override_font_sizes/font_size = 56
+-horizontal_alignment = 1
+ text = "Stary czlowiek i morze"
++horizontal_alignment = 1
+ 
+-[node name="Menu" type="VBoxContainer" parent="."]
++[node name="Menu" type="VBoxContainer" parent="." unique_id=387268898]
++layout_mode = 0
+ offset_left = 456.0
+ offset_top = 380.0
+ offset_right = 696.0
+ offset_bottom = 580.0
+ theme_override_constants/separation = 14
+ 
+-[node name="StartButton" type="Button" parent="Menu"]
++[node name="StartButton" type="Button" parent="Menu" unique_id=293119137]
++layout_mode = 2
+ text = "Start"
+ 
+-[node name="ScoresButton" type="Button" parent="Menu"]
++[node name="ScoresButton" type="Button" parent="Menu" unique_id=268270688]
++layout_mode = 2
+ text = "Wyniki"
+ 
+-[node name="SettingsButton" type="Button" parent="Menu"]
++[node name="SettingsButton" type="Button" parent="Menu" unique_id=1860144520]
++layout_mode = 2
+ text = "Ustawienia"
+ 
+-[node name="QuitButton" type="Button" parent="Menu"]
++[node name="QuitButton" type="Button" parent="Menu" unique_id=594421364]
++layout_mode = 2
+ text = "Wyjscie"
+diff --git a/scenes/enemies/barracuda.tscn b/scenes/enemies/barracuda.tscn
+index 247a69a..51dab08 100644
+--- a/scenes/enemies/barracuda.tscn
++++ b/scenes/enemies/barracuda.tscn
+@@ -1,28 +1,29 @@
+-[gd_scene load_steps=5 format=3]
++[gd_scene format=3 uid="uid://duvm2am0pmf58"]
+ 
+-[ext_resource type="Script" path="res://scripts/systems/enemy.gd" id="1_enemy"]
+-[ext_resource type="Texture2D" path="res://assets/meduza.svg.svg" id="2_tex"]
+-[ext_resource type="AudioStream" path="res://audio/sfx/FSFoley_Water_Drop_fx_BANDLAB.wav" id="3_spawn"]
++[ext_resource type="Script" uid="uid://dfe0lpyyf6k0f" path="res://scripts/systems/enemy.gd" id="1_enemy"]
++[ext_resource type="Texture2D" uid="uid://cv3g65vi1x0l7" path="res://assets/meduza.svg.svg" id="2_tex"]
++[ext_resource type="AudioStream" uid="uid://kebj4lxu75wb" path="res://audio/sfx/enemy_spawn.ogg" id="3_1hhk8"]
+ 
+ [sub_resource type="CircleShape2D" id="CircleShape2D_body"]
+ radius = 14.0
+ 
+-[node name="Barracuda" type="CharacterBody2D" groups=["enemies"]]
++[node name="Barracuda" type="CharacterBody2D" unique_id=1389026890 groups=["enemies"]]
+ collision_layer = 2
+ collision_mask = 0
+ script = ExtResource("1_enemy")
+ speed = 160.0
++xp_value = 2
+ max_health = 8.0
+ kill_score = 2
+-xp_value = 2
+ 
+-[node name="Sprite2D" type="Sprite2D" parent="."]
++[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1156857949]
+ modulate = Color(1, 0.85, 0.2, 1)
+ scale = Vector2(0.85, 0.85)
+ texture = ExtResource("2_tex")
+ 
+-[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
++[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=911843570]
+ shape = SubResource("CircleShape2D_body")
+ 
+-[node name="SpawnSound" type="AudioStreamPlayer2D" parent="."]
+-stream = ExtResource("3_spawn")
++[node name="SpawnSound" type="AudioStreamPlayer2D" parent="." unique_id=576859954]
++stream = ExtResource("3_1hhk8")
++volume_db = 5.403
+diff --git a/scenes/enemies/enemy.tscn b/scenes/enemies/enemy.tscn
+index fbdb533..39a012c 100644
+--- a/scenes/enemies/enemy.tscn
++++ b/scenes/enemies/enemy.tscn
+@@ -1,22 +1,23 @@
+-[gd_scene load_steps=5 format=3 uid="uid://djphki8cb53y5"]
++[gd_scene format=3 uid="uid://djphki8cb53y5"]
+ 
+ [ext_resource type="Script" uid="uid://dfe0lpyyf6k0f" path="res://scripts/systems/enemy.gd" id="1_55jtl"]
+ [ext_resource type="Texture2D" uid="uid://cv3g65vi1x0l7" path="res://assets/meduza.svg.svg" id="2_fcftc"]
+-[ext_resource type="AudioStream" uid="uid://diwck84uylbh6" path="res://audio/sfx/FSFoley_Water_Drop_fx_BANDLAB.wav" id="4_fcftc"]
++[ext_resource type="AudioStream" uid="uid://kebj4lxu75wb" path="res://audio/sfx/enemy_spawn.ogg" id="3_38ino"]
+ 
+ [sub_resource type="CircleShape2D" id="CircleShape2D_body"]
+ radius = 14.0
+ 
+-[node name="Jellyfish" type="CharacterBody2D" groups=["enemies"]]
++[node name="Jellyfish" type="CharacterBody2D" unique_id=1454153050 groups=["enemies"]]
+ collision_layer = 2
+ collision_mask = 0
+ script = ExtResource("1_55jtl")
+ 
+-[node name="Sprite2D" type="Sprite2D" parent="."]
++[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1612961113]
+ texture = ExtResource("2_fcftc")
+ 
+-[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
++[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1945406375]
+ shape = SubResource("CircleShape2D_body")
+ 
+-[node name="SpawnSound" type="AudioStreamPlayer2D" parent="."]
+-stream = ExtResource("4_fcftc")
++[node name="SpawnSound" type="AudioStreamPlayer2D" parent="." unique_id=481440860]
++stream = ExtResource("3_38ino")
++volume_db = 5.402
+diff --git a/scenes/enemies/shark.tscn b/scenes/enemies/shark.tscn
+index a607930..7e7fa14 100644
+--- a/scenes/enemies/shark.tscn
++++ b/scenes/enemies/shark.tscn
+@@ -1,28 +1,29 @@
+-[gd_scene load_steps=5 format=3]
++[gd_scene format=3 uid="uid://csrrolmwxegrs"]
+ 
+-[ext_resource type="Script" path="res://scripts/systems/enemy.gd" id="1_enemy"]
+-[ext_resource type="Texture2D" path="res://assets/meduza.svg.svg" id="2_tex"]
+-[ext_resource type="AudioStream" path="res://audio/sfx/FSFoley_Water_Drop_fx_BANDLAB.wav" id="3_spawn"]
++[ext_resource type="Script" uid="uid://dfe0lpyyf6k0f" path="res://scripts/systems/enemy.gd" id="1_enemy"]
++[ext_resource type="Texture2D" uid="uid://cv3g65vi1x0l7" path="res://assets/meduza.svg.svg" id="2_tex"]
++[ext_resource type="AudioStream" uid="uid://kebj4lxu75wb" path="res://audio/sfx/enemy_spawn.ogg" id="3_04l7l"]
+ 
+ [sub_resource type="CircleShape2D" id="CircleShape2D_body"]
+ radius = 20.0
+ 
+-[node name="Shark" type="CharacterBody2D" groups=["enemies"]]
++[node name="Shark" type="CharacterBody2D" unique_id=1307350119 groups=["enemies"]]
+ collision_layer = 2
+ collision_mask = 0
+ script = ExtResource("1_enemy")
+ speed = 50.0
++xp_value = 5
+ max_health = 40.0
+ kill_score = 5
+-xp_value = 5
+ 
+-[node name="Sprite2D" type="Sprite2D" parent="."]
++[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1265466589]
+ modulate = Color(0.5, 0.55, 0.62, 1)
+ scale = Vector2(1.5, 1.5)
+ texture = ExtResource("2_tex")
+ 
+-[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
++[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=426547600]
+ shape = SubResource("CircleShape2D_body")
+ 
+-[node name="SpawnSound" type="AudioStreamPlayer2D" parent="."]
+-stream = ExtResource("3_spawn")
++[node name="SpawnSound" type="AudioStreamPlayer2D" parent="." unique_id=324359798]
++stream = ExtResource("3_04l7l")
++volume_db = 4.917
+diff --git a/scripts/player/boat.gd b/scripts/player/boat.gd
+index 4a753a9..7d650bf 100644
+--- a/scripts/player/boat.gd
++++ b/scripts/player/boat.gd
+@@ -104,6 +104,7 @@ func try_take_enemy_hit(damage: float) -> void:
+ 		return
+ 	GameState.take_damage(damage)
+ 	time_since_last_hit = 0.0
++	AudioManager.play_sfx("player_hit")
+ 	if is_inside_tree():
+ 		_flash_hit()
+ 		_do_shake()
+diff --git a/scripts/systems/audio_manager.gd b/scripts/systems/audio_manager.gd
+index 98a893f..685055d 100644
+--- a/scripts/systems/audio_manager.gd
++++ b/scripts/systems/audio_manager.gd
+@@ -1,25 +1,27 @@
+ extends Node
+ 
+-# Autoload "AudioManager": centralne SFX + muzyka. Graceful fallback gdy plik nie istnieje
+-# (ciche placeholdery na tym etapie - realne OGG wejda pozniej). SFX pool (round-robin)
+-# zapobiega ucinaniu przy wielu zdarzeniach naraz.
+-
+ const SFX_PATHS := {
+-	"harpoon_shot": "res://audio/sfx/GameFX_Shoot_01_fx_BANDLAB.wav",
+-	"hit": "",
++	"harpoon_shot": "res://audio/sfx/harpoon_shot.ogg",
++	"hit": "res://audio/sfx/hit.ogg",
+ 	"enemy_death": "res://audio/sfx/enemy_death.wav",
+-	"level_up": "",
+-	"game_over": "",
+-	"boss_spawn": "",
++	"boss_spawn": "res://audio/sfx/boss_spawn.ogg",
++	"player_hit": "res://audio/sfx/player_hit.ogg",
++	"level_up": "res://audio/sfx/level_up.ogg",
++	"game_over": "res://audio/sfx/game_over.ogg",
++	"ui_click": "res://audio/sfx/ui_click.ogg",
++	"heal": "res://audio/sfx/heal.ogg",
+ }
+ 
+ const SFX_POOL_SIZE := 16
+ 
+-# Utwory muzyczne (placeholdery - realne OGG wejda pozniej; graceful fallback gdy brak pliku).
+ const MUSIC := {
+-	"gameplay": "res://audio/music/gameplay.ogg",
+-	"boss": "res://audio/music/boss.ogg",
++	"menu": "res://audio/music/music_menu.ogg",
++	"gameplay": "res://audio/music/music_game.ogg",
++	"boss": "res://audio/music/music_boss.ogg",
++	"gameover": "res://audio/music/music_gameover.ogg",
+ }
++
++const AMBIENT_PATH := "res://audio/ambient/ambient_sea.ogg"
+ const MUSIC_CROSSFADE := 1.5
+ 
+ var _sfx_streams := {}
+@@ -27,12 +29,12 @@ var _sfx_players: Array[AudioStreamPlayer] = []
+ var _sfx_index := 0
+ var _music_player: AudioStreamPlayer
+ var _ambient_player: AudioStreamPlayer
+-# Ostatnio zazadany utwor (intencja) - ustawiany nawet gdy plik to placeholder.
+-# Pozwala wpiac/testowac muzyke bez realnych plikow audio.
+ var current_music_track: String = ""
+ 
+ func _ready() -> void:
+-	# Preload strumieni z graceful fallback (null = cichy placeholder).
++	process_mode = Node.PROCESS_MODE_ALWAYS
++
++	# 1. Inicjalizacja SFX
+ 	for sfx_name in SFX_PATHS:
+ 		var path: String = SFX_PATHS[sfx_name]
+ 		if path != "" and ResourceLoader.exists(path):
+@@ -40,82 +42,89 @@ func _ready() -> void:
+ 		else:
+ 			_sfx_streams[sfx_name] = null
+ 
+-	# Pula odtwarzaczy SFX (round-robin).
+ 	for i in SFX_POOL_SIZE:
+ 		var p := AudioStreamPlayer.new()
+ 		p.bus = _bus_or_master("SFX")
+ 		add_child(p)
+ 		_sfx_players.append(p)
+ 
++	# 2. Inicjalizacja Muzyki
+ 	_music_player = AudioStreamPlayer.new()
+ 	_music_player.bus = _bus_or_master("Music")
+ 	add_child(_music_player)
+ 
++	# 3. Inicjalizacja Ambientu
+ 	_ambient_player = AudioStreamPlayer.new()
+ 	_ambient_player.bus = _bus_or_master("Ambient")
+ 	add_child(_ambient_player)
++	
++	if ResourceLoader.exists(AMBIENT_PATH):
++		_ambient_player.stream = load(AMBIENT_PATH)
++		_ambient_player.volume_db = -15.0 # Przyciszenie ambientu w tle
++		# Nie odpalamy `.play()` tutaj - funkcję tę przejmuje teraz play_music()
+ 
+-	# Wyzwalacze globalne (sygnaly GameState).
++	# 4. Połączenie sygnałów gry
+ 	GameState.level_up.connect(_on_level_up)
+ 	GameState.game_over.connect(_on_game_over)
+ 	GameState.boss_incoming.connect(_on_boss_incoming)
+ 	GameState.session_reset.connect(_on_session_reset)
+-	# Glosnosc busow + sesja/accessibility ustawia SettingsStore (autoload przed AudioManager).
+-
+-func _on_level_up(_new_level: int) -> void:
+-	play_sfx("level_up")
+-
+-func _on_game_over() -> void:
+-	play_sfx("game_over")
+-
+-func _on_boss_incoming() -> void:
++	
++	# Start muzyki menu po załadowaniu klatki
++	await get_tree().process_frame
++	play_music(MUSIC["menu"])
++
++# Reakcje na sygnały z GameState
++func _on_level_up(_new_level: int) -> void: play_sfx("level_up")
++func _on_game_over() -> void: play_music(MUSIC["gameover"])
++func _on_boss_incoming() -> void: 
+ 	play_sfx("boss_spawn")
+-	# Muzyka napiecia: plynne przejscie na utwor bossa.
+ 	crossfade_to(MUSIC["boss"], MUSIC_CROSSFADE)
++func _on_session_reset() -> void: play_music(MUSIC["gameplay"])
+ 
+-# Start nowej sesji (reset) - wlacz muzyke rozgrywki.
+-func _on_session_reset() -> void:
+-	play_music(MUSIC["gameplay"])
+-
++# Odtwarzanie efektów dźwiękowych (SFX)
+ func play_sfx(sfx_name: String) -> void:
+-	if not _sfx_streams.has(sfx_name):
+-		return
++	if not _sfx_streams.has(sfx_name): return
+ 	var stream = _sfx_streams[sfx_name]
+-	if stream == null:
+-		return # graceful fallback - cichy placeholder
+-	if _sfx_players.is_empty():
+-		return
++	if stream == null: return
+ 	var player := _sfx_players[_sfx_index]
+ 	_sfx_index = (_sfx_index + 1) % _sfx_players.size()
+ 	player.stream = stream
+ 	player.play()
+ 
++# Kontrola muzyki
++func stop_music() -> void:
++	if _music_player != null:
++		_music_player.stop()
++		_music_player.stream = null
++
+ func play_music(track: String) -> void:
+-	# Zapisz intencje zawsze (takze dla placeholderow) - wpiecie testowalne bez plikow.
++	if _music_player == null: return
++	
++	stop_music()
+ 	current_music_track = track
+-	if _music_player == null:
+-		return
++
+ 	if track != "" and ResourceLoader.exists(track):
+ 		_music_player.stream = load(track)
+ 		_music_player.play()
++	
++	# NOWOŚĆ: Kontrola szumu otoczenia (ambientu) w zależności od utworu
++	if _ambient_player != null and _ambient_player.stream != null:
++		if track == MUSIC["menu"]:
++			if not _ambient_player.playing:
++				_ambient_player.play()
++		else:
++			if _ambient_player.playing:
++				_ambient_player.stop()
+ 
+ func crossfade_to(track: String, duration: float) -> void:
+-	# Cel crossfade'u to docelowy utwor - zapisz intencje od razu (testowalne bez plikow).
+-	current_music_track = track
+-	# Wycisz Music, podmien utwor, wzmocnij z powrotem (Tween glosnosci busa).
+ 	var tween := create_tween()
+ 	tween.tween_method(_set_music_bus_db, 0.0, -40.0, duration * 0.5)
+ 	tween.tween_callback(func(): play_music(track))
+-	tween.tween_method(_set_music_bus_db, -40.0, 0.0, duration * 0.5)
++	tween.tween_callback(func(): _set_music_bus_db(0.0))
+ 
+ func _set_music_bus_db(db: float) -> void:
+ 	var idx := AudioServer.get_bus_index("Music")
+-	if idx != -1:
+-		AudioServer.set_bus_volume_db(idx, db)
++	if idx != -1: AudioServer.set_bus_volume_db(idx, db)
+ 
+ func _bus_or_master(bus_name: String) -> String:
+ 	return bus_name if AudioServer.get_bus_index(bus_name) != -1 else "Master"
+-
+-# Czysta funkcja: liniowa interpolacja glosnosci (db) wg t in [0,1].
+-static func fade_volume_db(t: float, from_db: float, to_db: float) -> float:
+-	return from_db + (to_db - from_db) * t
+diff --git a/scripts/systems/heal_plank.gd b/scripts/systems/heal_plank.gd
+index 444b9ff..cbfbf3b 100644
+--- a/scripts/systems/heal_plank.gd
++++ b/scripts/systems/heal_plank.gd
+@@ -10,7 +10,6 @@ var is_collected: bool = false
+ var _age: float = 0.0
+ 
+ func _ready() -> void:
+-	# Deska (mask=1) wykrywa cialo gracza (layer 1) i zbiera sie przy kontakcie.
+ 	body_entered.connect(_on_body_entered)
+ 
+ func _physics_process(delta: float) -> void:
+@@ -18,7 +17,6 @@ func _physics_process(delta: float) -> void:
+ 		return
+ 	if GameState.is_paused or GameState.is_game_over:
+ 		return
+-	# Lifetime liczony tylko podczas aktywnej gry (pauza/koniec wstrzymuja starzenie).
+ 	_age += delta
+ 	if _age >= lifetime:
+ 		_despawn()
+@@ -31,10 +29,10 @@ func _collect() -> void:
+ 	if is_collected:
+ 		return
+ 	is_collected = true
++	AudioManager.play_sfx("heal") # ODPALA DŹWIĘK LECZENIA
+ 	GameState.heal(heal_amount)
+ 	queue_free()
+ 
+-# Niezebrana deska po uplywie lifetime - znika bez leczenia (is_collected jako guard).
+ func _despawn() -> void:
+ 	if is_collected:
+ 		return
+diff --git a/scripts/ui/game_over.gd b/scripts/ui/game_over.gd
+index dca7bd1..588c585 100644
+--- a/scripts/ui/game_over.gd
++++ b/scripts/ui/game_over.gd
+@@ -25,7 +25,6 @@ func _ready() -> void:
+ 		menu_button.pressed.connect(_on_menu_pressed)
+ 
+ func _on_game_over() -> void:
+-	# Zapis wyniku do tablicy rekordow, potem odczyt najlepszego.
+ 	HighScores.add_score(GameState.score)
+ 	var top := HighScores.get_top(1)
+ 	var best: int = top[0] if top.size() > 0 else 0
+@@ -55,20 +54,22 @@ func _set_score_text(v: float) -> void:
+ 	if final_score_label:
+ 		final_score_label.text = "Wynik: " + str(int(v))
+ 
+-# Czysta funkcja: czy biezacy wynik to nowy rekord (>= najlepszego, pomijajac pusty przebieg 0).
+ static func is_new_record(score: int, best: int) -> bool:
+ 	return score > 0 and score >= best
+ 
+-# Czysta funkcja: etykieta najlepszego wyniku z oznaczeniem rekordu.
+ static func best_text(best: int, is_record: bool) -> String:
+ 	return "Najlepszy wynik: " + str(best) + ("  (NOWY REKORD!)" if is_record else "")
+ 
+ func _on_restart_pressed() -> void:
++	AudioManager.play_sfx("ui_click") # ODPALA DŹWIĘK KLIKNIĘCIA
+ 	get_tree().paused = false
+ 	GameState.reset()
++	AudioManager.play_music(AudioManager.MUSIC["gameplay"]) # ZMIANA MUZYKI NA GRĘ
+ 	get_tree().reload_current_scene()
+ 
+ func _on_menu_pressed() -> void:
++	AudioManager.play_sfx("ui_click") # ODPALA DŹWIĘK KLIKNIĘCIA
+ 	get_tree().paused = false
+ 	GameState.reset()
++	AudioManager.play_music(AudioManager.MUSIC["menu"]) # ZMIANA MUZYKI NA MENU
+ 	get_tree().change_scene_to_file(ScenePaths.MAIN_MENU)
+diff --git a/scripts/ui/level_up.gd b/scripts/ui/level_up.gd
+index cc1b44d..950736d 100644
+--- a/scripts/ui/level_up.gd
++++ b/scripts/ui/level_up.gd
+@@ -83,6 +83,7 @@ func _set_card_text(card: Node, id: String) -> void:
+ 		card.text = text
+ 
+ func _on_card_pressed(index: int) -> void:
++	AudioManager.play_sfx("ui_click")
+ 	var id: String = _current_ids[index] if index < _current_ids.size() else ""
+ 	if panel:
+ 		panel.hide()
+diff --git a/scripts/ui/main_menu.gd b/scripts/ui/main_menu.gd
+index 672ea70..cb48a2c 100644
+--- a/scripts/ui/main_menu.gd
++++ b/scripts/ui/main_menu.gd
+@@ -14,6 +14,8 @@ func _connect_button(path: String, handler: Callable) -> void:
+ 	var b := get_node_or_null(path)
+ 	if b:
+ 		b.pressed.connect(handler)
++		# Ta jedna linijka sprawia, ze kazdy zdefiniowany wyzej przycisk wywola Twoj sfx!
++		b.pressed.connect(func(): AudioManager.play_sfx("ui_click"))
+ 
+ func _animate_waves() -> void:
+ 	var boat := get_node_or_null("BoatSprite")
+diff --git a/scripts/ui/pause_menu.gd b/scripts/ui/pause_menu.gd
+index b8f1fb1..29caad5 100644
+--- a/scripts/ui/pause_menu.gd
++++ b/scripts/ui/pause_menu.gd
+@@ -46,6 +46,7 @@ func toggle() -> void:
+ 
+ ## Otwiera menu i wstrzymuje rozgrywke.
+ func _open() -> void:
++	AudioManager.play_sfx("ui_click") # Dzwiek przy wejsciu w pauze ESC/klawiszem
+ 	_is_open = true
+ 	GameState.is_paused = true      # spojnosc dla systemow czytajacych te flage
+ 	get_tree().paused = true
+@@ -54,16 +55,19 @@ func _open() -> void:
+ 
+ ## Wznawia rozgrywke. Publiczne - podpiete pod przycisk "Wznow" oraz klawisz pauzy.
+ func resume() -> void:
++	AudioManager.play_sfx("ui_click")
+ 	_is_open = false
+ 	GameState.is_paused = false
+ 	get_tree().paused = false
+ 	_dimmer.hide()
+ 
+ func _on_restart_pressed() -> void:
++	AudioManager.play_sfx("ui_click")
+ 	_leave_session()
+ 	get_tree().reload_current_scene()
+ 
+ func _on_menu_pressed() -> void:
++	AudioManager.play_sfx("ui_click")
+ 	_leave_session()
+ 	get_tree().change_scene_to_file(ScenePaths.MAIN_MENU)
+ 
+diff --git a/scripts/ui/scores.gd b/scripts/ui/scores.gd
+index 9938957..eccf440 100644
+--- a/scripts/ui/scores.gd
++++ b/scripts/ui/scores.gd
+@@ -18,6 +18,7 @@ func _show_scores() -> void:
+ 	list_label.text = format_scores(HighScores.get_top(5))
+ 
+ func _on_back() -> void:
++	AudioManager.play_sfx("ui_click")
+ 	get_tree().change_scene_to_file(ScenePaths.MAIN_MENU)
+ 
+ # Czysta funkcja: tekst listy wynikow (numerowany, malejaco) lub komunikat gdy pusto.
+diff --git a/scripts/ui/settings.gd b/scripts/ui/settings.gd
+index 6483683..82f18f0 100644
+--- a/scripts/ui/settings.gd
++++ b/scripts/ui/settings.gd
+@@ -27,22 +27,31 @@ func _ready() -> void:
+ 		music_slider.step = 0.01
+ 		music_slider.value = s["music_vol"]
+ 		music_slider.value_changed.connect(_on_music_changed)
++		# Zabezpieczenie na suwak - dzwiek gra tylko po puszczeniu, zeby nie zacinac!
++		music_slider.drag_ended.connect(func(_value_changed): AudioManager.play_sfx("ui_click"))
++
+ 	if sfx_slider:
+ 		sfx_slider.min_value = 0.0
+ 		sfx_slider.max_value = 1.0
+ 		sfx_slider.step = 0.01
+ 		sfx_slider.value = s["sfx_vol"]
+ 		sfx_slider.value_changed.connect(_on_sfx_changed)
++		# Zabezpieczenie na suwak - dzwiek gra tylko po puszczeniu
++		sfx_slider.drag_ended.connect(func(_value_changed): AudioManager.play_sfx("ui_click"))
++
+ 	if session_option:
+ 		var idx := SESSION_LENGTHS.find(int(s["session_length"]))
+ 		session_option.selected = idx if idx != -1 else 1
+ 		session_option.item_selected.connect(_on_session_selected)
++
+ 	if reduce_shake_check:
+ 		reduce_shake_check.button_pressed = bool(s["reduce_shake"])
+ 		reduce_shake_check.toggled.connect(_on_reduce_shake_toggled)
++
+ 	if reduce_flash_check:
+ 		reduce_flash_check.button_pressed = bool(s["reduce_flashing"])
+ 		reduce_flash_check.toggled.connect(_on_reduce_flash_toggled)
++
+ 	if back_button:
+ 		back_button.pressed.connect(_on_back)
+ 
+@@ -61,18 +70,22 @@ func _on_sfx_changed(v: float) -> void:
+ 	_save()
+ 
+ func _on_session_selected(idx: int) -> void:
++	AudioManager.play_sfx("ui_click")
+ 	SettingsStore.session_length_min = SESSION_LENGTHS[idx]
+ 	_save()
+ 
+ func _on_reduce_shake_toggled(pressed: bool) -> void:
++	AudioManager.play_sfx("ui_click")
+ 	SettingsStore.reduce_shake = pressed
+ 	_save()
+ 
+ func _on_reduce_flash_toggled(pressed: bool) -> void:
++	AudioManager.play_sfx("ui_click")
+ 	SettingsStore.reduce_flashing = pressed
+ 	_save()
+ 
+ func _on_back() -> void:
++	AudioManager.play_sfx("ui_click")
+ 	get_tree().change_scene_to_file(ScenePaths.MAIN_MENU)
+ 
+ func _save() -> void:

@@ -83,6 +83,7 @@ func _set_card_text(card: Node, id: String) -> void:
 		card.text = text
 
 func _on_card_pressed(index: int) -> void:
+	AudioManager.play_sfx("ui_click")
 	var id: String = _current_ids[index] if index < _current_ids.size() else ""
 	if panel:
 		panel.hide()

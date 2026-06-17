@@ -15,12 +15,9 @@ run/main_scene="res://scenes/MainMenu.tscn"
 config/features=PackedStringArray("4.6", "Forward Plus")
 config/icon="res://icon.svg"
 
-[display]
+[audio]
 
-window/size/viewport_width=1152
-window/size/viewport_height=648
-window/stretch/mode="canvas_items"
-window/stretch/aspect="expand"
+buses/default_bus_layout="uid://bbqct2t8sk1ek"
 
 [autoload]
 
@@ -29,6 +26,11 @@ GameState="*uid://kguqub804fro"
 SettingsStore="*res://scripts/globals/settings_store.gd"
 Upgrades="*res://scripts/systems/upgrades.gd"
 AudioManager="*res://scripts/systems/audio_manager.gd"
+
+[display]
+
+window/stretch/mode="canvas_items"
+window/stretch/aspect="expand"
 
 [editor_plugins]
 

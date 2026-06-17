@@ -46,6 +46,7 @@ func toggle() -> void:
 
 ## Otwiera menu i wstrzymuje rozgrywke.
 func _open() -> void:
+	AudioManager.play_sfx("ui_click") # Dzwiek przy wejsciu w pauze ESC/klawiszem
 	_is_open = true
 	GameState.is_paused = true      # spojnosc dla systemow czytajacych te flage
 	get_tree().paused = true
@@ -54,16 +55,19 @@ func _open() -> void:
 
 ## Wznawia rozgrywke. Publiczne - podpiete pod przycisk "Wznow" oraz klawisz pauzy.
 func resume() -> void:
+	AudioManager.play_sfx("ui_click")
 	_is_open = false
 	GameState.is_paused = false
 	get_tree().paused = false
 	_dimmer.hide()
 
 func _on_restart_pressed() -> void:
+	AudioManager.play_sfx("ui_click")
 	_leave_session()
 	get_tree().reload_current_scene()
 
 func _on_menu_pressed() -> void:
+	AudioManager.play_sfx("ui_click")
 	_leave_session()
 	get_tree().change_scene_to_file(ScenePaths.MAIN_MENU)
 

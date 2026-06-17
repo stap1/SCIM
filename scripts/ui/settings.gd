@@ -27,22 +27,31 @@ func _ready() -> void:
 		music_slider.step = 0.01
 		music_slider.value = s["music_vol"]
 		music_slider.value_changed.connect(_on_music_changed)
+		# Zabezpieczenie na suwak - dzwiek gra tylko po puszczeniu, zeby nie zacinac!
+		music_slider.drag_ended.connect(func(_value_changed): AudioManager.play_sfx("ui_click"))
+
 	if sfx_slider:
 		sfx_slider.min_value = 0.0
 		sfx_slider.max_value = 1.0
 		sfx_slider.step = 0.01
 		sfx_slider.value = s["sfx_vol"]
 		sfx_slider.value_changed.connect(_on_sfx_changed)
+		# Zabezpieczenie na suwak - dzwiek gra tylko po puszczeniu
+		sfx_slider.drag_ended.connect(func(_value_changed): AudioManager.play_sfx("ui_click"))
+
 	if session_option:
 		var idx := SESSION_LENGTHS.find(int(s["session_length"]))
 		session_option.selected = idx if idx != -1 else 1
 		session_option.item_selected.connect(_on_session_selected)
+
 	if reduce_shake_check:
 		reduce_shake_check.button_pressed = bool(s["reduce_shake"])
 		reduce_shake_check.toggled.connect(_on_reduce_shake_toggled)
+
 	if reduce_flash_check:
 		reduce_flash_check.button_pressed = bool(s["reduce_flashing"])
 		reduce_flash_check.toggled.connect(_on_reduce_flash_toggled)
+
 	if back_button:
 		back_button.pressed.connect(_on_back)
 
@@ -61,18 +70,22 @@ func _on_sfx_changed(v: float) -> void:
 	_save()
 
 func _on_session_selected(idx: int) -> void:
+	AudioManager.play_sfx("ui_click")
 	SettingsStore.session_length_min = SESSION_LENGTHS[idx]
 	_save()
 
 func _on_reduce_shake_toggled(pressed: bool) -> void:
+	AudioManager.play_sfx("ui_click")
 	SettingsStore.reduce_shake = pressed
 	_save()
 
 func _on_reduce_flash_toggled(pressed: bool) -> void:
+	AudioManager.play_sfx("ui_click")
 	SettingsStore.reduce_flashing = pressed
 	_save()
 
 func _on_back() -> void:
+	AudioManager.play_sfx("ui_click")
 	get_tree().change_scene_to_file(ScenePaths.MAIN_MENU)
 
 func _save() -> void:

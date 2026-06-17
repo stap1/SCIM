@@ -18,6 +18,7 @@ func _show_scores() -> void:
 	list_label.text = format_scores(HighScores.get_top(5))
 
 func _on_back() -> void:
+	AudioManager.play_sfx("ui_click")
 	get_tree().change_scene_to_file(ScenePaths.MAIN_MENU)
 
 # Czysta funkcja: tekst listy wynikow (numerowany, malejaco) lub komunikat gdy pusto.

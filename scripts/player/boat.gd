@@ -104,6 +104,7 @@ func try_take_enemy_hit(damage: float) -> void:
 		return
 	GameState.take_damage(damage)
 	time_since_last_hit = 0.0
+	AudioManager.play_sfx("player_hit")
 	if is_inside_tree():
 		_flash_hit()
 		_do_shake()

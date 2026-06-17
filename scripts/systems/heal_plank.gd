@@ -10,7 +10,6 @@ var is_collected: bool = false
 var _age: float = 0.0
 
 func _ready() -> void:
-	# Deska (mask=1) wykrywa cialo gracza (layer 1) i zbiera sie przy kontakcie.
 	body_entered.connect(_on_body_entered)
 
 func _physics_process(delta: float) -> void:
@@ -18,7 +17,6 @@ func _physics_process(delta: float) -> void:
 		return
 	if GameState.is_paused or GameState.is_game_over:
 		return
-	# Lifetime liczony tylko podczas aktywnej gry (pauza/koniec wstrzymuja starzenie).
 	_age += delta
 	if _age >= lifetime:
 		_despawn()
@@ -31,10 +29,10 @@ func _collect() -> void:
 	if is_collected:
 		return
 	is_collected = true
+	AudioManager.play_sfx("heal") # ODPALA DŹWIĘK LECZENIA
 	GameState.heal(heal_amount)
 	queue_free()
 
-# Niezebrana deska po uplywie lifetime - znika bez leczenia (is_collected jako guard).
 func _despawn() -> void:
 	if is_collected:
 		return
