@@ -35,7 +35,7 @@ func _on_game_over() -> void:
 	if kills_label:
 		kills_label.text = "Zatopione: " + str(GameState.enemies_killed)
 	if boss_label:
-		boss_label.text = "Klusownik pokonany: " + ("TAK" if GameState.miniboss_defeated else "nie")
+		boss_label.text = "Kłusownik pokonany: " + ("TAK" if GameState.miniboss_defeated else "nie")
 	if best_label:
 		best_label.text = best_text(best, is_record)
 

@@ -132,15 +132,16 @@ func _show_telegraph(duration: float) -> void:
 	_telegraph.visible = true
 	_telegraph.modulate.a = 0.0
 	if not SettingsStore.should_flash(SettingsStore.reduce_flashing):
-		_telegraph.modulate.a = 0.6
+		_telegraph.modulate.a = 0.95
 		return
 	var tween := create_tween()
 	var pulses: int = GameConfig.MINIBOSS_TELEGRAPH_PULSES
 	var half: float = duration / float(maxi(pulses, 1) * 2)
 	for i in pulses:
-		var peak: float = lerpf(0.5, 1.0, float(i + 1) / float(pulses))
+		# Overbright (>1) na blendzie additive - mocny, narastajacy ku szarzy rozblysk.
+		var peak: float = lerpf(0.9, 1.6, float(i + 1) / float(pulses))
 		tween.tween_property(_telegraph, "modulate:a", peak, half)
-		tween.tween_property(_telegraph, "modulate:a", peak * 0.4, half)
+		tween.tween_property(_telegraph, "modulate:a", peak * 0.5, half)
 
 func _hide_telegraph() -> void:
 	if _telegraph != null:

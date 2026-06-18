@@ -28,7 +28,7 @@ horizontal_alignment = 1
 
 [node name="ResumeButton" type="Button" parent="Dimmer/Center/Menu"]
 custom_minimum_size = Vector2(260, 48)
-text = "Wznow"
+text = "Wznów"
 
 [node name="RestartButton" type="Button" parent="Dimmer/Center/Menu"]
 custom_minimum_size = Vector2(260, 48)
@@ -36,4 +36,4 @@ text = "Restart"
 
 [node name="MenuButton" type="Button" parent="Dimmer/Center/Menu"]
 custom_minimum_size = Vector2(260, 48)
-text = "Menu glowne"
+text = "Menu główne"

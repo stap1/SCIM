@@ -27,6 +27,7 @@ void fragment() {
 	float h1 = texture(noise_tex, uv1).r;
 	float h2 = texture(noise_tex_2, uv2).r;
 	float h = h1 * 0.6 + h2 * 0.4;
+	h = clamp((h - 0.5) * 1.8 + 0.5, 0.0, 1.0);  // wiekszy kontrast grzbietow fal
 	vec3 col = mix(water_color.rgb, wave_color.rgb, h);
 
 	// Subtelny refleks na grzbietach: rozpakuj normal (*2-1), spec wzgledem stalego swiatla.

@@ -7,7 +7,7 @@ const ScoresScene := preload("res://scenes/Scores.tscn")
 const ScoresScript := preload("res://scripts/ui/scores.gd")
 
 func test_format_scores_empty() -> void:
-	assert_eq(ScoresScript.format_scores([] as Array[int]), "Brak wynikow",
+	assert_eq(ScoresScript.format_scores([] as Array[int]), "Brak wyników",
 		"pusta lista -> komunikat zastepczy")
 
 func test_format_scores_numbered_descending() -> void:
