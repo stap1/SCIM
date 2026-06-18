@@ -4,9 +4,9 @@ const SFX_PATHS := {
 	"harpoon_shot": "res://audio/sfx/harpoon_shot.ogg",
 	"hit": "res://audio/sfx/hit.ogg",
 	"enemy_death": "res://audio/sfx/enemy_death.wav",
-	# Brak dedykowanego SFX bossa - placeholder z graceful fallback. Bossa sygnalizuje
-	# crossfade na muzyke boss (music_boss.ogg) + ostrzezenie na HUD. Wpisz sciezke, gdy asset powstanie.
-	"boss_spawn": "",
+	# Brak dedykowanego SFX bossa - tymczasowo reuzywamy enemy_spawn.ogg jako cue.
+	# Docelowo podmienic na wlasny dzwiek bossa, gdy asset powstanie.
+	"boss_spawn": "res://audio/sfx/enemy_spawn.ogg",
 	"player_hit": "res://audio/sfx/player_hit.ogg",
 	"level_up": "res://audio/sfx/level_up.ogg",
 	# Uwaga: brak klucza "game_over" - ekran porazki gra muzyke (music_gameover.ogg), nie SFX.
