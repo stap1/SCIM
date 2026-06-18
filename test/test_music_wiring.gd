@@ -37,3 +37,19 @@ func test_play_music_missing_file_records_intent_no_crash() -> void:
 func test_crossfade_to_does_not_crash() -> void:
 	AudioManager.crossfade_to(AudioManager.MUSIC["gameplay"], 0.2)
 	pass_test("crossfade_to z brakujacym plikiem nie crashuje (graceful)")
+
+func test_crossfade_preserves_user_music_bus_volume() -> void:
+	# Regresja: crossfade_to NIE moze nadpisywac glosnosci busa "Music" ustawionej przez
+	# gracza (SettingsStore.apply_bus). Crossfade dziala na volume_db odtwarzacza, nie busa.
+	var idx := AudioServer.get_bus_index("Music")
+	if idx == -1:
+		pass_test("brak busa Music w tym srodowisku - pomijam")
+		return
+	var original := AudioServer.get_bus_volume_db(idx)
+	var user_db := -12.0
+	AudioServer.set_bus_volume_db(idx, user_db)
+	AudioManager.crossfade_to(AudioManager.MUSIC["boss"], 0.1)
+	await get_tree().create_timer(0.3).timeout
+	assert_almost_eq(AudioServer.get_bus_volume_db(idx), user_db, 0.01,
+		"crossfade zachowuje glosnosc busa Music ustawiona przez gracza")
+	AudioServer.set_bus_volume_db(idx, original)
