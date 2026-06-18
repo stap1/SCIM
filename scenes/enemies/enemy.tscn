@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://djphki8cb53y5"]
 
 [ext_resource type="Script" uid="uid://dfe0lpyyf6k0f" path="res://scripts/systems/enemy.gd" id="1_55jtl"]
-[ext_resource type="Texture2D" uid="uid://cv3g65vi1x0l7" path="res://assets/meduza.svg.svg" id="2_fcftc"]
+[ext_resource type="Texture2D" uid="uid://cey8c4s3krhpy" path="res://assets/enemy_jellyfish.png" id="2_fcftc"]
 [ext_resource type="AudioStream" uid="uid://kebj4lxu75wb" path="res://audio/sfx/enemy_spawn.ogg" id="3_38ino"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_body"]
@@ -13,6 +13,7 @@ collision_mask = 0
 script = ExtResource("1_55jtl")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=1612961113]
+scale = Vector2(0.5, 0.5)
 texture = ExtResource("2_fcftc")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1945406375]

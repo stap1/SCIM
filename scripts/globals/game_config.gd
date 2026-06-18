@@ -62,10 +62,11 @@ const MINIBOSS_CHARGE_DURATION: float = 0.45
 const MINIBOSS_TELEGRAPH_DURATION: float = 0.6
 # Szybkosc wygladzania obrotu bossa ku celowi (waga lerp_angle skalowana czasem klatki).
 const MINIBOSS_TURN_SPEED: float = 6.0
-# Telegraf wizualny: ile pulsow rozblysku w czasie wind-upu i ich barwa (biel kontrastuje
-# z czerwonym kadlubem bossa, wiec szarza jest czytelnie zapowiedziana).
+# Telegraf wizualny: ile pulsow rozblysku w czasie wind-upu i ich barwa. Overbright (>1)
+# rozjasnia pelnokolorowy sprite bossa - rozblysk widoczny mimo bialej bazy modulate
+# (placeholder mial czerwona baze, biel wystarczala; docelowy PNG wymaga overbright).
 const MINIBOSS_TELEGRAPH_PULSES: int = 3
-const MINIBOSS_TELEGRAPH_COLOR: Color = Color(1.0, 1.0, 1.0, 1.0)
+const MINIBOSS_TELEGRAPH_COLOR: Color = Color(1.8, 1.8, 1.8, 1.0)
 # Czas (s) pojawienia bossa i wyprzedzenie ostrzezenia boss_incoming.
 const MINIBOSS_SPAWN_TIME: float = 270.0
 const MINIBOSS_WARNING: float = 2.0

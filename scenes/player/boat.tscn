@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://df7rbwsa6d6ec"]
 
 [ext_resource type="Script" uid="uid://cb28khn2ubxbc" path="res://scripts/player/boat.gd" id="1_webh6"]
-[ext_resource type="Texture2D" uid="uid://blsotf7ntv08v" path="res://assets/lodz.svg.svg" id="2_webh6"]
+[ext_resource type="Texture2D" uid="uid://d1wysl4fkcsav" path="res://assets/boat.png" id="2_webh6"]
 [ext_resource type="Script" path="res://scripts/systems/auto_attacker.gd" id="4_autoatk"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_webh6"]
@@ -14,7 +14,7 @@ radius = 18.0
 script = ExtResource("1_webh6")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=703452449]
-rotation = 1.6458455
+scale = Vector2(0.5, 0.5)
 texture = ExtResource("2_webh6")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=387997369]

@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://csrrolmwxegrs"]
 
 [ext_resource type="Script" uid="uid://dfe0lpyyf6k0f" path="res://scripts/systems/enemy.gd" id="1_enemy"]
-[ext_resource type="Texture2D" uid="uid://cv3g65vi1x0l7" path="res://assets/meduza.svg.svg" id="2_tex"]
+[ext_resource type="Texture2D" uid="uid://dvrledwd6dppd" path="res://assets/enemy_shark.png" id="2_tex"]
 [ext_resource type="AudioStream" uid="uid://kebj4lxu75wb" path="res://audio/sfx/enemy_spawn.ogg" id="3_04l7l"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_body"]
@@ -17,8 +17,7 @@ max_health = 40.0
 kill_score = 5
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=1265466589]
-modulate = Color(0.5, 0.55, 0.62, 1)
-scale = Vector2(1.5, 1.5)
+scale = Vector2(0.5, 0.5)
 texture = ExtResource("2_tex")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=426547600]

@@ -14,7 +14,7 @@ func after_each() -> void:
 
 func test_telegraph_constants_in_config() -> void:
 	assert_eq(GameConfig.MINIBOSS_TELEGRAPH_PULSES, 3, "3 pulsy telegrafu")
-	assert_eq(GameConfig.MINIBOSS_TELEGRAPH_COLOR, Color(1, 1, 1, 1), "biel rozblysku")
+	assert_eq(GameConfig.MINIBOSS_TELEGRAPH_COLOR, Color(1.8, 1.8, 1.8, 1), "overbright rozblysk")
 
 func test_base_modulate_captured_from_sprite() -> void:
 	var boss = MotorBoatScene.instantiate()
