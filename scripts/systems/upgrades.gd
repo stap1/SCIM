@@ -108,6 +108,11 @@ func milestone_ids() -> Array[String]:
 		out.append(id)
 	return out
 
+# Sciezka ikony ulepszenia. Konwencja: upgrade_<id>.png w res://assets/ (id == nazwa pliku).
+# Karta robi graceful fallback (tekst) gdy plik nie istnieje.
+func icon_path(id: String) -> String:
+	return "res://assets/upgrade_%s.png" % id
+
 # Metadane karty (name/description) - dziala dla ulepszen zwyklych i milestone.
 func info(id: String) -> Dictionary:
 	if UPGRADES.has(id):

@@ -45,6 +45,17 @@ show_percentage = false
 theme_override_styles/background = SubResource("SB_bg")
 theme_override_styles/fill = SubResource("SB_fill")
 
+[node name="HullSprite" type="TextureRect" parent="."]
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -332.0
+offset_top = 6.0
+offset_right = -32.0
+offset_bottom = 76.0
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
 [node name="AmmoIcon" type="TextureRect" parent="."]
 offset_left = 20.0
 offset_top = 86.0
