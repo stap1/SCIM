@@ -4,10 +4,12 @@ const SFX_PATHS := {
 	"harpoon_shot": "res://audio/sfx/harpoon_shot.ogg",
 	"hit": "res://audio/sfx/hit.ogg",
 	"enemy_death": "res://audio/sfx/enemy_death.wav",
-	"boss_spawn": "res://audio/sfx/boss_spawn.ogg",
+	# Brak dedykowanego SFX bossa - placeholder z graceful fallback. Bossa sygnalizuje
+	# crossfade na muzyke boss (music_boss.ogg) + ostrzezenie na HUD. Wpisz sciezke, gdy asset powstanie.
+	"boss_spawn": "",
 	"player_hit": "res://audio/sfx/player_hit.ogg",
 	"level_up": "res://audio/sfx/level_up.ogg",
-	"game_over": "res://audio/sfx/game_over.ogg",
+	# Uwaga: brak klucza "game_over" - ekran porazki gra muzyke (music_gameover.ogg), nie SFX.
 	"ui_click": "res://audio/sfx/ui_click.ogg",
 	"heal": "res://audio/sfx/heal.ogg",
 }
@@ -120,14 +122,17 @@ func crossfade_to(track: String, duration: float) -> void:
 	# Zapisz intencje od razu (synchronicznie) - play_music ustawi ja ponownie w callbacku
 	# tweena, ale testy wpiecia muzyki czytaja current_music_track tuz po wywolaniu.
 	current_music_track = track
+	if _music_player == null:
+		play_music(track)
+		return
+	# Crossfade na poziomie ODTWARZACZA muzyki (volume_db), nie busa "Music". Bus trzyma
+	# glosnosc ustawiona przez gracza (SettingsStore.apply_bus) - nie wolno go nadpisywac,
+	# inaczej po bossie muzyka wracalaby do 0 dB niezaleznie od suwaka gracza.
+	var half := maxf(duration, 0.0) * 0.5
 	var tween := create_tween()
-	tween.tween_method(_set_music_bus_db, 0.0, -40.0, duration * 0.5)
-	tween.tween_callback(func(): play_music(track))
-	tween.tween_callback(func(): _set_music_bus_db(0.0))
-
-func _set_music_bus_db(db: float) -> void:
-	var idx := AudioServer.get_bus_index("Music")
-	if idx != -1: AudioServer.set_bus_volume_db(idx, db)
+	tween.tween_property(_music_player, "volume_db", -40.0, half)
+	tween.tween_callback(func() -> void: play_music(track))
+	tween.tween_property(_music_player, "volume_db", 0.0, half)
 
 func _bus_or_master(bus_name: String) -> String:
 	return bus_name if AudioServer.get_bus_index(bus_name) != -1 else "Master"

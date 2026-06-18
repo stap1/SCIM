@@ -15,6 +15,10 @@ data_*/
 .DS_Store
 Thumbs.db
 
+# Lokalne dumpy/notatki robocze (np. przypadkowy "git diff > plik")
+moje_zmiany.txt
+*.diff.txt
+
 # Editor-specific
 *.csproj.user
 *.sln.user
