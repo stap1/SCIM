@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" uid="uid://dfe0lpyyf6k0f" path="res://scripts/systems/enemy.gd" id="1_enemy"]
 [ext_resource type="Texture2D" uid="uid://cv3g65vi1x0l7" path="res://assets/meduza.svg.svg" id="2_tex"]
+[ext_resource type="AudioStream" uid="uid://kebj4lxu75wb" path="res://audio/sfx/enemy_spawn.ogg" id="3_spawn"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_body"]
 radius = 14.0
@@ -24,3 +25,4 @@ texture = ExtResource("2_tex")
 shape = SubResource("CircleShape2D_body")
 
 [node name="SpawnSound" type="AudioStreamPlayer2D" parent="." unique_id=576859954]
+stream = ExtResource("3_spawn")
