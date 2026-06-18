@@ -117,6 +117,9 @@ func play_music(track: String) -> void:
 				_ambient_player.stop()
 
 func crossfade_to(track: String, duration: float) -> void:
+	# Zapisz intencje od razu (synchronicznie) - play_music ustawi ja ponownie w callbacku
+	# tweena, ale testy wpiecia muzyki czytaja current_music_track tuz po wywolaniu.
+	current_music_track = track
 	var tween := create_tween()
 	tween.tween_method(_set_music_bus_db, 0.0, -40.0, duration * 0.5)
 	tween.tween_callback(func(): play_music(track))
@@ -128,3 +131,7 @@ func _set_music_bus_db(db: float) -> void:
 
 func _bus_or_master(bus_name: String) -> String:
 	return bus_name if AudioServer.get_bus_index(bus_name) != -1 else "Master"
+
+# Czysta funkcja: liniowa interpolacja glosnosci (db) wg t in [0,1].
+static func fade_volume_db(t: float, from_db: float, to_db: float) -> float:
+	return from_db + (to_db - from_db) * t
