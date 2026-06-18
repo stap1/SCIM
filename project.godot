@@ -26,6 +26,7 @@ GameState="*uid://kguqub804fro"
 SettingsStore="*res://scripts/globals/settings_store.gd"
 Upgrades="*res://scripts/systems/upgrades.gd"
 AudioManager="*res://scripts/systems/audio_manager.gd"
+PickupFx="*res://scripts/systems/pickup_fx.gd"
 
 [display]
 

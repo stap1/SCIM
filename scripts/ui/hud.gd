@@ -86,12 +86,30 @@ func _on_score_changed(new_score: int) -> void:
 	if score_label:
 		score_label.text = "Wynik: " + str(new_score)
 
+var _last_pulse_ms: int = 0
+
 func _on_xp_changed(_new_xp: int) -> void:
 	_refresh_xp()
+	_pulse_xp_bar(1.06)
+
+# Krotki puls skali paska XP przy zdobyciu XP. Throttle (>50 ms), by przy wielu orbach
+# na raz nie migotal nerwowo. Pivot na srodku - skaluje sie "z srodka".
+func _pulse_xp_bar(amount: float) -> void:
+	if xp_bar == null:
+		return
+	var now := Time.get_ticks_msec()
+	if now - _last_pulse_ms < 50:
+		return
+	_last_pulse_ms = now
+	xp_bar.pivot_offset = xp_bar.size * 0.5
+	var t := create_tween()
+	t.tween_property(xp_bar, "scale", Vector2(amount, amount), 0.06).set_trans(Tween.TRANS_SINE)
+	t.tween_property(xp_bar, "scale", Vector2.ONE, 0.1).set_trans(Tween.TRANS_SINE)
 
 func _on_level_up(new_level: int) -> void:
 	_set_level(new_level)
 	_refresh_xp() # awans zmienia prog i zeruje xp - odswiez pasek
+	_pulse_xp_bar(1.15) # mocniejszy puls na awansie
 
 # Pasek XP czyta GameState (read-only): wartosc = xp, skala = prog biezacego poziomu.
 func _refresh_xp() -> void:

@@ -96,6 +96,19 @@ const XP_MAGNET_SPEED: float = 250.0
 const XP_MAGNET_RANGE: float = 120.0
 # Po tylu sekundach aktywnej gry niezebrany orb znika (audyt P0.1).
 const XP_ORB_LIFETIME: float = 12.0
+# Model 1 orb = 1 XP (FAZA 6): wrog zrzuca xp_value orbow po 1 XP, rozrzuconych w promieniu.
+# Cap chroni FPS - po przekroczeniu nadmiar oddaje XP wprost (gracz nie traci nagrody).
+const XP_ORB_SCATTER_RADIUS: float = 28.0
+const XP_ORB_MAX_ON_SCREEN: int = 120
+# Boss: kilka "grubych" orbow (hybryda) - count x value (~12 XP), kazdy wiekszy wizualnie.
+const XP_ORB_BOSS_COUNT: int = 4
+const XP_ORB_BOSS_VALUE: int = 3
+const XP_ORB_FAT_SCALE: float = 1.6
+# Zbieranie: czas wsiakania orba do gracza; combo (seria w czasie) -> sila blysku + pitch.
+const XP_ORB_ABSORB_TIME: float = 0.18
+const XP_COMBO_RESET_TIME: float = 0.6
+const XP_COMBO_MAX: int = 12
+const XP_COMBO_PITCH_STEP: float = 0.04
 
 # --- Progresja ---
 # Maksymalny poziom gracza = wiek Ernesta Hemingwaya w chwili smierci.

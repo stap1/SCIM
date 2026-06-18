@@ -17,8 +17,14 @@ var _age: float = 0.0
 var _player: Node2D = null
 
 func _ready() -> void:
+	add_to_group("xp_orbs")  # do liczenia capa orbow w spawnerze
 	# Upgrade resource_magnet zwieksza zasieg zbierania nowo powstalych orbow.
 	magnet_range *= GameState.magnet_range_mult
+	# Gruby orb (bossa) jest wiekszy wizualnie. xp_value ustawiany przed add_child, wiec tu pewny.
+	if xp_value > 1:
+		var sprite := get_node_or_null("Sprite2D")
+		if sprite:
+			sprite.scale *= GameConfig.XP_ORB_FAT_SCALE
 
 func _physics_process(delta: float) -> void:
 	if is_collected:
@@ -48,9 +54,24 @@ func _physics_process(delta: float) -> void:
 func _collect() -> void:
 	if is_collected:
 		return
-	is_collected = true
-	GameState.add_xp(xp_value)
-	queue_free()
+	is_collected = true              # natychmiast - guard przed podwojnym zebraniem
+	GameState.add_xp(xp_value)       # nagroda od razu (bez ryzyka utraty XP w trakcie animacji)
+	var aura := get_node_or_null("GoldenAura")
+	if aura != null and aura.has_method("stop"):
+		aura.stop()                  # aura nie moze walczyc z wsiakaniem
+	PickupFx.flash_at(global_position, get_parent())
+	_absorb_and_free()
+
+# Satysfakcjonujace wsiakanie: orb leci do gracza i kurczy sie, potem znika. XP juz przyznane.
+func _absorb_and_free() -> void:
+	var t := create_tween()
+	if _player != null and is_instance_valid(_player):
+		t.tween_property(self, "global_position", _player.global_position,
+			GameConfig.XP_ORB_ABSORB_TIME).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_IN)
+	var sprite := get_node_or_null("Sprite2D")
+	if sprite != null:
+		t.parallel().tween_property(sprite, "scale", sprite.scale * 0.1, GameConfig.XP_ORB_ABSORB_TIME)
+	t.tween_callback(queue_free)
 
 # Niezebrany orb po uplywie lifetime - znika bez przyznania XP (is_collected jako guard "orb zniknal").
 func _despawn() -> void:

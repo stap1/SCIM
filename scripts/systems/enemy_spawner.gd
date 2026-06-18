@@ -95,10 +95,25 @@ func _on_enemy_died(pos: Vector2, xp_value: int) -> void:
 	get_parent().add_child(burst)
 	burst.global_position = pos
 
-	var orb := XpOrbScene.instantiate()
-	orb.xp_value = xp_value # mocniejszy wrog = wartosciowszy orb
-	get_parent().add_child(orb)
-	orb.global_position = pos
+	# Model 1 orb = 1 XP: wrog wart xp_value zrzuca xp_value orbow po 1 XP, rozrzuconych.
+	_spawn_orbs(pos, xp_value, 1)
+
+# Spawnuje 'count' orbow po 'value_each' XP, rozrzuconych w promieniu wokol center.
+# Cap (XP_ORB_MAX_ON_SCREEN) chroni FPS: nadmiar oddaje XP wprost, nie tworzac wezla.
+func _spawn_orbs(center: Vector2, count: int, value_each: int) -> void:
+	for i in count:
+		if _orb_count() >= GameConfig.XP_ORB_MAX_ON_SCREEN:
+			GameState.add_xp(value_each)
+			continue
+		var orb := XpOrbScene.instantiate()
+		orb.xp_value = value_each
+		get_parent().add_child(orb)
+		var angle := randf() * TAU
+		var radius := sqrt(randf()) * GameConfig.XP_ORB_SCATTER_RADIUS
+		orb.global_position = center + Vector2(radius, 0.0).rotated(angle)
+
+func _orb_count() -> int:
+	return get_tree().get_nodes_in_group("xp_orbs").size()
 
 # --- Lecznicze deski ---
 
@@ -156,11 +171,8 @@ func _on_boss_defeated(pos: Vector2) -> void:
 	get_parent().add_child(burst)
 	burst.global_position = pos
 
-	# Boss zrzuca najwartosciowszy orb (oprocz gwarantowanego awansu nizej).
-	var orb := XpOrbScene.instantiate()
-	orb.xp_value = GameConfig.XP_ORB_MINIBOSS
-	get_parent().add_child(orb)
-	orb.global_position = pos
+	# Boss zrzuca kilka grubych orbow (hybryda count x value), oprocz gwarantowanego awansu nizej.
+	_spawn_orbs(pos, GameConfig.XP_ORB_BOSS_COUNT, GameConfig.XP_ORB_BOSS_VALUE)
 
 	# Gwarantowany awans (nagroda) - pokazuje ekran wyboru ulepszenia.
 	GameState.grant_level_up()
