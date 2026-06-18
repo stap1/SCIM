@@ -25,3 +25,15 @@ func test_fade_volume_db_linear() -> void:
 	assert_almost_eq(AudioManager.fade_volume_db(0.0, -10.0, 0.0), -10.0, 0.001, "t=0 -> from")
 	assert_almost_eq(AudioManager.fade_volume_db(1.0, -10.0, 0.0), 0.0, 0.001, "t=1 -> to")
 	assert_almost_eq(AudioManager.fade_volume_db(0.5, -10.0, 0.0), -5.0, 0.001, "t=0.5 -> srodek")
+
+func test_all_declared_audio_paths_exist() -> void:
+	# Regresja: kazda NIEPUSTA sciezka SFX i kazdy utwor MUSIC musi wskazywac istniejacy
+	# zasob (pusty string = swiadomy placeholder). Lapie wiszace sciezki - jak
+	# boss_spawn.ogg/game_over.ogg po refaktorze audio (eaf3c90).
+	for key in AudioManager.SFX_PATHS:
+		var path: String = AudioManager.SFX_PATHS[key]
+		if path != "":
+			assert_true(ResourceLoader.exists(path), "SFX '%s' -> istniejacy plik (%s)" % [key, path])
+	for key in AudioManager.MUSIC:
+		var path: String = AudioManager.MUSIC[key]
+		assert_true(ResourceLoader.exists(path), "MUSIC '%s' -> istniejacy plik (%s)" % [key, path])
