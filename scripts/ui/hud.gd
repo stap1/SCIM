@@ -69,11 +69,16 @@ func _on_health_changed(new_health: float) -> void:
 	if health_bar == null:
 		return
 	health_bar.value = new_health
-	# Etap zniszczenia kadluba (0 = caly, 4 = roztrzaskany).
+	var max_hp: float = health_bar.max_value if health_bar.max_value > 0.0 else 1.0
+	var frac: float = clampf(new_health / max_hp, 0.0, 1.0)
+	# Etap zniszczenia kadluba (0 = caly, 4 = roztrzaskany) - progowa klatka.
 	var stage := hull_stage(new_health, health_bar.max_value, HULL_STAGES)
 	# Klatka kadluba wg etapu (gdy art dostepny); inaczej barwa wypelnienia jako fallback.
 	if _hull_sprite and stage < _hull_textures.size() and _hull_textures[stage] != null:
 		_hull_sprite.texture = _hull_textures[stage]
+	# Analogowy wskaznik: ciagla desaturacja sprite'a wg % HP (plynnie miedzy progami).
+	if _hull_sprite and _hull_sprite.material is ShaderMaterial:
+		_hull_sprite.material.set_shader_parameter("damage", 1.0 - frac)
 	if _hull_fill:
 		var t := float(stage) / float(HULL_STAGES - 1)
 		_hull_fill.bg_color = HULL_HEALTHY.lerp(HULL_CRITICAL, t)

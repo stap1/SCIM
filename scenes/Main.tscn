@@ -12,6 +12,7 @@
 [ext_resource type="Texture2D" uid="uid://c0mlq380u4mo0" path="res://assets/water_noise.png" id="11_wnoise"]
 [ext_resource type="Texture2D" uid="uid://cj2jcwuo6y4bw" path="res://assets/water_noise_2.png" id="12_wnoise2"]
 [ext_resource type="Texture2D" uid="uid://0ukss2dgy3ce" path="res://assets/water_normal.png" id="13_wnormal"]
+[ext_resource type="Script" path="res://scripts/systems/water_background.gd" id="14_waterbg"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_water"]
 shader = ExtResource("9_water")
@@ -34,12 +35,13 @@ script = ExtResource("1_elqb8")
 [node name="WaterBackground" type="ColorRect" parent="." unique_id=1521975193]
 z_index = -100
 material = SubResource("ShaderMaterial_water")
-offset_left = -1000.0
-offset_top = -1000.0
-offset_right = 1000.0
-offset_bottom = 1000.0
+offset_left = -1600.0
+offset_top = -1600.0
+offset_right = 1600.0
+offset_bottom = 1600.0
 mouse_filter = 2
 color = Color(0.16470589, 0.2901961, 0.41960785, 1)
+script = ExtResource("14_waterbg")
 
 [node name="Boat" parent="." unique_id=1889304063 instance=ExtResource("3_sugp2")]
 

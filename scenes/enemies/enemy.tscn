@@ -4,6 +4,7 @@
 [ext_resource type="Texture2D" uid="uid://cey8c4s3krhpy" path="res://assets/enemy_jellyfish.png" id="2_fcftc"]
 [ext_resource type="AudioStream" uid="uid://kebj4lxu75wb" path="res://audio/sfx/enemy_spawn.ogg" id="3_38ino"]
 [ext_resource type="Material" path="res://resources/wobble_jelly.tres" id="4_wobble"]
+[ext_resource type="Script" path="res://scripts/systems/enemy_idle.gd" id="5_idle"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_body"]
 radius = 14.0
@@ -24,3 +25,7 @@ shape = SubResource("CircleShape2D_body")
 [node name="SpawnSound" type="AudioStreamPlayer2D" parent="." unique_id=481440860]
 stream = ExtResource("3_38ino")
 volume_db = 5.402
+
+[node name="EnemyIdle" type="Node" parent="."]
+script = ExtResource("5_idle")
+profile = "jellyfish"

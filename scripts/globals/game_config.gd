@@ -76,6 +76,8 @@ const MINIBOSS_WARNING: float = 2.0
 const ENEMY_IDLE := {
 	"barracuda": {"bob_amount": 1.0, "bob_period": 0.5, "sway_amount": 0.06, "sway_period": 0.6},
 	"shark": {"bob_amount": 2.5, "bob_period": 1.8, "sway_amount": 0.04, "sway_period": 2.2},
+	# Meduza: wyrazny plyw gora-dol, bez kolysania (sway 0) - shader wobble robi galaretowatosc.
+	"jellyfish": {"bob_amount": 5.0, "bob_period": 2.2, "sway_amount": 0.0, "sway_period": 1.0},
 }
 # Kolysanie bossa: bob lokalnego Sprite'a (NIE ciala - szarza/telegraf graja rownolegle).
 const MINIBOSS_BOB_AMOUNT: float = 3.0

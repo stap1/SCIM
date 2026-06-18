@@ -18,8 +18,16 @@ uniform float scroll_speed_2 = 0.012;
 uniform float tex_scale = 2.0;
 uniform float normal_strength = 0.5;
 
+varying vec2 v_world;
+
+void vertex() {
+	// Pozycja swiatowa wierzcholka - fale zakotwiczone w swiecie, nie na ekranie
+	// (ColorRect podaza za kamera, ale woda i tak "stoi" w swiecie).
+	v_world = (MODEL_MATRIX * vec4(VERTEX, 0.0, 1.0)).xy;
+}
+
 void fragment() {
-	vec2 base_uv = UV * tex_scale;
+	vec2 base_uv = v_world / 1024.0 * tex_scale;
 	vec2 uv1 = base_uv + scroll_dir_1 * TIME * scroll_speed_1;
 	vec2 uv2 = base_uv + scroll_dir_2 * TIME * scroll_speed_2;
 

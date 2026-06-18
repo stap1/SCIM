@@ -1,0 +1,11 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3]
+
+[ext_resource type="Shader" path="res://shaders/fish_swim.gdshader" id="1_swim"]
+
+[resource]
+shader = ExtResource("1_swim")
+shader_parameter/swim_speed = 6.0
+shader_parameter/swim_amp = 5.0
+shader_parameter/swim_freq = 0.05
+shader_parameter/tail_start = 0.0
+shader_parameter/tail_end = 110.0

@@ -19,7 +19,7 @@ const UPGRADES := {
 	"tougher_hull": {
 		"id": "tougher_hull",
 		"name": "Mocniejszy kadłub",
-		"description": "Max HP +30 (i +30 HP)",
+		"description": "Max HP +30",
 		"max_level": 3,
 	},
 	"faster_boat": {
