@@ -28,6 +28,9 @@ var _base_modulate: Color = Color.WHITE
 var _charge_target: Vector2 = Vector2.ZERO
 
 @onready var hp_bar: ProgressBar = get_node_or_null("HpBar")
+## Wizualny telegraf szarzy (G4): additywny stozek, dziecko ciala - obraca sie z bossem,
+## wiec celuje tam, gdzie natrze. Ukryty poza wind-upem.
+@onready var _telegraph: Sprite2D = get_node_or_null("Telegraph")
 
 func _init() -> void:
 	# Wartosci startowe bossa z GameConfig (jedyne zrodlo balansu).
@@ -43,6 +46,8 @@ func _ready() -> void:
 	var sprite := get_node_or_null("Sprite2D")
 	if sprite:
 		_base_modulate = sprite.modulate
+	if _telegraph:
+		_telegraph.visible = false
 	_start_idle_bob()
 
 	_charge_timer = Timer.new()
@@ -99,6 +104,7 @@ func _begin_telegraph() -> void:
 		_charge_target = target.global_position
 	charge_telegraph.emit(telegraph_duration)
 	_flash_telegraph()
+	_show_telegraph(telegraph_duration)
 	var tween := create_tween()
 	tween.tween_interval(telegraph_duration)
 	tween.tween_callback(_begin_charge)
@@ -108,13 +114,38 @@ func _begin_charge() -> void:
 	if is_dying:
 		phase = Phase.TRACK
 		return
+	_hide_telegraph()  # wind-up skonczony - telegraf gasnie tuz przed natarciem
 	phase = Phase.CHARGE
 	var tween := create_tween()
 	tween.tween_property(self, "global_position", _charge_target, charge_duration)
 	tween.tween_callback(_end_charge)
 
 func _end_charge() -> void:
+	_hide_telegraph()  # bezpiecznik - telegraf nie zostaje po szarzy
 	phase = Phase.TRACK
+
+# Pokazuje telegraf szarzy na czas wind-upu. Respektuje dostepnosc: reduce_flashing ->
+# stale lagodne swiecenie zamiast narastajacej pulsacji.
+func _show_telegraph(duration: float) -> void:
+	if _telegraph == null:
+		return
+	_telegraph.visible = true
+	_telegraph.modulate.a = 0.0
+	if not SettingsStore.should_flash(SettingsStore.reduce_flashing):
+		_telegraph.modulate.a = 0.6
+		return
+	var tween := create_tween()
+	var pulses: int = GameConfig.MINIBOSS_TELEGRAPH_PULSES
+	var half: float = duration / float(maxi(pulses, 1) * 2)
+	for i in pulses:
+		var peak: float = lerpf(0.5, 1.0, float(i + 1) / float(pulses))
+		tween.tween_property(_telegraph, "modulate:a", peak, half)
+		tween.tween_property(_telegraph, "modulate:a", peak * 0.4, half)
+
+func _hide_telegraph() -> void:
+	if _telegraph != null:
+		_telegraph.visible = false
+		_telegraph.modulate.a = 0.0
 
 # Wizualny telegraf wind-upu: pulsujace rozjasnienie sprite'a, by gracz jednoznacznie
 # odczytal nadchodzaca szarze. Respektuje dostepnosc: przy wlaczonym "reduce flashing"
