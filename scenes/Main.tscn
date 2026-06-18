@@ -9,13 +9,23 @@
 [ext_resource type="PackedScene" path="res://scenes/ui/level_up.tscn" id="8_levelup"]
 [ext_resource type="Shader" uid="uid://pv7vg0vu2tid" path="res://shaders/water.gdshader" id="9_water"]
 [ext_resource type="PackedScene" path="res://scenes/ui/pause_menu.tscn" id="10_pause"]
+[ext_resource type="Texture2D" uid="uid://c0mlq380u4mo0" path="res://assets/water_noise.png" id="11_wnoise"]
+[ext_resource type="Texture2D" uid="uid://cj2jcwuo6y4bw" path="res://assets/water_noise_2.png" id="12_wnoise2"]
+[ext_resource type="Texture2D" uid="uid://0ukss2dgy3ce" path="res://assets/water_normal.png" id="13_wnormal"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_water"]
 shader = ExtResource("9_water")
 shader_parameter/water_color = Color(0.165, 0.29, 0.42, 1)
 shader_parameter/wave_color = Color(0.21, 0.37, 0.53, 1)
-shader_parameter/speed = 0.3
-shader_parameter/wave_scale = 10.0
+shader_parameter/scroll_dir_1 = Vector2(1, 0.3)
+shader_parameter/scroll_dir_2 = Vector2(-0.5, -0.8)
+shader_parameter/scroll_speed_1 = 0.02
+shader_parameter/scroll_speed_2 = 0.012
+shader_parameter/tex_scale = 2.0
+shader_parameter/normal_strength = 0.5
+shader_parameter/noise_tex = ExtResource("11_wnoise")
+shader_parameter/noise_tex_2 = ExtResource("12_wnoise2")
+shader_parameter/normal_tex = ExtResource("13_wnormal")
 
 [node name="Main" type="Node2D" unique_id=1150465566]
 position = Vector2(210, 228)
