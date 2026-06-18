@@ -1,0 +1,9 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3]
+
+[ext_resource type="Shader" path="res://shaders/wobble.gdshader" id="1_wobble"]
+
+[resource]
+shader = ExtResource("1_wobble")
+shader_parameter/wobble_speed = 2.0
+shader_parameter/wobble_amount = 3.0
+shader_parameter/wobble_freq = 0.05

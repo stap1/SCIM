@@ -71,6 +71,21 @@ const MINIBOSS_TELEGRAPH_COLOR: Color = Color(1.8, 1.8, 1.8, 1.0)
 const MINIBOSS_SPAWN_TIME: float = 270.0
 const MINIBOSS_WARNING: float = 2.0
 
+# --- Juice (FAZA 5): animacje "zycia" obiektow (kosmetyka Tweenow, nie balans rozgrywki) ---
+# Idle wrogow: bob (px, pion) + sway (rad, obrot) Sprite'a, profil per typ wroga.
+const ENEMY_IDLE := {
+	"barracuda": {"bob_amount": 1.0, "bob_period": 0.5, "sway_amount": 0.06, "sway_period": 0.6},
+	"shark": {"bob_amount": 2.5, "bob_period": 1.8, "sway_amount": 0.04, "sway_period": 2.2},
+}
+# Kolysanie bossa: bob lokalnego Sprite'a (NIE ciala - szarza/telegraf graja rownolegle).
+const MINIBOSS_BOB_AMOUNT: float = 3.0
+const MINIBOSS_BOB_PERIOD: float = 1.6
+# Dryf deski leczniczej: bob (px) + sway (rad) o roznych okresach (nieregularny dryf).
+const HEAL_PLANK_BOB_AMOUNT: float = 3.0
+const HEAL_PLANK_BOB_PERIOD: float = 1.4
+const HEAL_PLANK_SWAY_AMOUNT: float = 0.12
+const HEAL_PLANK_SWAY_PERIOD: float = 1.9
+
 # --- XP / orby ---
 # Wartosc bazowa orba (meduza). Mocniejsze typy zrzucaja wiecej: barakuda x2, rekin x5
 # (nadpisane jako xp_value w ich scenach .tscn - jak speed/hp/score), mini-boss = ponizej.

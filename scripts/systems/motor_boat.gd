@@ -43,6 +43,7 @@ func _ready() -> void:
 	var sprite := get_node_or_null("Sprite2D")
 	if sprite:
 		_base_modulate = sprite.modulate
+	_start_idle_bob()
 
 	_charge_timer = Timer.new()
 	_charge_timer.wait_time = charge_interval
@@ -149,6 +150,18 @@ static func is_locked(p: int) -> bool:
 ## @param delta      - czas klatki (s).
 static func aim_rotation(current: float, target: float, turn_speed: float, delta: float) -> float:
 	return lerp_angle(current, target, clampf(turn_speed * delta, 0.0, 1.0))
+
+# Kolysanie idle: Tween pętla na LOKALNYM Sprite2D.position:y. Rozlaczne z szarza
+# (global_position ciala), telegrafem (modulate) i celowaniem (rotation ciala).
+func _start_idle_bob() -> void:
+	var sprite := get_node_or_null("Sprite2D")
+	if sprite == null:
+		return
+	var base_y: float = sprite.position.y
+	var h: float = GameConfig.MINIBOSS_BOB_PERIOD * 0.5
+	var t := create_tween().set_loops()
+	t.tween_property(sprite, "position:y", base_y - GameConfig.MINIBOSS_BOB_AMOUNT, h).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	t.tween_property(sprite, "position:y", base_y + GameConfig.MINIBOSS_BOB_AMOUNT, h).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
 
 func _on_health_changed() -> void:
 	if hp_bar:
