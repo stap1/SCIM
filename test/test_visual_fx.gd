@@ -27,6 +27,19 @@ func test_predators_have_swim_material() -> void:
 		if mat:
 			assert_true(mat.shader.resource_path.ends_with("fish_swim.gdshader"), "uzywa fish_swim.gdshader")
 
+func test_swim_material_shared_for_perf() -> void:
+	# Wydajnosc: JEDEN wspoldzielony material dla wszystkich ryb (barakuda + rekin),
+	# nie kopia per instancja - vertex shader na 4 wierzcholkach, bez fragmentu.
+	var b1 = preload("res://scenes/enemies/barracuda.tscn").instantiate()
+	var b2 = preload("res://scenes/enemies/barracuda.tscn").instantiate()
+	var sh = preload("res://scenes/enemies/shark.tscn").instantiate()
+	add_child_autofree(b1)
+	add_child_autofree(b2)
+	add_child_autofree(sh)
+	var m: Material = b1.get_node("Sprite2D").material
+	assert_eq(m, b2.get_node("Sprite2D").material, "barakudy wspoldziela ten sam material ruchu")
+	assert_eq(m, sh.get_node("Sprite2D").material, "rekin wspoldziela ten sam material co barakuda")
+
 func test_water_follows_camera_script() -> void:
 	var m = preload("res://scenes/Main.tscn").instantiate()
 	add_child_autofree(m)
