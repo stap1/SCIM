@@ -27,7 +27,9 @@ var _base_modulate: Color = Color.WHITE
 ## gracz, ktory odejdzie po rozpoczeciu telegrafu, nie zostanie trafiony.
 var _charge_target: Vector2 = Vector2.ZERO
 
-@onready var hp_bar: ProgressBar = get_node_or_null("HpBar")
+@onready var hp_bar: ProgressBar = get_node_or_null("BarAnchor/HpBar")
+## Kotwica paska HP - kontr-rotowana, by pasek trzymal sie poziomo nad bossem (nie obracal sie z cialem).
+@onready var _bar_anchor: Node2D = get_node_or_null("BarAnchor")
 ## Wizualny telegraf szarzy (G4): additywny stozek, dziecko ciala - obraca sie z bossem,
 ## wiec celuje tam, gdzie natrze. Ukryty poza wind-upem.
 @onready var _telegraph: Sprite2D = get_node_or_null("Telegraph")
@@ -60,6 +62,8 @@ func _physics_process(delta: float) -> void:
 	if GameState.is_paused or GameState.is_game_over:
 		return
 	_face_aim(delta) # obrot dziala w KAZDEJ fazie (sledzenie i szarza)
+	if _bar_anchor != null:
+		_bar_anchor.global_rotation = 0.0  # pasek HP poziomo, nie obraca sie z bossem
 	# Swobodny ruch (sledzenie) tylko w fazie TRACK; telegraf zatrzymuje, szarza steruje Tweenem.
 	if is_locked(phase):
 		return

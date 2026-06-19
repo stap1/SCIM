@@ -4,10 +4,9 @@
 
 [resource]
 shader = ExtResource("1_swim")
-shader_parameter/swim_speed = 7.0
-shader_parameter/swim_amp = 9.0
-shader_parameter/head_amp = 2.0
+shader_parameter/swim_speed = 5.0
+shader_parameter/swim_amp = 10.0
 shader_parameter/swim_freq = 0.05
-shader_parameter/body_wave = 2.6
+shader_parameter/body_wave = 1.5
 shader_parameter/head_y = -90.0
 shader_parameter/tail_y = 110.0

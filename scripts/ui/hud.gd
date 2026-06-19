@@ -14,15 +14,7 @@ extends CanvasLayer
 # Pasek HP jako drewniany kadlub: im nizsze HP, tym bardziej "spekany" (etap 0 = caly).
 # Docelowo etap -> klatka hull_hp_<stage>.png; do czasu artu placeholder = barwa wypelnienia.
 const HULL_STAGES: int = 5
-const HULL_HEALTHY := Color(0.55, 0.36, 0.18)  # zdrowe drewno (placeholder barwy)
-const HULL_CRITICAL := Color(0.66, 0.13, 0.10)  # roztrzaskany - czerwien alarmu
-const HULL_TEX_PATHS: Array[String] = [
-	"res://assets/hull_hp_0.png", "res://assets/hull_hp_1.png", "res://assets/hull_hp_2.png",
-	"res://assets/hull_hp_3.png", "res://assets/hull_hp_4.png",
-]
-var _hull_fill: StyleBoxFlat
 var _hull_sprite: TextureRect
-var _hull_textures: Array = []
 
 func _ready() -> void:
 	GameState.health_changed.connect(_on_health_changed)
@@ -34,20 +26,12 @@ func _ready() -> void:
 	if boss_warning:
 		boss_warning.hide()
 
-	# Pasek HP jako kadlub: preload 5 klatek (graceful null gdy brak pliku - wtedy zostaje
-	# ProgressBar z barwa jako fallback).
+	# Pasek HP gracza: ilustracja kadluba ze shaderem (blend klatek + desaturacja + zapelnienie).
 	_hull_sprite = get_node_or_null("HullSprite")
-	for p in HULL_TEX_PATHS:
-		_hull_textures.append(load(p) if ResourceLoader.exists(p) else null)
 
 	# Inicjalizacja z aktualnego stanu (niezalezna od kolejnosci _ready scen).
 	if health_bar:
 		health_bar.max_value = GameState.max_health
-		# Wlasna kopia wypelnienia - barwa "kadluba" zmieniana wg etapu zniszczenia.
-		var fill := health_bar.get_theme_stylebox("fill")
-		if fill:
-			_hull_fill = fill.duplicate()
-			health_bar.add_theme_stylebox_override("fill", _hull_fill)
 	_on_health_changed(GameState.health)
 	_on_time_changed(GameState.time)
 	_on_score_changed(GameState.score)
@@ -71,17 +55,9 @@ func _on_health_changed(new_health: float) -> void:
 	health_bar.value = new_health
 	var max_hp: float = health_bar.max_value if health_bar.max_value > 0.0 else 1.0
 	var frac: float = clampf(new_health / max_hp, 0.0, 1.0)
-	# Etap zniszczenia kadluba (0 = caly, 4 = roztrzaskany) - progowa klatka.
-	var stage := hull_stage(new_health, health_bar.max_value, HULL_STAGES)
-	# Klatka kadluba wg etapu (gdy art dostepny); inaczej barwa wypelnienia jako fallback.
-	if _hull_sprite and stage < _hull_textures.size() and _hull_textures[stage] != null:
-		_hull_sprite.texture = _hull_textures[stage]
-	# Analogowy wskaznik: ciagla desaturacja sprite'a wg % HP (plynnie miedzy progami).
+	# Shader kadluba sam blenduje klatki uszkodzen, desaturuje i rysuje zapelnienie wg % HP.
 	if _hull_sprite and _hull_sprite.material is ShaderMaterial:
-		_hull_sprite.material.set_shader_parameter("damage", 1.0 - frac)
-	if _hull_fill:
-		var t := float(stage) / float(HULL_STAGES - 1)
-		_hull_fill.bg_color = HULL_HEALTHY.lerp(HULL_CRITICAL, t)
+		_hull_sprite.material.set_shader_parameter("health", frac)
 
 func _on_time_changed(new_time: float) -> void:
 	if time_label:

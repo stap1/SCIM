@@ -29,6 +29,8 @@ shape = SubResource("CircleShape2D_body")
 
 [node name="SpawnSound" type="AudioStreamPlayer2D" parent="." unique_id=576859954]
 stream = ExtResource("3_spawn")
+volume_db = 5.0
+bus = &"SFX"
 
 [node name="EnemyIdle" type="Node" parent="."]
 script = ExtResource("4_idle")

@@ -55,6 +55,6 @@ func test_hull_sprite_has_damage_shader() -> void:
 	assert_not_null(hs, "HUD ma HullSprite")
 	if hs:
 		var mat := hs.material as ShaderMaterial
-		assert_not_null(mat, "HullSprite ma ShaderMaterial (analogowa desaturacja)")
+		assert_not_null(mat, "HullSprite ma ShaderMaterial (blend + desaturacja + zapelnienie)")
 		if mat:
-			assert_true(mat.shader.resource_path.ends_with("hull_damage.gdshader"), "uzywa hull_damage.gdshader")
+			assert_true(mat.shader.resource_path.ends_with("hull_health.gdshader"), "uzywa hull_health.gdshader")

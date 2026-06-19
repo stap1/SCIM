@@ -74,8 +74,8 @@ const MINIBOSS_WARNING: float = 2.0
 # --- Juice (FAZA 5): animacje "zycia" obiektow (kosmetyka Tweenow, nie balans rozgrywki) ---
 # Idle wrogow: bob (px, pion) + sway (rad, obrot) Sprite'a, profil per typ wroga.
 const ENEMY_IDLE := {
-	"barracuda": {"bob_amount": 1.5, "bob_period": 0.45, "sway_amount": 0.13, "sway_period": 0.5},
-	"shark": {"bob_amount": 2.5, "bob_period": 1.6, "sway_amount": 0.09, "sway_period": 1.4},
+	"barracuda": {"bob_amount": 1.2, "bob_period": 0.5, "sway_amount": 0.04, "sway_period": 0.7},
+	"shark": {"bob_amount": 2.0, "bob_period": 1.7, "sway_amount": 0.03, "sway_period": 1.8},
 	# Meduza: wyrazny plyw gora-dol, bez kolysania (sway 0) - shader wobble robi galaretowatosc.
 	"jellyfish": {"bob_amount": 5.0, "bob_period": 2.2, "sway_amount": 0.0, "sway_period": 1.0},
 }
