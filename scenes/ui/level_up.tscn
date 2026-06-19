@@ -34,7 +34,7 @@ offset_left = 40.0
 offset_top = 180.0
 offset_right = -40.0
 offset_bottom = 250.0
-theme_override_font_sizes/font_size = 40
+theme_override_font_sizes/font_size = 24
 horizontal_alignment = 1
 text = "POZIOM W GÓRĘ - wybierz ulepszenie"
 
@@ -60,6 +60,7 @@ anchor_bottom = 1.0
 mouse_filter = 2
 horizontal_alignment = 1
 vertical_alignment = 2
+autowrap_mode = 2
 text = "Card0"
 
 [node name="Card1" type="Button" parent="Panel"]
@@ -84,6 +85,7 @@ anchor_bottom = 1.0
 mouse_filter = 2
 horizontal_alignment = 1
 vertical_alignment = 2
+autowrap_mode = 2
 text = "Card1"
 
 [node name="Card2" type="Button" parent="Panel"]
@@ -108,4 +110,5 @@ anchor_bottom = 1.0
 mouse_filter = 2
 horizontal_alignment = 1
 vertical_alignment = 2
+autowrap_mode = 2
 text = "Card2"
