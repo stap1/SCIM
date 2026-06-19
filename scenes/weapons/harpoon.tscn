@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://py5af316w0ij"]
 
 [ext_resource type="Script" uid="uid://6xarv0ubvasw" path="res://scripts/weapons/harpoon.gd" id="1_uumnc"]
-[ext_resource type="Texture2D" uid="uid://dwav8pccjvlxl" path="res://assets/harpun.svg.svg" id="2_gqujv"]
+[ext_resource type="Texture2D" uid="uid://bv047p3sbw3gc" path="res://assets/harpoon.png" id="2_gqujv"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_gqujv"]
 
@@ -11,6 +11,7 @@ collision_mask = 2
 script = ExtResource("1_uumnc")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=302299529]
+scale = Vector2(0.5, 0.5)
 texture = ExtResource("2_gqujv")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=327204468]

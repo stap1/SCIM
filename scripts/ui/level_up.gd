@@ -81,6 +81,16 @@ func _set_card_text(card: Node, id: String) -> void:
 		label.text = text
 	else:
 		card.text = text
+	# Ikona ulepszenia (graceful fallback: brak pliku -> karta zostaje tekstowa).
+	var icon := card.get_node_or_null("Icon") as TextureRect
+	if icon:
+		var ipath := Upgrades.icon_path(id)
+		if ResourceLoader.exists(ipath):
+			icon.texture = load(ipath)
+			icon.visible = true
+		else:
+			icon.texture = null
+			icon.visible = false
 
 func _on_card_pressed(index: int) -> void:
 	AudioManager.play_sfx("ui_click")

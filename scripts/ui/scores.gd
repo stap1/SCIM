@@ -24,7 +24,7 @@ func _on_back() -> void:
 # Czysta funkcja: tekst listy wynikow (numerowany, malejaco) lub komunikat gdy pusto.
 static func format_scores(top: Array[int]) -> String:
 	if top.is_empty():
-		return "Brak wynikow"
+		return "Brak wyników"
 	var text := ""
 	for i in top.size():
 		text += "%d.   %d\n" % [i + 1, top[i]]

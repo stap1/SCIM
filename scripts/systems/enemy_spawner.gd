@@ -81,8 +81,10 @@ func spawn_enemy(scene: PackedScene) -> Node:
 		pos += player.global_position - vp_size / 2.0
 
 	var enemy := scene.instantiate()
+	# Pozycja PRZED add_child: inaczej przez 1 klatke fizyki wrog jest w lokalnym (0,0) =
+	# pozycja Main (~lodz), co daje falszywe nalozenie na Hurtbox i natychmiastowy cios (bug #1).
+	enemy.position = get_parent().to_local(pos)
 	get_parent().add_child(enemy)
-	enemy.global_position = pos
 	if player != null and enemy.has_method("set_target"):
 		enemy.set_target(player)
 	if enemy.has_signal("died"):
@@ -95,10 +97,27 @@ func _on_enemy_died(pos: Vector2, xp_value: int) -> void:
 	get_parent().add_child(burst)
 	burst.global_position = pos
 
-	var orb := XpOrbScene.instantiate()
-	orb.xp_value = xp_value # mocniejszy wrog = wartosciowszy orb
-	get_parent().add_child(orb)
-	orb.global_position = pos
+	# Model 1 orb = 1 XP: wrog wart xp_value zrzuca xp_value orbow po 1 XP, rozrzuconych.
+	_spawn_orbs(pos, xp_value, 1)
+
+# Spawnuje 'count' orbow po 'value_each' XP, rozrzuconych w promieniu wokol center.
+# Cap (XP_ORB_MAX_ON_SCREEN) chroni FPS: nadmiar oddaje XP wprost, nie tworzac wezla.
+func _spawn_orbs(center: Vector2, count: int, value_each: int) -> void:
+	for i in count:
+		if _orb_count() >= GameConfig.XP_ORB_MAX_ON_SCREEN:
+			GameState.add_xp(value_each)
+			continue
+		var orb := XpOrbScene.instantiate()
+		orb.xp_value = value_each  # przed add_child (gruby orb skaluje sie w _ready)
+		var angle := randf() * TAU
+		var radius := sqrt(randf()) * GameConfig.XP_ORB_SCATTER_RADIUS
+		# Pozycja przed add_child - inaczej orb przez klatke jest w origin (~lodz) i moglby
+		# zostac od razu zebrany.
+		orb.position = get_parent().to_local(center + Vector2(radius, 0.0).rotated(angle))
+		get_parent().add_child(orb)
+
+func _orb_count() -> int:
+	return get_tree().get_nodes_in_group("xp_orbs").size()
 
 # --- Lecznicze deski ---
 
@@ -117,8 +136,8 @@ func _spawn_heal_plank() -> void:
 	var angle := randf() * TAU
 	var dist := randf_range(200.0, 400.0)
 	var plank := HealPlankScene.instantiate()
+	plank.position = get_parent().to_local(player.global_position + Vector2(dist, 0.0).rotated(angle))
 	get_parent().add_child(plank)
-	plank.global_position = player.global_position + Vector2(dist, 0.0).rotated(angle)
 
 # --- Mini-boss ---
 
@@ -141,9 +160,10 @@ func _check_boss() -> void:
 func _spawn_boss() -> void:
 	var player := get_tree().get_first_node_in_group("player")
 	var boss := MotorBoatScene.instantiate()
+	if player != null:
+		boss.position = get_parent().to_local(player.global_position + Vector2(0, -350))
 	get_parent().add_child(boss)
 	if player != null:
-		boss.global_position = player.global_position + Vector2(0, -350)
 		if boss.has_method("set_target"):
 			boss.set_target(player)
 	if boss.has_signal("boss_defeated"):
@@ -156,11 +176,8 @@ func _on_boss_defeated(pos: Vector2) -> void:
 	get_parent().add_child(burst)
 	burst.global_position = pos
 
-	# Boss zrzuca najwartosciowszy orb (oprocz gwarantowanego awansu nizej).
-	var orb := XpOrbScene.instantiate()
-	orb.xp_value = GameConfig.XP_ORB_MINIBOSS
-	get_parent().add_child(orb)
-	orb.global_position = pos
+	# Boss zrzuca kilka grubych orbow (hybryda count x value), oprocz gwarantowanego awansu nizej.
+	_spawn_orbs(pos, GameConfig.XP_ORB_BOSS_COUNT, GameConfig.XP_ORB_BOSS_VALUE)
 
 	# Gwarantowany awans (nagroda) - pokazuje ekran wyboru ulepszenia.
 	GameState.grant_level_up()

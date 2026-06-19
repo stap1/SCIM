@@ -1,8 +1,10 @@
 [gd_scene format=3 uid="uid://csrrolmwxegrs"]
 
 [ext_resource type="Script" uid="uid://dfe0lpyyf6k0f" path="res://scripts/systems/enemy.gd" id="1_enemy"]
-[ext_resource type="Texture2D" uid="uid://cv3g65vi1x0l7" path="res://assets/meduza.svg.svg" id="2_tex"]
+[ext_resource type="Texture2D" uid="uid://dvrledwd6dppd" path="res://assets/enemy_shark.png" id="2_tex"]
 [ext_resource type="AudioStream" uid="uid://kebj4lxu75wb" path="res://audio/sfx/enemy_spawn.ogg" id="3_04l7l"]
+[ext_resource type="Script" path="res://scripts/systems/enemy_idle.gd" id="4_idle"]
+[ext_resource type="Material" path="res://resources/fish_swim.tres" id="5_swim"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_body"]
 radius = 20.0
@@ -15,10 +17,11 @@ speed = 50.0
 xp_value = 5
 max_health = 40.0
 kill_score = 5
+face_target = true
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=1265466589]
-modulate = Color(0.5, 0.55, 0.62, 1)
-scale = Vector2(1.5, 1.5)
+material = ExtResource("5_swim")
+scale = Vector2(0.5, 0.5)
 texture = ExtResource("2_tex")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=426547600]
@@ -26,4 +29,9 @@ shape = SubResource("CircleShape2D_body")
 
 [node name="SpawnSound" type="AudioStreamPlayer2D" parent="." unique_id=324359798]
 stream = ExtResource("3_04l7l")
-volume_db = 4.917
+volume_db = 5.0
+bus = &"SFX"
+
+[node name="EnemyIdle" type="Node" parent="."]
+script = ExtResource("4_idle")
+profile = "shark"

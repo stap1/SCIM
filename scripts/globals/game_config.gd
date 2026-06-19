@@ -62,13 +62,31 @@ const MINIBOSS_CHARGE_DURATION: float = 0.45
 const MINIBOSS_TELEGRAPH_DURATION: float = 0.6
 # Szybkosc wygladzania obrotu bossa ku celowi (waga lerp_angle skalowana czasem klatki).
 const MINIBOSS_TURN_SPEED: float = 6.0
-# Telegraf wizualny: ile pulsow rozblysku w czasie wind-upu i ich barwa (biel kontrastuje
-# z czerwonym kadlubem bossa, wiec szarza jest czytelnie zapowiedziana).
+# Telegraf wizualny: ile pulsow rozblysku w czasie wind-upu i ich barwa. Overbright (>1)
+# rozjasnia pelnokolorowy sprite bossa - rozblysk widoczny mimo bialej bazy modulate
+# (placeholder mial czerwona baze, biel wystarczala; docelowy PNG wymaga overbright).
 const MINIBOSS_TELEGRAPH_PULSES: int = 3
-const MINIBOSS_TELEGRAPH_COLOR: Color = Color(1.0, 1.0, 1.0, 1.0)
+const MINIBOSS_TELEGRAPH_COLOR: Color = Color(1.8, 1.8, 1.8, 1.0)
 # Czas (s) pojawienia bossa i wyprzedzenie ostrzezenia boss_incoming.
 const MINIBOSS_SPAWN_TIME: float = 270.0
 const MINIBOSS_WARNING: float = 2.0
+
+# --- Juice (FAZA 5): animacje "zycia" obiektow (kosmetyka Tweenow, nie balans rozgrywki) ---
+# Idle wrogow: bob (px, pion) + sway (rad, obrot) Sprite'a, profil per typ wroga.
+const ENEMY_IDLE := {
+	"barracuda": {"bob_amount": 1.2, "bob_period": 0.5, "sway_amount": 0.04, "sway_period": 0.7},
+	"shark": {"bob_amount": 2.0, "bob_period": 1.7, "sway_amount": 0.03, "sway_period": 1.8},
+	# Meduza: wyrazny plyw gora-dol, bez kolysania (sway 0) - shader wobble robi galaretowatosc.
+	"jellyfish": {"bob_amount": 5.0, "bob_period": 2.2, "sway_amount": 0.0, "sway_period": 1.0},
+}
+# Kolysanie bossa: bob lokalnego Sprite'a (NIE ciala - szarza/telegraf graja rownolegle).
+const MINIBOSS_BOB_AMOUNT: float = 3.0
+const MINIBOSS_BOB_PERIOD: float = 1.6
+# Dryf deski leczniczej: bob (px) + sway (rad) o roznych okresach (nieregularny dryf).
+const HEAL_PLANK_BOB_AMOUNT: float = 3.0
+const HEAL_PLANK_BOB_PERIOD: float = 1.4
+const HEAL_PLANK_SWAY_AMOUNT: float = 0.12
+const HEAL_PLANK_SWAY_PERIOD: float = 1.9
 
 # --- XP / orby ---
 # Wartosc bazowa orba (meduza). Mocniejsze typy zrzucaja wiecej: barakuda x2, rekin x5
@@ -80,6 +98,19 @@ const XP_MAGNET_SPEED: float = 250.0
 const XP_MAGNET_RANGE: float = 120.0
 # Po tylu sekundach aktywnej gry niezebrany orb znika (audyt P0.1).
 const XP_ORB_LIFETIME: float = 12.0
+# Model 1 orb = 1 XP (FAZA 6): wrog zrzuca xp_value orbow po 1 XP, rozrzuconych w promieniu.
+# Cap chroni FPS - po przekroczeniu nadmiar oddaje XP wprost (gracz nie traci nagrody).
+const XP_ORB_SCATTER_RADIUS: float = 28.0
+const XP_ORB_MAX_ON_SCREEN: int = 120
+# Boss: kilka "grubych" orbow (hybryda) - count x value (~12 XP), kazdy wiekszy wizualnie.
+const XP_ORB_BOSS_COUNT: int = 4
+const XP_ORB_BOSS_VALUE: int = 3
+const XP_ORB_FAT_SCALE: float = 1.6
+# Zbieranie: czas wsiakania orba do gracza; combo (seria w czasie) -> sila blysku + pitch.
+const XP_ORB_ABSORB_TIME: float = 0.18
+const XP_COMBO_RESET_TIME: float = 0.6
+const XP_COMBO_MAX: int = 12
+const XP_COMBO_PITCH_STEP: float = 0.04
 
 # --- Progresja ---
 # Maksymalny poziom gracza = wiek Ernesta Hemingwaya w chwili smierci.

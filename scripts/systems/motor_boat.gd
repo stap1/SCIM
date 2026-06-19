@@ -27,7 +27,12 @@ var _base_modulate: Color = Color.WHITE
 ## gracz, ktory odejdzie po rozpoczeciu telegrafu, nie zostanie trafiony.
 var _charge_target: Vector2 = Vector2.ZERO
 
-@onready var hp_bar: ProgressBar = get_node_or_null("HpBar")
+@onready var hp_bar: ProgressBar = get_node_or_null("BarAnchor/HpBar")
+## Kotwica paska HP - kontr-rotowana, by pasek trzymal sie poziomo nad bossem (nie obracal sie z cialem).
+@onready var _bar_anchor: Node2D = get_node_or_null("BarAnchor")
+## Wizualny telegraf szarzy (G4): additywny stozek, dziecko ciala - obraca sie z bossem,
+## wiec celuje tam, gdzie natrze. Ukryty poza wind-upem.
+@onready var _telegraph: Sprite2D = get_node_or_null("Telegraph")
 
 func _init() -> void:
 	# Wartosci startowe bossa z GameConfig (jedyne zrodlo balansu).
@@ -43,6 +48,9 @@ func _ready() -> void:
 	var sprite := get_node_or_null("Sprite2D")
 	if sprite:
 		_base_modulate = sprite.modulate
+	if _telegraph:
+		_telegraph.visible = false
+	_start_idle_bob()
 
 	_charge_timer = Timer.new()
 	_charge_timer.wait_time = charge_interval
@@ -54,6 +62,8 @@ func _physics_process(delta: float) -> void:
 	if GameState.is_paused or GameState.is_game_over:
 		return
 	_face_aim(delta) # obrot dziala w KAZDEJ fazie (sledzenie i szarza)
+	if _bar_anchor != null:
+		_bar_anchor.global_rotation = 0.0  # pasek HP poziomo, nie obraca sie z bossem
 	# Swobodny ruch (sledzenie) tylko w fazie TRACK; telegraf zatrzymuje, szarza steruje Tweenem.
 	if is_locked(phase):
 		return
@@ -98,6 +108,7 @@ func _begin_telegraph() -> void:
 		_charge_target = target.global_position
 	charge_telegraph.emit(telegraph_duration)
 	_flash_telegraph()
+	_show_telegraph(telegraph_duration)
 	var tween := create_tween()
 	tween.tween_interval(telegraph_duration)
 	tween.tween_callback(_begin_charge)
@@ -107,13 +118,39 @@ func _begin_charge() -> void:
 	if is_dying:
 		phase = Phase.TRACK
 		return
+	_hide_telegraph()  # wind-up skonczony - telegraf gasnie tuz przed natarciem
 	phase = Phase.CHARGE
 	var tween := create_tween()
 	tween.tween_property(self, "global_position", _charge_target, charge_duration)
 	tween.tween_callback(_end_charge)
 
 func _end_charge() -> void:
+	_hide_telegraph()  # bezpiecznik - telegraf nie zostaje po szarzy
 	phase = Phase.TRACK
+
+# Pokazuje telegraf szarzy na czas wind-upu. Respektuje dostepnosc: reduce_flashing ->
+# stale lagodne swiecenie zamiast narastajacej pulsacji.
+func _show_telegraph(duration: float) -> void:
+	if _telegraph == null:
+		return
+	_telegraph.visible = true
+	_telegraph.modulate.a = 0.0
+	if not SettingsStore.should_flash(SettingsStore.reduce_flashing):
+		_telegraph.modulate.a = 0.95
+		return
+	var tween := create_tween()
+	var pulses: int = GameConfig.MINIBOSS_TELEGRAPH_PULSES
+	var half: float = duration / float(maxi(pulses, 1) * 2)
+	for i in pulses:
+		# Overbright (>1) na blendzie additive - mocny, narastajacy ku szarzy rozblysk.
+		var peak: float = lerpf(0.9, 1.6, float(i + 1) / float(pulses))
+		tween.tween_property(_telegraph, "modulate:a", peak, half)
+		tween.tween_property(_telegraph, "modulate:a", peak * 0.5, half)
+
+func _hide_telegraph() -> void:
+	if _telegraph != null:
+		_telegraph.visible = false
+		_telegraph.modulate.a = 0.0
 
 # Wizualny telegraf wind-upu: pulsujace rozjasnienie sprite'a, by gracz jednoznacznie
 # odczytal nadchodzaca szarze. Respektuje dostepnosc: przy wlaczonym "reduce flashing"
@@ -149,6 +186,18 @@ static func is_locked(p: int) -> bool:
 ## @param delta      - czas klatki (s).
 static func aim_rotation(current: float, target: float, turn_speed: float, delta: float) -> float:
 	return lerp_angle(current, target, clampf(turn_speed * delta, 0.0, 1.0))
+
+# Kolysanie idle: Tween pętla na LOKALNYM Sprite2D.position:y. Rozlaczne z szarza
+# (global_position ciala), telegrafem (modulate) i celowaniem (rotation ciala).
+func _start_idle_bob() -> void:
+	var sprite := get_node_or_null("Sprite2D")
+	if sprite == null:
+		return
+	var base_y: float = sprite.position.y
+	var h: float = GameConfig.MINIBOSS_BOB_PERIOD * 0.5
+	var t := create_tween().set_loops()
+	t.tween_property(sprite, "position:y", base_y - GameConfig.MINIBOSS_BOB_AMOUNT, h).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	t.tween_property(sprite, "position:y", base_y + GameConfig.MINIBOSS_BOB_AMOUNT, h).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
 
 func _on_health_changed() -> void:
 	if hp_bar:

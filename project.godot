@@ -12,7 +12,7 @@ config_version=5
 
 config/name="SCIM"
 run/main_scene="res://scenes/MainMenu.tscn"
-config/features=PackedStringArray("4.6", "Forward Plus")
+config/features=PackedStringArray("4.6", "GL Compatibility")
 config/icon="res://icon.svg"
 
 [audio]
@@ -26,6 +26,7 @@ GameState="*uid://kguqub804fro"
 SettingsStore="*res://scripts/globals/settings_store.gd"
 Upgrades="*res://scripts/systems/upgrades.gd"
 AudioManager="*res://scripts/systems/audio_manager.gd"
+PickupFx="*res://scripts/systems/pickup_fx.gd"
 
 [display]
 
@@ -84,4 +85,5 @@ pause={
 
 [rendering]
 
-rendering_device/driver.windows="d3d12"
+renderer/rendering_method="gl_compatibility"
+renderer/rendering_method.mobile="gl_compatibility"

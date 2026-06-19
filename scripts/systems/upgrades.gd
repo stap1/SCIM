@@ -7,37 +7,37 @@ const UPGRADES := {
 	"faster_attack": {
 		"id": "faster_attack",
 		"name": "Szybszy harpun",
-		"description": "Atak co 15% krocej",
+		"description": "Atak co 15% krócej",
 		"max_level": 3,
 	},
 	"longer_range": {
 		"id": "longer_range",
-		"name": "Dluzszy zasieg",
-		"description": "Zasieg ataku +20%",
+		"name": "Dłuższy zasięg",
+		"description": "Zasięg ataku +20%",
 		"max_level": 3,
 	},
 	"tougher_hull": {
 		"id": "tougher_hull",
-		"name": "Mocniejszy kadlub",
-		"description": "Max HP +30 (i +30 HP)",
+		"name": "Mocniejszy kadłub",
+		"description": "Max HP +30",
 		"max_level": 3,
 	},
 	"faster_boat": {
 		"id": "faster_boat",
-		"name": "Szybsza lodz",
-		"description": "Predkosc +20%",
+		"name": "Szybsza łódź",
+		"description": "Prędkość +20%",
 		"max_level": 3,
 	},
 	"resource_magnet": {
 		"id": "resource_magnet",
 		"name": "Magnes na zasoby",
-		"description": "Zasieg zbierania XP +40%",
+		"description": "Zasięg zbierania XP +40%",
 		"max_level": 3,
 	},
 	"double_harpoon": {
 		"id": "double_harpoon",
-		"name": "Podwojny harpun",
-		"description": "Atakuj 2 najblizszych wrogow",
+		"name": "Podwójny harpun",
+		"description": "Atakuj 2 najbliższych wrogów",
 		"max_level": 1,
 	},
 }
@@ -107,6 +107,11 @@ func milestone_ids() -> Array[String]:
 	for id in MILESTONE_UPGRADES:
 		out.append(id)
 	return out
+
+# Sciezka ikony ulepszenia. Konwencja: upgrade_<id>.png w res://assets/ (id == nazwa pliku).
+# Karta robi graceful fallback (tekst) gdy plik nie istnieje.
+func icon_path(id: String) -> String:
+	return "res://assets/upgrade_%s.png" % id
 
 # Metadane karty (name/description) - dziala dla ulepszen zwyklych i milestone.
 func info(id: String) -> Dictionary:

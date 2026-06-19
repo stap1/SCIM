@@ -12,6 +12,8 @@ const SFX_PATHS := {
 	# Uwaga: brak klucza "game_over" - ekran porazki gra muzyke (music_gameover.ogg), nie SFX.
 	"ui_click": "res://audio/sfx/ui_click.ogg",
 	"heal": "res://audio/sfx/heal.ogg",
+	# Zbieranie orba XP (combo zmienia pitch) - placeholder do czasu dedykowanego assetu.
+	"xp_pickup": "",
 }
 
 const SFX_POOL_SIZE := 16
@@ -91,6 +93,20 @@ func play_sfx(sfx_name: String) -> void:
 	var player := _sfx_players[_sfx_index]
 	_sfx_index = (_sfx_index + 1) % _sfx_players.size()
 	player.stream = stream
+	player.pitch_scale = 1.0  # reset po ewentualnym play_sfx_pitched (pula round-robin)
+	player.play()
+
+# Jak play_sfx, ale z zadanym pitch (combo orbow - rosnacy ton serii zbiorow).
+func play_sfx_pitched(sfx_name: String, pitch: float) -> void:
+	if not _sfx_streams.has(sfx_name):
+		return
+	var stream = _sfx_streams[sfx_name]
+	if stream == null:
+		return
+	var player := _sfx_players[_sfx_index]
+	_sfx_index = (_sfx_index + 1) % _sfx_players.size()
+	player.stream = stream
+	player.pitch_scale = maxf(0.01, pitch)
 	player.play()
 
 # Kontrola muzyki

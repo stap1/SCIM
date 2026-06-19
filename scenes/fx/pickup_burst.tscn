@@ -1,0 +1,19 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/systems/pickup_burst.gd" id="1_pb"]
+
+[node name="PickupBurst" type="CPUParticles2D"]
+z_index = 6
+emitting = true
+amount = 10
+one_shot = true
+lifetime = 0.5
+explosiveness = 1.0
+spread = 180.0
+gravity = Vector2(0, 0)
+initial_velocity_min = 40.0
+initial_velocity_max = 90.0
+scale_amount_min = 2.0
+scale_amount_max = 4.0
+color = Color(1, 0.85, 0.35, 1)
+script = ExtResource("1_pb")

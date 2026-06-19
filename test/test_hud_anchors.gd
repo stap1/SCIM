@@ -22,9 +22,11 @@ func test_boss_warning_centered() -> void:
 	var hud = HUDScene.instantiate()
 	add_child_autofree(hud)
 	await wait_physics_frames(1)
-	var warn: Control = hud.get_node("BossWarning")
-	assert_almost_eq(warn.anchor_left, 0.5, 0.001, "BossWarning kotwiczony do srodka")
-	assert_almost_eq(warn.anchor_right, 0.5, 0.001, "BossWarning kotwiczony do srodka")
+	var warn: Label = hud.get_node("BossWarning")
+	# Pelna szerokosc + centrowany tekst (wczesniej waski box -> tekst przelewal sie w bok).
+	assert_almost_eq(warn.anchor_left, 0.0, 0.001, "BossWarning na pelna szerokosc (lewa 0)")
+	assert_almost_eq(warn.anchor_right, 1.0, 0.001, "BossWarning na pelna szerokosc (prawa 1)")
+	assert_eq(warn.horizontal_alignment, HORIZONTAL_ALIGNMENT_CENTER, "tekst wysrodkowany")
 
 # --- Niezaleznosc od rozdzielczosci (project.godot) ---
 

@@ -14,7 +14,7 @@ func after_each() -> void:
 
 func test_telegraph_constants_in_config() -> void:
 	assert_eq(GameConfig.MINIBOSS_TELEGRAPH_PULSES, 3, "3 pulsy telegrafu")
-	assert_eq(GameConfig.MINIBOSS_TELEGRAPH_COLOR, Color(1, 1, 1, 1), "biel rozblysku")
+	assert_eq(GameConfig.MINIBOSS_TELEGRAPH_COLOR, Color(1.8, 1.8, 1.8, 1), "overbright rozblysk")
 
 func test_base_modulate_captured_from_sprite() -> void:
 	var boss = MotorBoatScene.instantiate()
@@ -33,6 +33,27 @@ func test_telegraph_changes_sprite_modulate() -> void:
 	boss._flash_telegraph()
 	await wait_physics_frames(2)
 	assert_ne(sprite.modulate, base, "telegraf zmienia barwe sprite'a (widoczny blysk)")
+
+func test_telegraph_sprite_hidden_initially() -> void:
+	var boss = MotorBoatScene.instantiate()
+	add_child_autofree(boss)
+	await wait_physics_frames(1)
+	var tg = boss.get_node_or_null("Telegraph")
+	assert_not_null(tg, "boss ma wezel Telegraph (G4)")
+	if tg:
+		assert_false(tg.visible, "telegraf ukryty poza wind-upem")
+		assert_true(tg.material is CanvasItemMaterial, "telegraf ma material (additive blend)")
+
+func test_show_telegraph_toggles_visibility() -> void:
+	var boss = MotorBoatScene.instantiate()
+	add_child_autofree(boss)
+	await wait_physics_frames(1)
+	SettingsStore.reduce_flashing = false
+	boss._show_telegraph(0.6)
+	var tg = boss.get_node_or_null("Telegraph")
+	assert_true(tg.visible, "telegraf widoczny po _show_telegraph")
+	boss._hide_telegraph()
+	assert_false(tg.visible, "telegraf ukryty po _hide_telegraph")
 
 func test_telegraph_respects_reduce_flashing() -> void:
 	var boss = MotorBoatScene.instantiate()

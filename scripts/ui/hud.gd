@@ -14,9 +14,7 @@ extends CanvasLayer
 # Pasek HP jako drewniany kadlub: im nizsze HP, tym bardziej "spekany" (etap 0 = caly).
 # Docelowo etap -> klatka hull_hp_<stage>.png; do czasu artu placeholder = barwa wypelnienia.
 const HULL_STAGES: int = 5
-const HULL_HEALTHY := Color(0.55, 0.36, 0.18)  # zdrowe drewno
-const HULL_CRITICAL := Color(0.66, 0.13, 0.10)  # roztrzaskany - czerwien alarmu
-var _hull_fill: StyleBoxFlat
+var _hull_sprite: TextureRect
 
 func _ready() -> void:
 	GameState.health_changed.connect(_on_health_changed)
@@ -28,14 +26,12 @@ func _ready() -> void:
 	if boss_warning:
 		boss_warning.hide()
 
+	# Pasek HP gracza: ilustracja kadluba ze shaderem (blend klatek + desaturacja + zapelnienie).
+	_hull_sprite = get_node_or_null("HullSprite")
+
 	# Inicjalizacja z aktualnego stanu (niezalezna od kolejnosci _ready scen).
 	if health_bar:
 		health_bar.max_value = GameState.max_health
-		# Wlasna kopia wypelnienia - barwa "kadluba" zmieniana wg etapu zniszczenia.
-		var fill := health_bar.get_theme_stylebox("fill")
-		if fill:
-			_hull_fill = fill.duplicate()
-			health_bar.add_theme_stylebox_override("fill", _hull_fill)
 	_on_health_changed(GameState.health)
 	_on_time_changed(GameState.time)
 	_on_score_changed(GameState.score)
@@ -57,11 +53,11 @@ func _on_health_changed(new_health: float) -> void:
 	if health_bar == null:
 		return
 	health_bar.value = new_health
-	# Etap zniszczenia kadluba -> barwa wypelnienia (placeholder do czasu klatek artu).
-	if _hull_fill:
-		var stage := hull_stage(new_health, health_bar.max_value, HULL_STAGES)
-		var t := float(stage) / float(HULL_STAGES - 1)
-		_hull_fill.bg_color = HULL_HEALTHY.lerp(HULL_CRITICAL, t)
+	var max_hp: float = health_bar.max_value if health_bar.max_value > 0.0 else 1.0
+	var frac: float = clampf(new_health / max_hp, 0.0, 1.0)
+	# Shader kadluba sam blenduje klatki uszkodzen, desaturuje i rysuje zapelnienie wg % HP.
+	if _hull_sprite and _hull_sprite.material is ShaderMaterial:
+		_hull_sprite.material.set_shader_parameter("health", frac)
 
 func _on_time_changed(new_time: float) -> void:
 	if time_label:
@@ -71,12 +67,30 @@ func _on_score_changed(new_score: int) -> void:
 	if score_label:
 		score_label.text = "Wynik: " + str(new_score)
 
+var _last_pulse_ms: int = 0
+
 func _on_xp_changed(_new_xp: int) -> void:
 	_refresh_xp()
+	_pulse_xp_bar(1.06)
+
+# Krotki puls skali paska XP przy zdobyciu XP. Throttle (>50 ms), by przy wielu orbach
+# na raz nie migotal nerwowo. Pivot na srodku - skaluje sie "z srodka".
+func _pulse_xp_bar(amount: float) -> void:
+	if xp_bar == null:
+		return
+	var now := Time.get_ticks_msec()
+	if now - _last_pulse_ms < 50:
+		return
+	_last_pulse_ms = now
+	xp_bar.pivot_offset = xp_bar.size * 0.5
+	var t := create_tween()
+	t.tween_property(xp_bar, "scale", Vector2(amount, amount), 0.06).set_trans(Tween.TRANS_SINE)
+	t.tween_property(xp_bar, "scale", Vector2.ONE, 0.1).set_trans(Tween.TRANS_SINE)
 
 func _on_level_up(new_level: int) -> void:
 	_set_level(new_level)
 	_refresh_xp() # awans zmienia prog i zeruje xp - odswiez pasek
+	_pulse_xp_bar(1.15) # mocniejszy puls na awansie
 
 # Pasek XP czyta GameState (read-only): wartosc = xp, skala = prog biezacego poziomu.
 func _refresh_xp() -> void:
