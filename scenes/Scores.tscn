@@ -22,12 +22,12 @@ offset_bottom = 520.0
 theme_override_constants/separation = 16
 
 [node name="Title" type="Label" parent="Panel"]
-theme_override_font_sizes/font_size = 40
+theme_override_font_sizes/font_size = 18
 horizontal_alignment = 1
 text = "Najlepsze wyniki"
 
 [node name="ScoresList" type="Label" parent="Panel"]
-theme_override_font_sizes/font_size = 28
+theme_override_font_sizes/font_size = 16
 horizontal_alignment = 1
 text = "Brak wyników"
 
