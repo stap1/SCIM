@@ -18,6 +18,11 @@ func _show_scores() -> void:
 		return
 	list_label.text = format_scores(HighScores.get_top(5))
 
+func _unhandled_input(event: InputEvent) -> void:
+	if event.is_action_pressed("ui_cancel"):  # ESC -> powrot do menu
+		_on_back()
+		get_viewport().set_input_as_handled()
+
 func _on_back() -> void:
 	AudioManager.play_sfx("ui_click")
 	get_tree().change_scene_to_file(ScenePaths.MAIN_MENU)

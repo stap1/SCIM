@@ -34,6 +34,12 @@ func _close() -> void:
 	if _return_focus != null and is_instance_valid(_return_focus):
 		_return_focus.grab_focus()
 
+# ESC zamyka popup (jak WYJSCIE) - spojnie z innymi menu.
+func _unhandled_input(event: InputEvent) -> void:
+	if visible and event.is_action_pressed("ui_cancel"):
+		_on_exit()
+		get_viewport().set_input_as_handled()
+
 # Czysta funkcja: czy pip o danym indeksie ma byc zapalony (kupiony poziom).
 static func pip_lit(level: int, index: int) -> bool:
 	return index < level

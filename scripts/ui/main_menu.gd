@@ -3,7 +3,15 @@ extends Control
 # Menu glowne. Start uruchamia gre (po GameState.reset()), Ustawienia/Wyniki otwieraja
 # odpowiednie sceny, Wyjscie zamyka. Animowane tlo - lodz kolysze sie na falach (Tween).
 
+# Sciezka przycisku, na ktory ma wrocic focus po powrocie z podmenu (statyczne - przetrwa
+# zmiane sceny). Ustawiane przy wejsciu w podmenu, czytane w _ready po powrocie.
+static var _return_focus: String = ""
+
 func _ready() -> void:
+	# Gwarancja muzyki menu (np. powrot z pauzy resetuje sesje -> gralaby muzyka gry).
+	if AudioManager.current_music_track != AudioManager.MUSIC["menu"]:
+		AudioManager.play_music(AudioManager.MUSIC["menu"])
+
 	# SZYBKA GRA (5 min) = jedyny aktywny start; NOWA GRA wyszarzona (przyszlosc).
 	_connect_button("Menu/QuickGameButton", _on_quick_game)
 	_connect_button("Menu/UpgradesButton", _on_upgrades)
@@ -12,10 +20,15 @@ func _ready() -> void:
 	_connect_button("Menu/CreditsButton", _on_credits)
 	_connect_button("Menu/QuitButton", _on_quit)
 	_animate_waves()
-	# Nawigacja klawiatura: focus na pierwszej aktywnej pozycji (strzalki/enter/spacja dzialaja).
-	var first := get_node_or_null("Menu/QuickGameButton")
-	if first:
-		first.grab_focus()
+
+	# Nawigacja klawiatura: focus wraca na opcje, z ktorej wrocilismy (lub SZYBKA GRA).
+	var focus_path := _return_focus
+	_return_focus = ""
+	var btn: Button = get_node_or_null(focus_path) as Button if focus_path != "" else null
+	if btn == null or btn.disabled:
+		btn = get_node_or_null("Menu/QuickGameButton") as Button
+	if btn:
+		btn.grab_focus()
 
 func _connect_button(path: String, handler: Callable) -> void:
 	var b := get_node_or_null(path)
@@ -46,14 +59,17 @@ func _on_upgrades() -> void:
 		popup.open(get_node_or_null("Menu/UpgradesButton"))
 
 func _on_credits() -> void:
+	_return_focus = "Menu/CreditsButton"
 	get_tree().change_scene_to_file(ScenePaths.CREDITS)
 
 func _on_scores() -> void:
 	# Ekran wynikow - krok 21. Otwiera Scores.tscn, jesli juz istnieje.
 	if ResourceLoader.exists(ScenePaths.SCORES):
+		_return_focus = "Menu/ScoresButton"
 		get_tree().change_scene_to_file(ScenePaths.SCORES)
 
 func _on_settings() -> void:
+	_return_focus = "Menu/SettingsButton"
 	get_tree().change_scene_to_file(ScenePaths.SETTINGS)
 
 func _on_quit() -> void:

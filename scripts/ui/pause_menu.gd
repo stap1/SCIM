@@ -26,10 +26,15 @@ extends CanvasLayer
 ## Czy to menu jest aktualnym wlascicielem pauzy. Chroni przed "przejeciem" pauzy
 ## zalozonej przez inny ekran (np. wznowienie gry w trakcie wyboru ulepszenia).
 var _is_open: bool = false
+## Tryb nakladki: pauza otwarta NAD innym ekranem (np. level-up), ktory juz trzyma pauze.
+## Wznowienie wtedy NIE zdejmuje pauzy - oddaje sterowanie temu ekranowi (sygnal overlay_closed).
+var _overlay: bool = false
+signal overlay_closed
 
 func _ready() -> void:
 	# Pewnik na wypadek braku ustawienia w .tscn - menu musi dzialac przy pauzie.
 	process_mode = Node.PROCESS_MODE_ALWAYS
+	add_to_group("pause_menu")  # level-up znajduje pauze przez grupe (luzne powiazanie)
 	_dimmer.hide()
 	_resume_button.pressed.connect(resume)
 	_restart_button.pressed.connect(_on_restart_pressed)
@@ -69,13 +74,36 @@ func _open() -> void:
 	_dimmer.show()
 	_resume_button.grab_focus()     # ergonomia: od razu nawigacja klawiatura/pad
 
+## Otwiera pauze jako NAKLADKE nad ekranem, ktory juz trzyma pauze (np. level-up).
+## Nie rusza get_tree().paused (juz wstrzymane). Wznowienie odda sterowanie przez overlay_closed.
+func open_overlay() -> void:
+	if _is_open:
+		return
+	AudioManager.play_sfx("ui_click")
+	_is_open = true
+	_overlay = true
+	_settings_panel.hide()
+	_menu_root.show()
+	_dimmer.show()
+	_resume_button.grab_focus()
+
+func is_overlay_open() -> bool:
+	return _is_open and _overlay
+
 ## Wznawia rozgrywke. Publiczne - podpiete pod przycisk "Wznow" oraz klawisz pauzy.
 func resume() -> void:
 	AudioManager.play_sfx("ui_click")
 	_is_open = false
+	_dimmer.hide()
+	_settings_panel.hide()
+	_menu_root.show()
+	if _overlay:
+		# Nakladka nad level-up: nie zdejmuj pauzy - oddaj sterowanie ekranowi pod spodem.
+		_overlay = false
+		overlay_closed.emit()
+		return
 	GameState.is_paused = false
 	get_tree().paused = false
-	_dimmer.hide()
 
 func _on_restart_pressed() -> void:
 	AudioManager.play_sfx("ui_click")

@@ -37,6 +37,9 @@ func test_settings_disables_longer_sessions() -> void:
 	assert_true(opt.is_item_disabled(1), "10 min wyszarzone")
 	assert_true(opt.is_item_disabled(2), "15 min wyszarzone")
 	assert_not_null(s.get_node_or_null("Panel/SessionNote"), "notka o dluzszych sesjach")
+	# Domyslnie 5 min (wskaznik na 5, nie na stare 15).
+	assert_eq(opt.selected, 0, "wybrana opcja sesji = 5 min (indeks 0)")
+	assert_eq(SettingsStore.session_length_min, 5, "sesja wymuszona na 5 min")
 
 func test_credits_loads_with_back() -> void:
 	assert_true(ResourceLoader.exists(ScenePaths.CREDITS), "scena CREDITS istnieje")

@@ -4,6 +4,7 @@ extends GutTest
 # Enter i Spacja (ui_accept) dzialaja natywnie. Tu sprawdzamy, ze focus jest ustawiany.
 
 const MenuScene := preload("res://scenes/MainMenu.tscn")
+const MenuScript := preload("res://scripts/ui/main_menu.gd")
 const LevelUpScene := preload("res://scenes/ui/level_up.tscn")
 const PauseScene := preload("res://scenes/ui/pause_menu.tscn")
 const GameOverScene := preload("res://scenes/ui/game_over.tscn")
@@ -31,6 +32,38 @@ func test_main_menu_grabs_focus() -> void:
 	await wait_frames(2)
 	assert_eq(get_viewport().gui_get_focus_owner(), m.get_node("Menu/QuickGameButton"),
 		"menu glowne: focus na SZYBKA GRA")
+
+func test_main_menu_returns_focus_to_source() -> void:
+	# Powrot z podmenu: focus wraca na przycisk, ktorym je otwarto.
+	MenuScript._return_focus = "Menu/SettingsButton"
+	var m = MenuScene.instantiate()
+	add_child_autofree(m)
+	await wait_frames(2)
+	assert_eq(get_viewport().gui_get_focus_owner(), m.get_node("Menu/SettingsButton"),
+		"focus wraca na opcje, z ktorej wrocilismy")
+
+func test_main_menu_ensures_menu_music() -> void:
+	# Powrot z gry/pauzy: menu wymusza muzyke menu (reset sesji gralby muzyke gry).
+	AudioManager.current_music_track = AudioManager.MUSIC["gameplay"]
+	var m = MenuScene.instantiate()
+	add_child_autofree(m)
+	await wait_frames(1)
+	assert_eq(AudioManager.current_music_track, AudioManager.MUSIC["menu"],
+		"menu glowne wymusza muzyke menu")
+
+func test_pause_overlay_keeps_pause() -> void:
+	# Nakladka pauzy nad level-upem: Wznow NIE zdejmuje pauzy (level-up dalej trzyma).
+	var pm = PauseScene.instantiate()
+	add_child_autofree(pm)
+	await wait_frames(1)
+	get_tree().paused = true  # pauza trzymana przez level-up
+	pm.open_overlay()
+	assert_true(pm.is_overlay_open(), "nakladka otwarta")
+	watch_signals(pm)
+	pm.resume()
+	assert_true(get_tree().paused, "nakladka nie zdejmuje pauzy")
+	assert_signal_emitted(pm, "overlay_closed", "nakladka oddaje sterowanie (overlay_closed)")
+	get_tree().paused = false
 
 func test_level_up_grabs_card_focus() -> void:
 	var lu = LevelUpScene.instantiate()

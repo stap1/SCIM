@@ -44,15 +44,8 @@ mgr Artur Karwatka
 [b]Inspiracja i podziękowania[/b]
 Ernest Hemingway - „Stary człowiek i morze\"
 
-[b]Dźwięki (CC0, BigSoundBank - autor Joseph SARDIN)[/b]
-Maszyna do pisania: klawisz i dzwonek karetki
-Syrena portowa: Ocean Liner Horn
-
-[b]Referencja graficzna[/b]
-Tivadar Csontváry Kosztka - „Stary rybak\" (1902, domena publiczna)
-
-[b]Wykorzystanie AI[/b]
-Claude, Gemini, Stable Diffusion, Nano Banana Pro"
+[b]Silnik[/b]
+Godot Engine 4 - licencja MIT (open source)"
 fit_content = true
 
 [node name="BackButton" type="Button" parent="Panel"]
