@@ -22,6 +22,25 @@ var _weight_by_scene: Dictionary = {}
 # Dodatek do budzetu wrogow z meta-progresji "horda" (R3d ustawi z MetaProgress; tu 0 = brak).
 # Wiecej wrogow naraz = wiecej zabic = wiecej punktow (risk/reward).
 var _spawn_budget_bonus: float = 0.0
+# Mapa typ (Enemy.EnemyType int) -> scena, do eventow spawnu.
+var _scene_for_type: Dictionary = {}
+# Stan eventow: id -> czy juz odpalil (jednorazowe); osobno liczba odpalen eventow czasowych.
+var _event_fired: Dictionary = {}
+var _time_event_count: Dictionary = {}
+
+# --- Eventy spawnu (powtarzalne, DANE) ---
+# Zmienne charakterystyki: typ wroga (spawn) + trigger + tryb. Latwo dodac/usunac/zmienic.
+#  trigger.kind: "kill_count" (na sygnal enemy_killed danego typu) lub "time" (czas sesji).
+#  trigger.type: typ liczonego wroga (tylko kill_count). trigger.at: prog/czas. trigger.repeat: bool.
+#  mode: "fill" (zapelnij budzet danym typem) lub "burst" (count sztuk).
+const SPAWN_EVENTS := [
+	# "Morze nie znosi pustki" - po 30. zabitej meduzie rojenie meduz zapelnia budzet.
+	{"id": "jelly_swarm", "type": 0, "mode": "fill",
+		"trigger": {"kind": "kill_count", "type": 0, "at": 30, "repeat": false}},
+	# Cykliczny rajd barakud co 100 s (inny typ + inny trigger + powtarzalny - demonstruje system).
+	{"id": "barracuda_raid", "type": 1, "mode": "burst", "count": 4,
+		"trigger": {"kind": "time", "at": 100.0, "repeat": true}},
+]
 
 # Balans edytowalny w jednym miejscu - bez dotykania logiki.
 var difficulty_curve := {
@@ -41,6 +60,9 @@ func _ready() -> void:
 		BarracudaScene: int(GameConfig.ENEMY_WEIGHT[1]),
 		SharkScene: int(GameConfig.ENEMY_WEIGHT[2]),
 	}
+	_scene_for_type = {0: JellyfishScene, 1: BarracudaScene, 2: SharkScene}
+	# Eventy spawnu na zabiciach danego typu (np. rojenie meduz przy "Morze nie znosi pustki").
+	GameState.enemy_killed.connect(_on_event_kill)
 	# _spawn_budget_bonus zwieksza budzet wg meta-progresji "horda" - podpinane w R3d.
 
 	_timer = Timer.new()
@@ -63,11 +85,93 @@ func stop_spawning() -> void:
 	if _heal_timer:
 		_heal_timer.stop()
 
+# --- Eventy spawnu (powtarzalne, dane: typ wroga + trigger) ---
+
+# Trigger na zabiciu: eventy kill_count na sygnal enemy_killed danego typu.
+func _on_event_kill(killed_type: int, count: int) -> void:
+	if GameState.is_game_over or GameState.victory_locked:
+		return
+	for ev in SPAWN_EVENTS:
+		var t: Dictionary = ev["trigger"]
+		if t.get("kind", "") != "kill_count":
+			continue
+		if int(t.get("type", -1)) != killed_type:
+			continue
+		var repeat := bool(t.get("repeat", false))
+		if not event_kill_triggered(int(t.get("at", 0)), repeat, count):
+			continue
+		if not repeat:
+			if bool(_event_fired.get(ev["id"], false)):
+				continue
+			_event_fired[ev["id"]] = true
+		_run_event(ev)
+
+# Trigger czasowy: sprawdzany co tick. repeat -> co 'at' sekund; inaczej raz po 'at'.
+func _check_time_events() -> void:
+	if GameState.is_game_over or GameState.victory_locked:
+		return
+	for ev in SPAWN_EVENTS:
+		var t: Dictionary = ev["trigger"]
+		if t.get("kind", "") != "time":
+			continue
+		var at := float(t.get("at", 0.0))
+		if at <= 0.0:
+			continue
+		if bool(t.get("repeat", false)):
+			var due := int(floor(GameState.time / at))
+			if due > int(_time_event_count.get(ev["id"], 0)):
+				_time_event_count[ev["id"]] = due
+				_run_event(ev)
+		elif GameState.time >= at and not bool(_event_fired.get(ev["id"], false)):
+			_event_fired[ev["id"]] = true
+			_run_event(ev)
+
+# Wykonuje event: zapelnia budzet danym typem (fill) lub spawnuje 'count' sztuk (burst).
+func _run_event(ev: Dictionary) -> void:
+	var enemy_type := int(ev.get("type", 0))
+	var scene = _scene_for_type.get(enemy_type, null)
+	if scene == null:
+		return
+	if ev.get("mode", "fill") == "burst":
+		_burst_spawn(scene, int(ev.get("count", 1)))
+	else:
+		_fill_budget_with(scene, enemy_type)
+
+# Spawnuje wrogow danego typu az do zapelnienia budzetu wagi (lub twardego capu liczby).
+func _fill_budget_with(scene: PackedScene, enemy_type: int) -> void:
+	var w := int(GameConfig.ENEMY_WEIGHT.get(enemy_type, 1))
+	var budget := weight_budget(GameState.time, _spawn_budget_bonus)
+	var guard := 0
+	while guard < max_enemies:
+		var enemies := get_tree().get_nodes_in_group("enemies")
+		if enemies.size() >= max_enemies:
+			break
+		if float(current_enemy_weight(enemies) + w) > budget:
+			break
+		spawn_enemy(scene)
+		guard += 1
+
+# Spawnuje do 'n' wrogow danego typu (respektuje twardy cap liczby).
+func _burst_spawn(scene: PackedScene, n: int) -> void:
+	for i in n:
+		if get_tree().get_nodes_in_group("enemies").size() >= max_enemies:
+			break
+		spawn_enemy(scene)
+
+# Czysta funkcja: czy event kill_count ma sie odpalic. repeat -> co 'at' zabic; inaczej raz przy 'at'.
+static func event_kill_triggered(at: int, repeat: bool, count: int) -> bool:
+	if at <= 0:
+		return false
+	if repeat:
+		return count % at == 0
+	return count == at
+
 func _on_timeout() -> void:
 	if GameState.is_paused or GameState.is_game_over:
 		return
 
 	_check_boss()
+	_check_time_events()
 
 	# Karencja startowa - brak zwyklych wrogow przez pierwsze SPAWN_GRACE_SECONDS.
 	if is_in_grace(GameState.time, GameConfig.SPAWN_GRACE_SECONDS):
