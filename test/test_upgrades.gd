@@ -14,7 +14,7 @@ func test_six_upgrades_have_fields() -> void:
 		assert_true(u.has("description"), "%s ma pole description" % id)
 
 func test_apply_faster_attack_pure() -> void:
-	assert_almost_eq(Upgrades.apply_faster_attack(0.8), 0.68, 0.001, "0.8 * 0.85 = 0.68")
+	assert_almost_eq(Upgrades.apply_faster_attack(0.8), 0.72, 0.001, "0.8 * 0.90 = 0.72")
 
 func test_apply_double_harpoon_pure() -> void:
 	assert_eq(Upgrades.apply_double_harpoon(), 2, "double_harpoon ustawia 2 pociski")
@@ -22,12 +22,12 @@ func test_apply_double_harpoon_pure() -> void:
 func test_apply_tougher_hull_increases_max_health() -> void:
 	var before: float = GameState.max_health
 	Upgrades.apply("tougher_hull")
-	assert_almost_eq(GameState.max_health, before + 30.0, 0.001, "tougher_hull: max_health +30")
+	assert_almost_eq(GameState.max_health, before + 20.0, 0.001, "tougher_hull: max_health +20")
 
 func test_apply_resource_magnet_increases_multiplier() -> void:
 	var before: float = GameState.magnet_range_mult
 	Upgrades.apply("resource_magnet")
-	assert_almost_eq(GameState.magnet_range_mult, before * 1.4, 0.001, "resource_magnet: mnoznik *1.4")
+	assert_almost_eq(GameState.magnet_range_mult, before * 1.25, 0.001, "resource_magnet: mnoznik *1.25")
 
 func test_upgrade_respects_max_level() -> void:
 	var id := "faster_attack"
