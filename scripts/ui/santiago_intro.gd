@@ -48,7 +48,9 @@ static func pick_portrait_index(count: int, rng_seed: int) -> int:
 	rng.seed = rng_seed
 	return rng.randi_range(0, count - 1)
 
-# --- Sekwencja intro (jeden Tween, gra mimo pauzy bo overlay = ALWAYS) ---
+# --- Sekwencja intro (JEDEN Tween, gra mimo pauzy bo overlay = ALWAYS) ---
+# Animacje tokenow sa CZESCIA glownego tweena (bez zagniezdzania create_tween w callbackach -
+# wczesniej zagniezdzone tweeny tej samej etykiety kolidowaly i odliczanie utykalo na "3").
 func _start_intro() -> void:
 	get_tree().paused = true
 	_reduce = not SettingsStore.should_flash(SettingsStore.reduce_flashing)
@@ -59,37 +61,30 @@ func _start_intro() -> void:
 	var tw := create_tween()
 	# Wejscie: przewrocenie strony odslania portret.
 	tw.tween_method(_set_page, 0.0, 1.0, GameConfig.INTRO_PAGE_TURN_TIME)
-	# Odliczanie: kazda duza cyfra pojawia sie, kurczy i znika; potem okrzyk.
-	tw.tween_callback(_show_token.bind("3"))
-	tw.tween_interval(step)
-	tw.tween_callback(_show_token.bind("2"))
-	tw.tween_interval(step)
-	tw.tween_callback(_show_token.bind("1"))
-	tw.tween_interval(step)
-	tw.tween_callback(_show_token.bind(NarrativeData.INTRO_SHOUT))
-	tw.tween_interval(step)
+	# Odliczanie: kazdy token (3,2,1, okrzyk) pojawia sie duzy i kurczac sie znika.
+	if countdown_label != null:
+		for token in ["3", "2", "1", NarrativeData.INTRO_SHOUT]:
+			tw.tween_callback(_prep_token.bind(token))
+			if _reduce:
+				tw.tween_property(countdown_label, "modulate:a", 0.0, step)
+			else:
+				tw.tween_property(countdown_label, "scale", Vector2(0.5, 0.5), step).set_trans(Tween.TRANS_QUAD)
+				tw.parallel().tween_property(countdown_label, "modulate:a", 0.0, step)
+	else:
+		tw.tween_interval(step * 4.0)  # zachowaj rytm gdy brak etykiety
 	# Przejscie na wode: syrena + przewrocenie strony odslaniajace rozgrywke.
 	tw.tween_callback(func() -> void: AudioManager.play_sfx("port_siren"))
 	tw.tween_method(_set_page_out, 0.0, 1.0, GameConfig.INTRO_PAGE_TURN_TIME)
 	tw.tween_callback(_finish)
 
-# Pokazuje token odliczania (cyfra lub okrzyk): duzy, potem kurczy sie i znika.
-# Sub-Tween gra mimo pauzy (overlay = ALWAYS). reduce_flashing -> tylko fade, bez skali.
-func _show_token(text_value: String) -> void:
+# Ustawia token odliczania na stan poczatkowy (duzy, pelna widocznosc). Animacje robi glowny tween.
+func _prep_token(text_value: String) -> void:
 	if countdown_label == null:
 		return
 	countdown_label.text = text_value
 	countdown_label.pivot_offset = countdown_label.size * 0.5
 	countdown_label.modulate.a = 1.0
-	var step: float = GameConfig.INTRO_COUNTDOWN_STEP
-	var t := create_tween()
-	if _reduce:
-		countdown_label.scale = Vector2.ONE
-		t.tween_property(countdown_label, "modulate:a", 0.0, step)
-	else:
-		countdown_label.scale = Vector2(1.6, 1.6)
-		t.tween_property(countdown_label, "scale", Vector2(0.5, 0.5), step).set_trans(Tween.TRANS_QUAD)
-		t.parallel().tween_property(countdown_label, "modulate:a", 0.0, step)
+	countdown_label.scale = Vector2.ONE if _reduce else Vector2(1.6, 1.6)
 
 # Page-turn IN (0->1): strona "kladzie sie" od grzbietu (lewa krawedz).
 func _set_page(t: float) -> void:

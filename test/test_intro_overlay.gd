@@ -33,6 +33,18 @@ func test_overlay_always_process_and_pauses() -> void:
 	assert_signal_emitted(overlay, "intro_finished", "emituje intro_finished")
 	assert_false(get_tree().paused, "po zakonczeniu zdejmuje pauze")
 
+func test_countdown_progresses_past_three() -> void:
+	# Regresja: odliczanie utykalo na "3" (zagniezdzone tweeny). Po przewroceniu strony (0.5s)
+	# i pierwszym kroku (0.7s) token "3" ma ustapic "2". Timer process_always tyka mimo pauzy.
+	var overlay = IntroScene.instantiate()
+	add_child_autofree(overlay)
+	var label = overlay.get_node_or_null("Page/Countdown")
+	assert_not_null(label, "etykieta odliczania istnieje")
+	await get_tree().create_timer(1.6, true).timeout
+	assert_ne(label.text, "3", "odliczanie idzie dalej niz 3 (3->2->1)")
+	if get_tree().paused:
+		get_tree().paused = false
+
 func test_exit_before_finish_unpauses() -> void:
 	# Symuluje zmiane sceny w trakcie intro: overlay znika bez _finish -> nie zostawia pauzy.
 	var overlay = IntroScene.instantiate()
