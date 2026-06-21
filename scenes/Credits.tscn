@@ -1,0 +1,57 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/credits.gd" id="1_cred"]
+
+[node name="Credits" type="Control"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource("1_cred")
+
+[node name="Background" type="ColorRect" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0.07, 0.1, 0.15, 1)
+
+[node name="Panel" type="VBoxContainer" parent="."]
+offset_left = 180.0
+offset_top = 60.0
+offset_right = 972.0
+offset_bottom = 600.0
+theme_override_constants/separation = 16
+
+[node name="Title" type="Label" parent="Panel"]
+theme_override_colors/font_color = Color(0.96, 0.9, 0.76, 1)
+theme_override_font_sizes/font_size = 32
+horizontal_alignment = 1
+text = "CREDITS"
+
+[node name="Body" type="RichTextLabel" parent="Panel"]
+custom_minimum_size = Vector2(792, 400)
+layout_mode = 2
+size_flags_vertical = 3
+bbcode_enabled = true
+text = "[center][b]Stary człowiek i morze[/b][/center]
+
+[b]Autorzy[/b]
+Stanisław Przybyłek
+Mateusz
+
+[b]Inspiracja i podziękowania[/b]
+Ernest Hemingway - „Stary człowiek i morze\"
+
+[b]Dźwięki (CC0, BigSoundBank - autor Joseph SARDIN)[/b]
+Maszyna do pisania: klawisz i dzwonek karetki
+Syrena portowa: Ocean Liner Horn
+
+[b]Referencja graficzna[/b]
+Tivadar Csontváry Kosztka - „Stary rybak\" (1902, domena publiczna)
+
+[b]Wykorzystanie AI[/b]
+Claude, Gemini, Stable Diffusion, Nano Banana Pro"
+fit_content = true
+
+[node name="BackButton" type="Button" parent="Panel"]
+layout_mode = 2
+text = "Powrót"

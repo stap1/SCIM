@@ -4,9 +4,12 @@ extends Control
 # odpowiednie sceny, Wyjscie zamyka. Animowane tlo - lodz kolysze sie na falach (Tween).
 
 func _ready() -> void:
-	_connect_button("Menu/StartButton", _on_start)
-	_connect_button("Menu/ScoresButton", _on_scores)
+	# SZYBKA GRA (5 min) = jedyny aktywny start; NOWA GRA wyszarzona (przyszlosc).
+	_connect_button("Menu/QuickGameButton", _on_quick_game)
+	_connect_button("Menu/UpgradesButton", _on_upgrades)
 	_connect_button("Menu/SettingsButton", _on_settings)
+	_connect_button("Menu/ScoresButton", _on_scores)
+	_connect_button("Menu/CreditsButton", _on_credits)
 	_connect_button("Menu/QuitButton", _on_quit)
 	_animate_waves()
 
@@ -26,9 +29,19 @@ func _animate_waves() -> void:
 	tween.tween_property(boat, "position:y", base_y - 12.0, 1.2).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
 	tween.tween_property(boat, "position:y", base_y + 12.0, 1.2).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
 
-func _on_start() -> void:
+func _on_quick_game() -> void:
+	SettingsStore.session_length_min = 5  # tryb szybkiej gry: stale 5 minut
 	GameState.reset()
 	get_tree().change_scene_to_file(ScenePaths.MAIN)
+
+# Otwiera popup ULEPSZENIA (sklep meta-progresji). Popup zyje w scenie menu (R3c).
+func _on_upgrades() -> void:
+	var popup := get_node_or_null("UpgradesMenu")
+	if popup != null and popup.has_method("open"):
+		popup.open()
+
+func _on_credits() -> void:
+	get_tree().change_scene_to_file(ScenePaths.CREDITS)
 
 func _on_scores() -> void:
 	# Ekran wynikow - krok 21. Otwiera Scores.tscn, jesli juz istnieje.

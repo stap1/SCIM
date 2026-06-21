@@ -15,7 +15,7 @@ const SETTINGS_PATH := "user://settings.cfg"
 # --- Zywe ustawienia gracza (NIE stan sesji) - jedyne zrodlo prawdy o ustawieniach (P1.6).
 # Dlugosc sesji trzymana w MINUTACH (jednostka czytelna dla gracza); przeliczenie na
 # sekundy rozgrywki przez czysta funkcje session_seconds() - jeden punkt konwersji.
-var session_length_min: int = 15
+var session_length_min: int = 5
 # Accessibility - czytane przez kod efektow (shake/flash) via should_apply_shake/should_flash.
 var reduce_shake: bool = false
 var reduce_flashing: bool = false
@@ -70,13 +70,13 @@ static func save_settings(path: String, music_vol: float, sfx_vol: float, sessio
 static func load_settings(path: String) -> Dictionary:
 	var cfg := ConfigFile.new()
 	var result := {
-		"music_vol": 1.0, "sfx_vol": 1.0, "session_length": 15,
+		"music_vol": 1.0, "sfx_vol": 1.0, "session_length": 5,
 		"reduce_shake": false, "reduce_flashing": false,
 	}
 	if cfg.load(path) == OK:
 		result["music_vol"] = cfg.get_value("audio", "music_vol", 1.0)
 		result["sfx_vol"] = cfg.get_value("audio", "sfx_vol", 1.0)
-		result["session_length"] = cfg.get_value("game", "session_length", 15)
+		result["session_length"] = cfg.get_value("game", "session_length", 5)
 		result["reduce_shake"] = cfg.get_value("accessibility", "reduce_shake", false)
 		result["reduce_flashing"] = cfg.get_value("accessibility", "reduce_flashing", false)
 	return result

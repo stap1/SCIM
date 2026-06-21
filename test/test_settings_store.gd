@@ -34,7 +34,7 @@ func test_config_round_trip() -> void:
 func test_load_missing_returns_defaults() -> void:
 	var s := SettingsStore.load_settings("user://nie_istnieje_xyz.cfg")
 	assert_almost_eq(s["music_vol"], 1.0, 0.001, "domyslna glosnosc 1.0")
-	assert_eq(int(s["session_length"]), 15, "domyslna sesja 15")
+	assert_eq(int(s["session_length"]), 5, "domyslna sesja 5")
 	assert_false(bool(s["reduce_shake"]), "domyslnie bez redukcji shake")
 
 # apply_saved zapisuje ustawienia do SettingsStore - patrz test_state_separation.gd (P1.6).

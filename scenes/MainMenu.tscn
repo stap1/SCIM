@@ -41,24 +41,37 @@ horizontal_alignment = 1
 [node name="Menu" type="VBoxContainer" parent="."]
 layout_mode = 0
 offset_left = 64.0
-offset_top = 224.0
-offset_right = 324.0
-offset_bottom = 470.0
+offset_top = 168.0
+offset_right = 380.0
+offset_bottom = 600.0
 theme = ExtResource("3_theme")
-theme_override_constants/separation = 16
+theme_override_constants/separation = 12
 
-[node name="StartButton" type="Button" parent="Menu"]
+[node name="QuickGameButton" type="Button" parent="Menu"]
 layout_mode = 2
-text = "Start"
+text = "SZYBKA GRA (5 minut)"
 
-[node name="ScoresButton" type="Button" parent="Menu"]
+[node name="NewGameButton" type="Button" parent="Menu"]
 layout_mode = 2
-text = "Wyniki"
+disabled = true
+text = "NOWA GRA"
+
+[node name="UpgradesButton" type="Button" parent="Menu"]
+layout_mode = 2
+text = "ULEPSZENIA"
 
 [node name="SettingsButton" type="Button" parent="Menu"]
 layout_mode = 2
-text = "Ustawienia"
+text = "USTAWIENIA"
+
+[node name="ScoresButton" type="Button" parent="Menu"]
+layout_mode = 2
+text = "WYNIKI"
+
+[node name="CreditsButton" type="Button" parent="Menu"]
+layout_mode = 2
+text = "CREDITS"
 
 [node name="QuitButton" type="Button" parent="Menu"]
 layout_mode = 2
-text = "Wyjście"
+text = "WYJŚCIE Z GRY"

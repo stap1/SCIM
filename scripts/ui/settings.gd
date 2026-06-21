@@ -5,7 +5,9 @@ extends Control
 # tylko buduje UI i deleguje zapis/odczyt do SettingsStore. Nie zawiera juz wlasnej
 # logiki persystencji/audio, by gameplay/audio nie musialy siegac do skryptu UI.
 
-const SESSION_LENGTHS := [10, 15, 20]
+# Tylko 5 min aktywne; 10/15 wyszarzone (dluzsze sesje w przyszlym etapie).
+const SESSION_LENGTHS := [5, 10, 15]
+const SESSION_ENABLED := 5
 
 @onready var music_slider: HSlider = get_node_or_null("Panel/MusicSlider")
 @onready var sfx_slider: HSlider = get_node_or_null("Panel/SFXSlider")
@@ -16,8 +18,11 @@ const SESSION_LENGTHS := [10, 15, 20]
 
 func _ready() -> void:
 	if session_option:
-		for length in SESSION_LENGTHS:
-			session_option.add_item("%d min" % length)
+		for i in SESSION_LENGTHS.size():
+			session_option.add_item("%d min" % SESSION_LENGTHS[i])
+			# Dluzsze sesje (10/15) wyszarzone do przyszlego etapu - tylko 5 min wybieralne.
+			if SESSION_LENGTHS[i] != SESSION_ENABLED:
+				session_option.set_item_disabled(i, true)
 
 	var s := SettingsStore.load_settings(SettingsStore.SETTINGS_PATH)
 
@@ -41,7 +46,7 @@ func _ready() -> void:
 
 	if session_option:
 		var idx := SESSION_LENGTHS.find(int(s["session_length"]))
-		session_option.selected = idx if idx != -1 else 1
+		session_option.selected = idx if idx != -1 else 0  # fallback = 5 min (jedyne aktywne)
 		session_option.item_selected.connect(_on_session_selected)
 
 	if reduce_shake_check:
