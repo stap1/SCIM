@@ -93,7 +93,10 @@ func _ready() -> void:
 
 # Reakcje na sygnały z GameState
 func _on_level_up(_new_level: int) -> void: play_sfx("level_up")
-func _on_game_over() -> void: play_music(MUSIC["gameover"])
+func _on_game_over() -> void:
+	# Wariant wygranej/porazki (R4b): inny nastroj. music_menu jako placeholder zwyciestwa
+	# (docelowo wlasny utwor); music_gameover przy porazce.
+	play_music(MUSIC["menu"] if GameState.won else MUSIC["gameover"])
 func _on_boss_incoming() -> void: 
 	play_sfx("boss_spawn")
 	crossfade_to(MUSIC["boss"], MUSIC_CROSSFADE)

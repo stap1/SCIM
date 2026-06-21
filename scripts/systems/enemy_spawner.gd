@@ -55,6 +55,13 @@ func _ready() -> void:
 	_heal_timer.timeout.connect(_on_heal_timeout)
 	add_child(_heal_timer)
 
+# Wstrzymuje spawn wrogow i desek (laska na zebranie orbow po wygranej, R4a).
+func stop_spawning() -> void:
+	if _timer:
+		_timer.stop()
+	if _heal_timer:
+		_heal_timer.stop()
+
 func _on_timeout() -> void:
 	if GameState.is_paused or GameState.is_game_over:
 		return

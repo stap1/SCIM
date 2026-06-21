@@ -76,6 +76,16 @@ offset_bottom = 374.0
 horizontal_alignment = 1
 text = "Najlepszy wynik: 0"
 
+[node name="MetaLabel" type="Label" parent="Panel"]
+anchor_right = 1.0
+offset_left = 20.0
+offset_top = 376.0
+offset_right = -20.0
+offset_bottom = 396.0
+theme_override_colors/font_color = Color(1, 0.85, 0.1, 1)
+horizontal_alignment = 1
+text = "Zdobyte punkty: 0"
+
 [node name="RestartButton" type="Button" parent="Panel"]
 offset_left = 400.0
 offset_top = 400.0

@@ -41,6 +41,10 @@ var kills_by_type: Dictionary = {}
 var miniboss_defeated: bool = false
 var is_paused: bool = false
 var is_game_over: bool = false
+# Wynik sesji: true = wygrana (przetrwal/pokonal bossa), false = porazka (smierc). Czyta ekran konca.
+var won: bool = false
+# Blokada porazki podczas laski na zebranie orbow po wygranej (smierc w tym oknie nie psuje wygranej).
+var victory_locked: bool = false
 
 # --- Mutatory: jedyne dozwolone sciezki zmiany stanu ---
 
@@ -59,6 +63,8 @@ func reset() -> void:
 	magnet_range_mult = 1.0
 	is_paused = false
 	is_game_over = false
+	won = false
+	victory_locked = false
 	health_changed.emit(health)
 	score_changed.emit(score)
 	time_changed.emit(time)
@@ -120,7 +126,8 @@ static func xp_threshold(level_value: int) -> int:
 func take_damage(amount: float) -> void:
 	health = maxf(0.0, health - amount)
 	health_changed.emit(health)
-	if health <= 0.0:
+	# Smierc konczy gra porazka - chyba ze trwa laska po wygranej (victory_locked).
+	if health <= 0.0 and not victory_locked:
 		trigger_game_over()
 
 # Przywraca HP (zebrana deska), nigdy ponad max_health.
@@ -134,8 +141,10 @@ func heal_to_full() -> void:
 	health_changed.emit(health)
 
 # Jedyne miejsce konczenia gry. Guard gwarantuje, ze sygnal game_over poleci dokladnie raz.
-func trigger_game_over() -> void:
+# victory=true gdy gracz przetrwal sesje / pokonal bossa (ekran konca pokaze wariant wygranej).
+func trigger_game_over(victory: bool = false) -> void:
 	if is_game_over:
 		return
 	is_game_over = true
+	won = victory
 	game_over.emit()

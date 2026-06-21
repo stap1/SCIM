@@ -164,3 +164,7 @@ const DIALOGUE_HOLD: float = 3.5            # ile sekund kwestia trzyma sie PO n
 # --- Intro Santiago (B3) ---
 const INTRO_COUNTDOWN_STEP: float = 0.7     # czas jednego kroku odliczania 3-2-1
 const INTRO_PAGE_TURN_TIME: float = 0.5     # czas animacji przewrocenia strony (komiks/ksiazka)
+
+# --- Koniec sesji (R4) ---
+# Po spelnieniu warunku wygranej: laska na zebranie orbow, zanim pojawi sie ekran wyniku.
+const VICTORY_COLLECT_GRACE: float = 3.0

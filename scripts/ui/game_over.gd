@@ -6,7 +6,16 @@ extends CanvasLayer
 
 const HighScores := preload("res://scripts/systems/highscores.gd")
 
+# Warianty nastroju ekranu konca (R4b).
+const WIN_COLOR := Color(0.6, 0.95, 0.55, 1)
+const LOSS_COLOR := Color(1.0, 0.41, 0.41, 1)
+const WIN_BG := Color(0.06, 0.14, 0.10, 0.82)
+const LOSS_BG := Color(0.09, 0.09, 0.09, 0.71)
+
 @onready var panel: Control = $Panel
+@onready var go_label: Label = get_node_or_null("Panel/GameOverLabel")
+@onready var background: ColorRect = get_node_or_null("Panel/Background")
+@onready var meta_label: Label = get_node_or_null("Panel/MetaLabel")
 @onready var final_score_label: Label = get_node_or_null("Panel/FinalScoreLabel")
 @onready var time_label: Label = get_node_or_null("Panel/TimeLabel")
 @onready var kills_label: Label = get_node_or_null("Panel/KillsLabel")
@@ -42,6 +51,19 @@ func _on_game_over() -> void:
 	if best_label:
 		best_label.text = best_text(best, is_record)
 
+	# Wariant wygrana/porazka (R4b): tytul, kolory, nastroj.
+	if go_label:
+		go_label.text = outcome_title(GameState.won)
+		go_label.add_theme_color_override("font_color", WIN_COLOR if GameState.won else LOSS_COLOR)
+	if background:
+		background.color = WIN_BG if GameState.won else LOSS_BG
+
+	# Przeliczenie wyniku na punkty meta i dopisanie na konto (R3b).
+	var pts := MetaProgress.score_to_points(GameState.score)
+	MetaProgress.add_points(pts)
+	if meta_label:
+		meta_label.text = "Zdobyte punkty: %d" % pts
+
 	if panel:
 		panel.show()
 	get_tree().paused = true
@@ -61,6 +83,10 @@ func _set_score_text(v: float) -> void:
 # Suma (enemies_killed) zostaje wiodaca (zgodnosc highscores); rozbicie z kills_by_type.
 static func kills_breakdown_text(total: int, jelly: int, barracuda: int, shark: int) -> String:
 	return "Zatopione: %d (meduzy %d / barakudy %d / rekiny %d)" % [total, jelly, barracuda, shark]
+
+# Czysta funkcja: tytul ekranu konca wg wyniku (R4b).
+static func outcome_title(won: bool) -> String:
+	return "WYGRANA" if won else "KONIEC REJSU"
 
 static func is_new_record(score: int, best: int) -> bool:
 	return score > 0 and score >= best
