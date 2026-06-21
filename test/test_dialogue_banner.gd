@@ -41,6 +41,26 @@ func test_highest_jelly_threshold() -> void:
 	assert_eq(Banner.highest_jelly_threshold(45), 30, "45 -> 30")
 	assert_eq(Banner.highest_jelly_threshold(80), 60, "80 -> 60")
 
+func test_banner_always_and_below_overlays() -> void:
+	# Baner ma dzialac mimo pauzy (ALWAYS) i renderowac sie POD level-up(5)/pauza(10).
+	var banner = BannerScene.instantiate()
+	add_child_autofree(banner)
+	assert_eq(banner.process_mode, Node.PROCESS_MODE_ALWAYS, "baner dziala mimo pauzy")
+	assert_lt(banner.layer, 5, "baner pod ekranem level-up (warstwa 5) i pauzy (10)")
+
+func test_typing_continues_during_pause() -> void:
+	# Regresja: maszyna zatrzymywala sie przy pauzie/level-up. Ma pisac dalej (pod ekranem).
+	var banner = BannerScene.instantiate()
+	add_child_autofree(banner)
+	await wait_frames(1)
+	banner.enqueue("Tym razem nie wrocę z morza z pustymi rękami i tak dalej")
+	get_tree().paused = true
+	await get_tree().create_timer(0.3, true).timeout  # timer tyka mimo pauzy
+	var typer = banner.get_node("Panel/Line")
+	assert_gt(typer.visible_characters, 0, "maszyna pisze mimo pauzy (>0 znakow)")
+	assert_lt(typer.visible_characters, typer.text.length(), "wciaz w toku - dowod, ze nie zamarla")
+	get_tree().paused = false
+
 func test_queue_is_fifo() -> void:
 	var banner = BannerScene.instantiate()
 	add_child_autofree(banner)
