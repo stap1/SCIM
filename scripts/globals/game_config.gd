@@ -131,3 +131,16 @@ const HEAL_PLANK_LIFETIME: float = 15.0
 # --- Efekty ---
 # Czas zycia bursta smierci wroga (CPUParticles2D) zanim sam sie zwolni.
 const DEATH_BURST_LIFETIME: float = 1.5
+
+# --- Narracja: efekt maszyny do pisania (dialogi B4 + ostrzezenie o bossie) ---
+const TYPEWRITER_CPS: float = 32.0          # znaki/s ujawniania; szybko, ale czytelnie
+const TYPEWRITER_KEY_EVERY: int = 2         # dzwiek klawisza co N ujawnionych nie-bialych znakow
+const TYPEWRITER_KEY_PITCH_JITTER: float = 0.12  # +/- losowy pitch klawisza (naturalnosc)
+
+# --- Narracja: dialogi w grze (dolny pasek, bez pauzy) ---
+const DIALOGUE_FADE: float = 0.4            # czas fade in/out paska
+const DIALOGUE_HOLD: float = 3.5            # ile sekund kwestia trzyma sie PO napisaniu
+
+# --- Intro Santiago (B3) ---
+const INTRO_COUNTDOWN_STEP: float = 0.7     # czas jednego kroku odliczania 3-2-1
+const INTRO_PAGE_TURN_TIME: float = 0.5     # czas animacji przewrocenia strony (komiks/ksiazka)

@@ -14,6 +14,12 @@ const SFX_PATHS := {
 	"heal": "res://audio/sfx/heal.ogg",
 	# Zbieranie orba XP (combo zmienia pitch) - placeholder do czasu dedykowanego assetu.
 	"xp_pickup": "",
+	# Narracja (maszyna do pisania): klawisz grany throttlowanie przez dedykowany player
+	# (play_typewriter_key), dzwonek karetki przez zwykle play_sfx na koncu kwestii.
+	"typewriter_key": "res://audio/sfx/typewriter_key.ogg",
+	"typewriter_bell": "res://audio/sfx/typewriter_bell.ogg",
+	# Syrena portowa - cue startu nowej gry (po odliczaniu intro).
+	"port_siren": "res://audio/sfx/port_siren.ogg",
 }
 
 const SFX_POOL_SIZE := 16
@@ -33,6 +39,9 @@ var _sfx_players: Array[AudioStreamPlayer] = []
 var _sfx_index := 0
 var _music_player: AudioStreamPlayer
 var _ambient_player: AudioStreamPlayer
+# Dedykowany odtwarzacz klawisza maszyny do pisania - nie obciaza puli SFX (gesto grany).
+# Kazdy klawisz przerywa poprzedni, co brzmi naturalnie przy szybkim pisaniu.
+var _typewriter_player: AudioStreamPlayer
 var current_music_track: String = ""
 
 func _ready() -> void:
@@ -61,6 +70,11 @@ func _ready() -> void:
 	_ambient_player = AudioStreamPlayer.new()
 	_ambient_player.bus = _bus_or_master("Ambient")
 	add_child(_ambient_player)
+
+	# 3b. Dedykowany player klawisza maszyny do pisania (bus SFX - suwak gracza dziala).
+	_typewriter_player = AudioStreamPlayer.new()
+	_typewriter_player.bus = _bus_or_master("SFX")
+	add_child(_typewriter_player)
 	
 	if ResourceLoader.exists(AMBIENT_PATH):
 		_ambient_player.stream = load(AMBIENT_PATH)
@@ -108,6 +122,18 @@ func play_sfx_pitched(sfx_name: String, pitch: float) -> void:
 	player.stream = stream
 	player.pitch_scale = maxf(0.01, pitch)
 	player.play()
+
+# Klawisz maszyny do pisania (dedykowany player, z zadanym pitch). Przerywa poprzedni
+# klawisz. Brak streamu (plik nieobecny) -> cisza, bez crasha.
+func play_typewriter_key(pitch: float) -> void:
+	if _typewriter_player == null:
+		return
+	var stream = _sfx_streams.get("typewriter_key")
+	if stream == null:
+		return
+	_typewriter_player.stream = stream
+	_typewriter_player.pitch_scale = maxf(0.01, pitch)
+	_typewriter_player.play()
 
 # Kontrola muzyki
 func stop_music() -> void:
