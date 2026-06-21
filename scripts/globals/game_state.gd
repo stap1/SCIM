@@ -13,6 +13,9 @@ signal level_up(new_level: int)
 signal session_reset
 # Ostrzezenie przed pojawieniem sie mini-bossa.
 signal boss_incoming
+# Zabicie wroga danego typu (Enemy.EnemyType jako int) + biezacy licznik tego typu.
+# Wyzwala narracje (dialogi B4) i statystyke per typ (ekran konca B5).
+signal enemy_killed(type: int, count_of_type: int)
 # Emitowany DOKLADNIE RAZ, gdy gra sie konczy (guard w trigger_game_over).
 signal game_over
 
@@ -32,9 +35,16 @@ var xp_to_next: int = 0
 # Mnoznik zasiegu zbierania XP (upgrade resource_magnet). Czytany przez XpOrb na spawnie.
 var magnet_range_mult: float = 1.0
 var enemies_killed: int = 0
+# Zabicia w rozbiciu na typ (Enemy.EnemyType jako int -> licznik). enemies_killed (suma)
+# pozostaje osobno (highscores/ekran konca). Resetowane na nowa sesje.
+var kills_by_type: Dictionary = {}
 var miniboss_defeated: bool = false
 var is_paused: bool = false
 var is_game_over: bool = false
+# Wynik sesji: true = wygrana (przetrwal/pokonal bossa), false = porazka (smierc). Czyta ekran konca.
+var won: bool = false
+# Blokada porazki podczas laski na zebranie orbow po wygranej (smierc w tym oknie nie psuje wygranej).
+var victory_locked: bool = false
 
 # --- Mutatory: jedyne dozwolone sciezki zmiany stanu ---
 
@@ -48,10 +58,13 @@ func reset() -> void:
 	max_health = GameConfig.PLAYER_MAX_HP
 	health = max_health
 	enemies_killed = 0
+	kills_by_type.clear()
 	miniboss_defeated = false
 	magnet_range_mult = 1.0
 	is_paused = false
 	is_game_over = false
+	won = false
+	victory_locked = false
 	health_changed.emit(health)
 	score_changed.emit(score)
 	time_changed.emit(time)
@@ -65,6 +78,13 @@ func add_time(delta: float) -> void:
 func add_score(amount: int) -> void:
 	score += amount
 	score_changed.emit(score)
+
+# Rejestruje zabicie wroga danego typu (Enemy.EnemyType jako int). Zwieksza licznik
+# tego typu i emituje enemy_killed(type, count). enemies_killed (suma) liczy EnemyBase.die().
+func register_kill(type: int) -> void:
+	var c: int = int(kills_by_type.get(type, 0)) + 1
+	kills_by_type[type] = c
+	enemy_killed.emit(type, c)
 
 # Wymuszony awans (nagroda za pokonanie bossa) - zwieksza poziom i emituje level_up.
 # Respektuje cap poziomu (na maksie nagroda nie przekracza GameConfig.MAX_LEVEL).
@@ -106,7 +126,8 @@ static func xp_threshold(level_value: int) -> int:
 func take_damage(amount: float) -> void:
 	health = maxf(0.0, health - amount)
 	health_changed.emit(health)
-	if health <= 0.0:
+	# Smierc konczy gra porazka - chyba ze trwa laska po wygranej (victory_locked).
+	if health <= 0.0 and not victory_locked:
 		trigger_game_over()
 
 # Przywraca HP (zebrana deska), nigdy ponad max_health.
@@ -120,8 +141,10 @@ func heal_to_full() -> void:
 	health_changed.emit(health)
 
 # Jedyne miejsce konczenia gry. Guard gwarantuje, ze sygnal game_over poleci dokladnie raz.
-func trigger_game_over() -> void:
+# victory=true gdy gracz przetrwal sesje / pokonal bossa (ekran konca pokaze wariant wygranej).
+func trigger_game_over(victory: bool = false) -> void:
 	if is_game_over:
 		return
 	is_game_over = true
+	won = victory
 	game_over.emit()

@@ -11,11 +11,17 @@ func _ready() -> void:
 	_show_scores()
 	if back_button:
 		back_button.pressed.connect(_on_back)
+		back_button.grab_focus()  # nawigacja klawiatura
 
 func _show_scores() -> void:
 	if list_label == null:
 		return
 	list_label.text = format_scores(HighScores.get_top(5))
+
+func _unhandled_input(event: InputEvent) -> void:
+	if event.is_action_pressed("ui_cancel"):  # ESC -> powrot do menu
+		_on_back()
+		get_viewport().set_input_as_handled()
 
 func _on_back() -> void:
 	AudioManager.play_sfx("ui_click")

@@ -7,31 +7,31 @@ const UPGRADES := {
 	"faster_attack": {
 		"id": "faster_attack",
 		"name": "Szybszy harpun",
-		"description": "Atak co 15% krócej",
+		"description": "Atak co 10% krócej",
 		"max_level": 3,
 	},
 	"longer_range": {
 		"id": "longer_range",
 		"name": "Dłuższy zasięg",
-		"description": "Zasięg ataku +20%",
+		"description": "Zasięg ataku +15%",
 		"max_level": 3,
 	},
 	"tougher_hull": {
 		"id": "tougher_hull",
 		"name": "Mocniejszy kadłub",
-		"description": "Max HP +30",
+		"description": "Max HP +20",
 		"max_level": 3,
 	},
 	"faster_boat": {
 		"id": "faster_boat",
 		"name": "Szybsza łódź",
-		"description": "Prędkość +20%",
+		"description": "Prędkość +15%",
 		"max_level": 3,
 	},
 	"resource_magnet": {
 		"id": "resource_magnet",
 		"name": "Magnes na zasoby",
-		"description": "Zasięg zbierania XP +40%",
+		"description": "Zasięg zbierania XP +25%",
 		"max_level": 3,
 	},
 	"double_harpoon": {
@@ -122,20 +122,21 @@ func info(id: String) -> Dictionary:
 	return {}
 
 # --- Czyste funkcje (bez zaleznosci od drzewa, testowalne) ---
+# Rebalans: bonusy z kart level-up zmniejszone (slabszy przyrost mocy per poziom).
 static func apply_faster_attack(interval: float) -> float:
-	return interval * 0.85
+	return interval * 0.90
 
 static func apply_longer_range(attack_range: float) -> float:
-	return attack_range * 1.2
+	return attack_range * 1.15
 
 static func apply_tougher_hull(value: float) -> float:
-	return value + 30.0
+	return value + 20.0
 
 static func apply_faster_boat(speed: float) -> float:
-	return speed * 1.2
+	return speed * 1.15
 
 static func apply_resource_magnet(mult: float) -> float:
-	return mult * 1.4
+	return mult * 1.25
 
 static func apply_double_harpoon() -> int:
 	return 2

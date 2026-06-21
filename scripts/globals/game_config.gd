@@ -44,20 +44,43 @@ const ENEMY_JELLYFISH_HP: float = 10.0
 const ENEMY_JELLYFISH_SCORE: int = 1
 # Obrazenia kontaktowe zwyklego wroga (baza EnemyBase). Rowne legacy PLAYER_CONTACT_DAMAGE.
 const ENEMY_CONTACT_DAMAGE: float = PLAYER_CONTACT_DAMAGE
-# Cap jednoczesnych wrogow (wydajnosc + Web).
-const ENEMY_MAX_COUNT: int = 30
+# Twardy cap jednoczesnych wrogow (wydajnosc + Web). Przy lekkich meduzach (waga 1) to
+# wlasnie ten cap - nie budzet - byl realnym ogranicznikiem. Test wydajnosci/feel: max 100.
+const ENEMY_MAX_COUNT: int = 500
 # Karencja startowa: przez tyle sekund od startu sesji spawner nie wypuszcza
 # zwyklych wrogow (onboarding - gracz zdazy sie rozejrzec; fix obrazen na starcie).
 const SPAWN_GRACE_SECONDS: float = 2.0
+
+# --- Spawn wagowy (R5): presja rosnie z czasem przez budzet wagi na ekranie ---
+# Wagi per typ (Enemy.EnemyType jako int): meduza(0)=1, barakuda(1)=2, rekin(2)=3.
+const ENEMY_WEIGHT := {0: 1, 1: 2, 2: 3}
+# Budzet sumy wag zywych wrogow na ekranie: BASE na starcie, rosnie PER_MIN, cap MAX.
+# Podniesione (rebalans): pelniejszy start, wyrazny wzrost z czasem, wyzszy sufit -
+# wiecej meduz wczesniej i pozniej (cap liczby ENEMY_MAX_COUNT chroni FPS).
+const ENEMY_WEIGHT_BUDGET_BASE: float = 14.0
+# Stromy wzrost, by twardy cap ENEMY_MAX_COUNT (500) byl realnie osiagalny pod koniec sesji.
+const ENEMY_WEIGHT_BUDGET_PER_MIN: float = 100.0
+const ENEMY_WEIGHT_BUDGET_MAX: float = 520.0
+# Eventowe hordy (np. rojenie meduz) wypelniaja tylko ten ulamek budzetu - reszta zostaje
+# na zwykly spawn (event nie zapycha calego pola).
+const EVENT_FILL_FRACTION: float = 0.6
+# Skracanie interwalu spawnu z czasem (mnoznik bazowego interwalu z difficulty_curve, capowany).
+const SPAWN_INTERVAL_RAMP: float = 0.08      # spadek mnoznika na minute
+const SPAWN_INTERVAL_MIN_FACTOR: float = 0.45
+# Mnoznik liczby zrzucanych orbow XP (R5b): kazdy wrog zrzuca x2 orbow (x2 XP).
+const XP_ORB_DROP_MULT: int = 2
 
 # --- Mini-boss (MotorBoat) ---
 const MINIBOSS_HP: float = 300.0
 const MINIBOSS_SCORE: int = 500
 # Mini-boss rani gracza na kontakt mocniej niz zwykly wrog.
 const MINIBOSS_CONTACT_DAMAGE: float = 25.0
-const MINIBOSS_TRACK_SPEED: float = 60.0
+const MINIBOSS_TRACK_SPEED: float = 85.0
 const MINIBOSS_CHARGE_INTERVAL: float = 3.0
-const MINIBOSS_CHARGE_DURATION: float = 0.45
+const MINIBOSS_CHARGE_DURATION: float = 0.55
+# Dystans szarzy: boss natiera w linii o ta dlugosc w kierunku gracza, PRZELATUJAC obok
+# (a nie zatrzymujac sie przed nim) - dzieki temu odslania bok do ostrzelania.
+const MINIBOSS_CHARGE_DISTANCE: float = 520.0
 # Wind-up (telegraf) przed szarza - czas, ktory gracz ma na reakcje/unik.
 const MINIBOSS_TELEGRAPH_DURATION: float = 0.6
 # Szybkosc wygladzania obrotu bossa ku celowi (waga lerp_angle skalowana czasem klatki).
@@ -68,7 +91,8 @@ const MINIBOSS_TURN_SPEED: float = 6.0
 const MINIBOSS_TELEGRAPH_PULSES: int = 3
 const MINIBOSS_TELEGRAPH_COLOR: Color = Color(1.8, 1.8, 1.8, 1.0)
 # Czas (s) pojawienia bossa i wyprzedzenie ostrzezenia boss_incoming.
-const MINIBOSS_SPAWN_TIME: float = 270.0
+# A2: 210 s (3:30) - rekin wchodzi w min. 2 (120 s), wiec ~90 s walki z pelnym skladem.
+const MINIBOSS_SPAWN_TIME: float = 210.0
 const MINIBOSS_WARNING: float = 2.0
 
 # --- Juice (FAZA 5): animacje "zycia" obiektow (kosmetyka Tweenow, nie balans rozgrywki) ---
@@ -94,8 +118,10 @@ const HEAL_PLANK_SWAY_PERIOD: float = 1.9
 const XP_ORB_VALUE: int = 1
 const XP_ORB_MINIBOSS: int = 10
 const XP_PICKUP_RADIUS: float = 30.0
-const XP_MAGNET_SPEED: float = 250.0
-const XP_MAGNET_RANGE: float = 120.0
+# Magnes: orb dogania gracza nawet gdy ten ucieka na max (PLAYER_MAX_SPEED=200) i lapie
+# wczesniej (A1). Wczesniej 250/120 - orb wypadal poza zasieg przy ucieczce.
+const XP_MAGNET_SPEED: float = 400.0
+const XP_MAGNET_RANGE: float = 180.0
 # Po tylu sekundach aktywnej gry niezebrany orb znika (audyt P0.1).
 const XP_ORB_LIFETIME: float = 12.0
 # Model 1 orb = 1 XP (FAZA 6): wrog zrzuca xp_value orbow po 1 XP, rozrzuconych w promieniu.
@@ -118,6 +144,13 @@ const MAX_LEVEL: int = 61
 # Co tyle poziomow zamiast zwyklej karty pojawia sie specjalny power-up (harpun/przebijanie).
 const MILESTONE_LEVEL_INTERVAL: int = 5
 
+# --- Meta-progresja (R3): trwale ulepszenia kupowane miedzy sesjami ---
+const META_POINTS_PER_SCORE: int = 10     # tyle wyniku = 1 punkt meta
+const META_COST_BASE: int = 50            # koszt poziomu L = BASE*(L+1)
+const META_BOAT_SPEED_MAX: float = 80.0   # bonus startowej predkosci lodzi na maks. poziomie
+const META_MAGNET_MULT_MAX: float = 1.0   # dodatek mnoznika zasiegu zbierania na maks (1.0 -> x2)
+const META_HORDE_BUDGET_MAX: float = 18.0 # dodatek do budzetu wrogow na maks (wiecej wrogow = wiecej punktow)
+
 # --- Leczenie ---
 # Dryfujaca deska (rybak lata nia kadlub): ile HP przywraca i jak czesto sie pojawia.
 const HEAL_PLANK_AMOUNT: float = 25.0
@@ -128,3 +161,20 @@ const HEAL_PLANK_LIFETIME: float = 15.0
 # --- Efekty ---
 # Czas zycia bursta smierci wroga (CPUParticles2D) zanim sam sie zwolni.
 const DEATH_BURST_LIFETIME: float = 1.5
+
+# --- Narracja: efekt maszyny do pisania (dialogi B4 + ostrzezenie o bossie) ---
+const TYPEWRITER_CPS: float = 16.0          # znaki/s ujawniania; wolno, by mlodszy gracz zdazyl przeczytac
+const TYPEWRITER_KEY_EVERY: int = 2         # dzwiek klawisza co N ujawnionych nie-bialych znakow
+const TYPEWRITER_KEY_PITCH_JITTER: float = 0.12  # +/- losowy pitch klawisza (naturalnosc)
+
+# --- Narracja: dialogi w grze (dolny pasek, bez pauzy) ---
+const DIALOGUE_FADE: float = 0.4            # czas fade in/out paska
+const DIALOGUE_HOLD: float = 3.5            # ile sekund kwestia trzyma sie PO napisaniu
+
+# --- Intro Santiago (B3) ---
+const INTRO_COUNTDOWN_STEP: float = 0.7     # czas jednego kroku odliczania 3-2-1
+const INTRO_PAGE_TURN_TIME: float = 0.5     # czas animacji przewrocenia strony (komiks/ksiazka)
+
+# --- Koniec sesji (R4) ---
+# Po spelnieniu warunku wygranej: laska na zebranie orbow, zanim pojawi sie ekran wyniku.
+const VICTORY_COLLECT_GRACE: float = 3.0

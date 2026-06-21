@@ -34,14 +34,15 @@ window/size/viewport_width=1152
 window/size/viewport_height=648
 window/stretch/mode="canvas_items"
 window/stretch/aspect="expand"
-
-[gui]
-
-theme/custom_font="uid://ol68kawq588u"
+window/vsync/vsync_mode=1
 
 [editor_plugins]
 
 enabled=PackedStringArray("res://addons/gut/plugin.cfg")
+
+[gui]
+
+theme/custom="res://resources/game_theme.tres"
 
 [input]
 

@@ -16,8 +16,9 @@ func test_motorboat_stats_and_group() -> void:
 	assert_true(boss.is_in_group("enemies"), "MotorBoat w grupie enemies")
 
 func test_should_spawn_boss() -> void:
-	assert_true(SpawnerScript.should_spawn_boss(270.0, false), "time>=270 i nie spawniony -> true")
-	assert_false(SpawnerScript.should_spawn_boss(270.0, true), "juz spawniony -> false")
+	assert_true(SpawnerScript.should_spawn_boss(210.0, false), "time>=210 i nie spawniony -> true")
+	assert_false(SpawnerScript.should_spawn_boss(210.0, true), "juz spawniony -> false")
+	assert_false(SpawnerScript.should_spawn_boss(209.0, false), "tuz przed progiem -> false")
 	assert_false(SpawnerScript.should_spawn_boss(100.0, false), "za wczesnie -> false")
 
 func test_double_die_does_not_crash() -> void:
@@ -47,9 +48,9 @@ func test_spawner_spawns_boss_exactly_once() -> void:
 	spawner.max_enemies = 0 # tylko boss (regularne pomijane przez limit)
 	add_child_autofree(spawner)
 	await wait_physics_frames(1)
-	GameState.time = 271.0
+	GameState.time = 211.0
 	spawner._on_timeout()
-	assert_eq(_count_bosses(), 1, "boss spawniony raz po 270s")
+	assert_eq(_count_bosses(), 1, "boss spawniony raz po 210s")
 	spawner._on_timeout()
 	assert_eq(_count_bosses(), 1, "guard: brak drugiego bossa")
 	# Sprzatanie wrogow dodanych do drzewa testowego.

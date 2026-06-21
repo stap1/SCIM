@@ -10,21 +10,39 @@ extends CanvasLayer
 ## wlascicieli flagi get_tree().paused.
 
 @onready var _dimmer: Control = $Dimmer
+@onready var _menu_root: VBoxContainer = $Dimmer/Center/Menu
 @onready var _resume_button: Button = $Dimmer/Center/Menu/ResumeButton
+@onready var _settings_button: Button = $Dimmer/Center/Menu/SettingsButton
 @onready var _restart_button: Button = $Dimmer/Center/Menu/RestartButton
 @onready var _menu_button: Button = $Dimmer/Center/Menu/MenuButton
+# Panel ustawien w pauzie (w miejscu - bez opuszczania rozgrywki).
+@onready var _settings_panel: VBoxContainer = $Dimmer/Center/SettingsPanel
+@onready var _music_slider: HSlider = $Dimmer/Center/SettingsPanel/MusicSlider
+@onready var _sfx_slider: HSlider = $Dimmer/Center/SettingsPanel/SFXSlider
+@onready var _reduce_shake_check: CheckButton = $Dimmer/Center/SettingsPanel/ReduceShakeCheck
+@onready var _reduce_flash_check: CheckButton = $Dimmer/Center/SettingsPanel/ReduceFlashCheck
+@onready var _settings_back: Button = $Dimmer/Center/SettingsPanel/BackButton
 
 ## Czy to menu jest aktualnym wlascicielem pauzy. Chroni przed "przejeciem" pauzy
 ## zalozonej przez inny ekran (np. wznowienie gry w trakcie wyboru ulepszenia).
 var _is_open: bool = false
+## Tryb nakladki: pauza otwarta NAD innym ekranem (np. level-up), ktory juz trzyma pauze.
+## Wznowienie wtedy NIE zdejmuje pauzy - oddaje sterowanie temu ekranowi (sygnal overlay_closed).
+var _overlay: bool = false
+signal overlay_closed
 
 func _ready() -> void:
 	# Pewnik na wypadek braku ustawienia w .tscn - menu musi dzialac przy pauzie.
 	process_mode = Node.PROCESS_MODE_ALWAYS
+	add_to_group("pause_menu")  # level-up znajduje pauze przez grupe (luzne powiazanie)
 	_dimmer.hide()
 	_resume_button.pressed.connect(resume)
 	_restart_button.pressed.connect(_on_restart_pressed)
 	_menu_button.pressed.connect(_on_menu_pressed)
+	_settings_button.pressed.connect(_open_settings)
+	_settings_back.pressed.connect(_close_settings)
+	_init_settings_controls()
+	_settings_panel.hide()
 
 ## Obsluga klawisza pauzy. _unhandled_input dziala dla wezlow ALWAYS takze przy
 ## get_tree().paused, a uruchamia sie dopiero gdy zdarzenia nie skonsumowal zaden Control.
@@ -50,16 +68,42 @@ func _open() -> void:
 	_is_open = true
 	GameState.is_paused = true      # spojnosc dla systemow czytajacych te flage
 	get_tree().paused = true
+	# Zawsze otwieraj na glownych przyciskach pauzy (panel ustawien schowany).
+	_settings_panel.hide()
+	_menu_root.show()
 	_dimmer.show()
 	_resume_button.grab_focus()     # ergonomia: od razu nawigacja klawiatura/pad
+
+## Otwiera pauze jako NAKLADKE nad ekranem, ktory juz trzyma pauze (np. level-up).
+## Nie rusza get_tree().paused (juz wstrzymane). Wznowienie odda sterowanie przez overlay_closed.
+func open_overlay() -> void:
+	if _is_open:
+		return
+	AudioManager.play_sfx("ui_click")
+	_is_open = true
+	_overlay = true
+	_settings_panel.hide()
+	_menu_root.show()
+	_dimmer.show()
+	_resume_button.grab_focus()
+
+func is_overlay_open() -> bool:
+	return _is_open and _overlay
 
 ## Wznawia rozgrywke. Publiczne - podpiete pod przycisk "Wznow" oraz klawisz pauzy.
 func resume() -> void:
 	AudioManager.play_sfx("ui_click")
 	_is_open = false
+	_dimmer.hide()
+	_settings_panel.hide()
+	_menu_root.show()
+	if _overlay:
+		# Nakladka nad level-up: nie zdejmuj pauzy - oddaj sterowanie ekranowi pod spodem.
+		_overlay = false
+		overlay_closed.emit()
+		return
 	GameState.is_paused = false
 	get_tree().paused = false
-	_dimmer.hide()
 
 func _on_restart_pressed() -> void:
 	AudioManager.play_sfx("ui_click")
@@ -78,3 +122,56 @@ func _leave_session() -> void:
 	GameState.is_paused = false
 	get_tree().paused = false
 	GameState.reset()
+
+# --- Ustawienia w pauzie (w miejscu, bez opuszczania sesji) ---
+
+func _open_settings() -> void:
+	AudioManager.play_sfx("ui_click")
+	_refresh_settings_values()
+	_menu_root.hide()
+	_settings_panel.show()
+	_settings_back.grab_focus()
+
+func _close_settings() -> void:
+	AudioManager.play_sfx("ui_click")
+	_settings_panel.hide()
+	_menu_root.show()
+	_settings_button.grab_focus()
+
+func _init_settings_controls() -> void:
+	_refresh_settings_values()
+	_music_slider.value_changed.connect(_on_music_changed)
+	_sfx_slider.value_changed.connect(_on_sfx_changed)
+	_reduce_shake_check.toggled.connect(_on_reduce_shake_toggled)
+	_reduce_flash_check.toggled.connect(_on_reduce_flash_toggled)
+
+# Wczytuje biezace wartosci do kontrolek (bez emisji sygnalow - by nie nadpisac zapisu).
+func _refresh_settings_values() -> void:
+	var s := SettingsStore.load_settings(SettingsStore.SETTINGS_PATH)
+	_music_slider.set_value_no_signal(float(s["music_vol"]))
+	_sfx_slider.set_value_no_signal(float(s["sfx_vol"]))
+	_reduce_shake_check.set_pressed_no_signal(bool(s["reduce_shake"]))
+	_reduce_flash_check.set_pressed_no_signal(bool(s["reduce_flashing"]))
+
+func _on_music_changed(v: float) -> void:
+	SettingsStore.apply_bus("Music", v)
+	_save_settings()
+
+func _on_sfx_changed(v: float) -> void:
+	SettingsStore.apply_bus("SFX", v)
+	_save_settings()
+
+func _on_reduce_shake_toggled(pressed: bool) -> void:
+	AudioManager.play_sfx("ui_click")
+	SettingsStore.reduce_shake = pressed
+	_save_settings()
+
+func _on_reduce_flash_toggled(pressed: bool) -> void:
+	AudioManager.play_sfx("ui_click")
+	SettingsStore.reduce_flashing = pressed
+	_save_settings()
+
+# Zapis przez SettingsStore (jedyny wlasciciel trwalosci). Dlugosc sesji bez zmian w pauzie.
+func _save_settings() -> void:
+	SettingsStore.save_settings(SettingsStore.SETTINGS_PATH, _music_slider.value, _sfx_slider.value,
+		SettingsStore.session_length_min, _reduce_shake_check.button_pressed, _reduce_flash_check.button_pressed)

@@ -1,0 +1,43 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/dialogue_banner.gd" id="1_dlg"]
+[ext_resource type="Script" path="res://scripts/ui/typewriter_label.gd" id="2_typ"]
+
+[node name="DialogueBanner" type="CanvasLayer"]
+layer = 2
+process_mode = 3
+script = ExtResource("1_dlg")
+
+[node name="Panel" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+
+[node name="Bg" type="ColorRect" parent="Panel"]
+layout_mode = 1
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 60.0
+offset_top = -120.0
+offset_right = -60.0
+offset_bottom = -24.0
+mouse_filter = 2
+color = Color(0, 0, 0, 0.55)
+
+[node name="Line" type="Label" parent="Panel"]
+layout_mode = 1
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 80.0
+offset_top = -116.0
+offset_right = -80.0
+offset_bottom = -28.0
+theme_override_font_sizes/font_size = 22
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 3
+script = ExtResource("2_typ")

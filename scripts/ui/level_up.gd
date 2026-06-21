@@ -37,6 +37,26 @@ func _on_level_up(new_level: int) -> void:
 		panel.show()
 	get_tree().paused = true
 	_flash()
+	# Nawigacja klawiatura: focus na pierwszej karcie (strzalki przechodza miedzy kartami).
+	if not cards.is_empty() and cards[0] != null:
+		cards[0].grab_focus()
+
+# ESC w trakcie wyboru ulepszenia: otwiera menu pauzy jako NAKLADKE nad level-upem.
+# Po jego zamknieciu (Wznow) wraca do wyboru karty. Restart/Menu w pauzie opuszczaja gre.
+func _unhandled_input(event: InputEvent) -> void:
+	if not (panel and panel.visible):
+		return
+	if event.is_action_pressed("pause"):
+		var pm = get_tree().get_first_node_in_group("pause_menu")
+		if pm == null or pm.is_overlay_open():
+			return  # pauza obsluzy ESC sama (zamkniecie nakladki)
+		pm.open_overlay()
+		pm.overlay_closed.connect(_refocus_card, CONNECT_ONE_SHOT)
+		get_viewport().set_input_as_handled()
+
+func _refocus_card() -> void:
+	if not cards.is_empty() and cards[0] != null and panel and panel.visible:
+		cards[0].grab_focus()
 
 ## Dobiera oferte kart dla danego poziomu. Na poziomach milestone (co
 ## GameConfig.MILESTONE_LEVEL_INTERVAL) zwraca WYLACZNIE pule milestone, w przeciwnym

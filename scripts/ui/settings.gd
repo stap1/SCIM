@@ -5,7 +5,9 @@ extends Control
 # tylko buduje UI i deleguje zapis/odczyt do SettingsStore. Nie zawiera juz wlasnej
 # logiki persystencji/audio, by gameplay/audio nie musialy siegac do skryptu UI.
 
-const SESSION_LENGTHS := [10, 15, 20]
+# Tylko 5 min aktywne; 10/15 wyszarzone (dluzsze sesje w przyszlym etapie).
+const SESSION_LENGTHS := [5, 10, 15]
+const SESSION_ENABLED := 5
 
 @onready var music_slider: HSlider = get_node_or_null("Panel/MusicSlider")
 @onready var sfx_slider: HSlider = get_node_or_null("Panel/SFXSlider")
@@ -16,8 +18,11 @@ const SESSION_LENGTHS := [10, 15, 20]
 
 func _ready() -> void:
 	if session_option:
-		for length in SESSION_LENGTHS:
-			session_option.add_item("%d min" % length)
+		for i in SESSION_LENGTHS.size():
+			session_option.add_item("%d min" % SESSION_LENGTHS[i])
+			# Dluzsze sesje (10/15) wyszarzone do przyszlego etapu - tylko 5 min wybieralne.
+			if SESSION_LENGTHS[i] != SESSION_ENABLED:
+				session_option.set_item_disabled(i, true)
 
 	var s := SettingsStore.load_settings(SettingsStore.SETTINGS_PATH)
 
@@ -40,8 +45,13 @@ func _ready() -> void:
 		sfx_slider.drag_ended.connect(func(_value_changed): AudioManager.play_sfx("ui_click"))
 
 	if session_option:
-		var idx := SESSION_LENGTHS.find(int(s["session_length"]))
-		session_option.selected = idx if idx != -1 else 1
+		# Tylko 5 min aktywne - jesli zapis wskazuje wyszarzona opcje (np. stare 15), wymus 5.
+		var current := int(s["session_length"])
+		if current != SESSION_ENABLED:
+			current = SESSION_ENABLED
+			SettingsStore.session_length_min = SESSION_ENABLED
+		var idx := SESSION_LENGTHS.find(current)
+		session_option.selected = idx if idx != -1 else 0
 		session_option.item_selected.connect(_on_session_selected)
 
 	if reduce_shake_check:
@@ -57,9 +67,15 @@ func _ready() -> void:
 
 	SettingsStore.apply_bus("Music", s["music_vol"])
 	SettingsStore.apply_bus("SFX", s["sfx_vol"])
-	SettingsStore.session_length_min = int(s["session_length"])
+	SettingsStore.session_length_min = SESSION_ENABLED  # tylko 5 min aktywne (10/15 wyszarzone)
 	SettingsStore.reduce_shake = bool(s["reduce_shake"])
 	SettingsStore.reduce_flashing = bool(s["reduce_flashing"])
+
+	# Nawigacja klawiatura: focus na pierwszej kontrolce.
+	if music_slider:
+		music_slider.grab_focus()
+	elif back_button:
+		back_button.grab_focus()
 
 func _on_music_changed(v: float) -> void:
 	SettingsStore.apply_bus("Music", v)
@@ -83,6 +99,12 @@ func _on_reduce_flash_toggled(pressed: bool) -> void:
 	AudioManager.play_sfx("ui_click")
 	SettingsStore.reduce_flashing = pressed
 	_save()
+
+# ESC wraca do menu glownego (focus wroci na "Ustawienia" przez MainMenu._return_focus).
+func _unhandled_input(event: InputEvent) -> void:
+	if event.is_action_pressed("ui_cancel"):
+		_on_back()
+		get_viewport().set_input_as_handled()
 
 func _on_back() -> void:
 	AudioManager.play_sfx("ui_click")

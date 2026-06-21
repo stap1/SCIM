@@ -13,6 +13,8 @@
 [ext_resource type="Texture2D" uid="uid://cj2jcwuo6y4bw" path="res://assets/water_noise_2.png" id="12_wnoise2"]
 [ext_resource type="Texture2D" uid="uid://0ukss2dgy3ce" path="res://assets/water_normal.png" id="13_wnormal"]
 [ext_resource type="Script" path="res://scripts/systems/water_background.gd" id="14_waterbg"]
+[ext_resource type="PackedScene" path="res://scenes/ui/dialogue_banner.tscn" id="15_dlgbanner"]
+[ext_resource type="PackedScene" path="res://scenes/ui/santiago_intro.tscn" id="16_intro"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_water"]
 shader = ExtResource("9_water")
@@ -58,3 +60,7 @@ script = ExtResource("7_pool")
 [node name="GameOver" parent="." unique_id=76033415 instance=ExtResource("6_gameover")]
 
 [node name="PauseMenu" parent="." unique_id=811916830 instance=ExtResource("10_pause")]
+
+[node name="DialogueBanner" parent="." instance=ExtResource("15_dlgbanner")]
+
+[node name="SantiagoIntro" parent="." instance=ExtResource("16_intro")]

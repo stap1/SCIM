@@ -68,6 +68,15 @@ func test_no_reentry_during_sequence() -> void:
 	boss._on_charge() # powinno byc zignorowane (faza != TRACK)
 	assert_eq(boss.phase, MotorBoatScript.Phase.TELEGRAPH, "drugi _on_charge w trakcie sekwencji ignorowany")
 
+func test_charge_overshoots_by_distance() -> void:
+	# Szarza siega na pelny MINIBOSS_CHARGE_DISTANCE (przelot obok gracza, nie zatrzymanie przed).
+	var boss = _boss_with_target()
+	await wait_physics_frames(1)
+	boss._on_charge()  # TRACK -> TELEGRAPH (ustawia _charge_target)
+	var dist: float = boss.global_position.distance_to(boss._charge_target)
+	assert_almost_eq(dist, GameConfig.MINIBOSS_CHARGE_DISTANCE, 1.0,
+		"szarza siega na pelny dystans (overshoot)")
+
 func test_begin_charge_sets_charge_phase() -> void:
 	var boss = _boss_with_target()
 	await wait_physics_frames(1)
