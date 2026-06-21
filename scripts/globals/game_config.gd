@@ -46,7 +46,7 @@ const ENEMY_JELLYFISH_SCORE: int = 1
 const ENEMY_CONTACT_DAMAGE: float = PLAYER_CONTACT_DAMAGE
 # Twardy cap jednoczesnych wrogow (wydajnosc + Web). Przy lekkich meduzach (waga 1) to
 # wlasnie ten cap - nie budzet - byl realnym ogranicznikiem. Test wydajnosci/feel: max 100.
-const ENEMY_MAX_COUNT: int = 100
+const ENEMY_MAX_COUNT: int = 500
 # Karencja startowa: przez tyle sekund od startu sesji spawner nie wypuszcza
 # zwyklych wrogow (onboarding - gracz zdazy sie rozejrzec; fix obrazen na starcie).
 const SPAWN_GRACE_SECONDS: float = 2.0

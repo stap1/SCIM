@@ -45,7 +45,7 @@ func test_enemy_and_miniboss_constants() -> void:
 	assert_almost_eq(GameConfig.ENEMY_JELLYFISH_SPEED, 80.0, 0.001, "ENEMY_JELLYFISH_SPEED 80")
 	assert_almost_eq(GameConfig.ENEMY_JELLYFISH_HP, 10.0, 0.001, "ENEMY_JELLYFISH_HP 10")
 	assert_eq(GameConfig.ENEMY_JELLYFISH_SCORE, 1, "ENEMY_JELLYFISH_SCORE 1")
-	assert_eq(GameConfig.ENEMY_MAX_COUNT, 100, "ENEMY_MAX_COUNT 100")
+	assert_eq(GameConfig.ENEMY_MAX_COUNT, 500, "ENEMY_MAX_COUNT 500")
 	assert_almost_eq(GameConfig.MINIBOSS_HP, 300.0, 0.001, "MINIBOSS_HP 300")
 	assert_eq(GameConfig.MINIBOSS_SCORE, 500, "MINIBOSS_SCORE 500")
 	assert_almost_eq(GameConfig.MINIBOSS_SPAWN_TIME, 210.0, 0.001, "MINIBOSS_SPAWN_TIME 210")
