@@ -56,6 +56,27 @@ func test_no_pause_during_game_over() -> void:
 	assert_false(get_tree().paused, "po game over klawisz pauzy ignorowany")
 	assert_false(pm.get_node("Dimmer").visible, "menu sie nie otwiera po game over")
 
+func test_pause_has_settings_access() -> void:
+	var pm = _menu()
+	await wait_physics_frames(1)
+	assert_not_null(pm.get_node_or_null("Dimmer/Center/Menu/SettingsButton"), "pauza ma przycisk Ustawienia")
+	assert_not_null(pm.get_node_or_null("Dimmer/Center/SettingsPanel"), "pauza ma panel ustawien")
+
+func test_settings_panel_opens_and_closes() -> void:
+	var pm = _menu()
+	await wait_physics_frames(1)
+	pm.toggle()  # otworz pauze
+	var panel = pm.get_node("Dimmer/Center/SettingsPanel")
+	var menu = pm.get_node("Dimmer/Center/Menu")
+	assert_false(panel.visible, "panel ustawien poczatkowo ukryty")
+	pm._open_settings()
+	assert_true(panel.visible, "po 'Ustawienia' panel widoczny")
+	assert_false(menu.visible, "glowne przyciski schowane")
+	pm._close_settings()
+	assert_true(menu.visible, "'Powrot' wraca do glownych przyciskow")
+	assert_false(panel.visible, "panel schowany po 'Powrot'")
+	pm.resume()
+
 func test_does_not_steal_foreign_pause() -> void:
 	# Symulacja: drzewo wstrzymane przez inny ekran (np. wybor ulepszenia).
 	var pm = _menu()

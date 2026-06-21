@@ -30,6 +30,10 @@ horizontal_alignment = 1
 custom_minimum_size = Vector2(260, 48)
 text = "Wznów"
 
+[node name="SettingsButton" type="Button" parent="Dimmer/Center/Menu"]
+custom_minimum_size = Vector2(260, 48)
+text = "Ustawienia"
+
 [node name="RestartButton" type="Button" parent="Dimmer/Center/Menu"]
 custom_minimum_size = Vector2(260, 48)
 text = "Restart"
@@ -37,3 +41,39 @@ text = "Restart"
 [node name="MenuButton" type="Button" parent="Dimmer/Center/Menu"]
 custom_minimum_size = Vector2(260, 48)
 text = "Menu główne"
+
+[node name="SettingsPanel" type="VBoxContainer" parent="Dimmer/Center"]
+visible = false
+theme_override_constants/separation = 10
+
+[node name="Title" type="Label" parent="Dimmer/Center/SettingsPanel"]
+text = "Ustawienia"
+horizontal_alignment = 1
+
+[node name="MusicLabel" type="Label" parent="Dimmer/Center/SettingsPanel"]
+text = "Muzyka"
+
+[node name="MusicSlider" type="HSlider" parent="Dimmer/Center/SettingsPanel"]
+custom_minimum_size = Vector2(300, 20)
+max_value = 1.0
+step = 0.01
+value = 1.0
+
+[node name="SFXLabel" type="Label" parent="Dimmer/Center/SettingsPanel"]
+text = "Efekty (SFX)"
+
+[node name="SFXSlider" type="HSlider" parent="Dimmer/Center/SettingsPanel"]
+custom_minimum_size = Vector2(300, 20)
+max_value = 1.0
+step = 0.01
+value = 1.0
+
+[node name="ReduceShakeCheck" type="CheckButton" parent="Dimmer/Center/SettingsPanel"]
+text = "Ogranicz trzęsienie ekranu"
+
+[node name="ReduceFlashCheck" type="CheckButton" parent="Dimmer/Center/SettingsPanel"]
+text = "Ogranicz miganie"
+
+[node name="BackButton" type="Button" parent="Dimmer/Center/SettingsPanel"]
+custom_minimum_size = Vector2(260, 44)
+text = "Powrót"
