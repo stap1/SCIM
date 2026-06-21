@@ -55,6 +55,14 @@ func test_bonuses_grow_with_level() -> void:
 		MetaProgress.buy("boat")
 	assert_almost_eq(MetaProgress.bonus_boat_speed(), GameConfig.META_BOAT_SPEED_MAX, 0.001, "maks -> pelny bonus")
 
+func test_horde_bonus_grows_with_level() -> void:
+	assert_almost_eq(MetaProgress.enemy_budget_bonus(), 0.0, 0.001, "poziom 0 -> brak hordy")
+	MetaProgress._points = 100000
+	for i in MetaProgress.max_level_of("horde"):
+		MetaProgress.buy("horde")
+	assert_almost_eq(MetaProgress.enemy_budget_bonus(), GameConfig.META_HORDE_BUDGET_MAX, 0.001,
+		"maks -> pelny dodatek do budzetu wrogow")
+
 func test_magnet_mult_starts_at_one() -> void:
 	assert_almost_eq(MetaProgress.bonus_magnet_mult(), 1.0, 0.001, "bez ulepszenia mnoznik 1.0")
 

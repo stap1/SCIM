@@ -139,7 +139,7 @@ const META_POINTS_PER_SCORE: int = 10     # tyle wyniku = 1 punkt meta
 const META_COST_BASE: int = 50            # koszt poziomu L = BASE*(L+1)
 const META_BOAT_SPEED_MAX: float = 80.0   # bonus startowej predkosci lodzi na maks. poziomie
 const META_MAGNET_MULT_MAX: float = 1.0   # dodatek mnoznika zasiegu zbierania na maks (1.0 -> x2)
-const META_SPAWN_EASE_MAX: float = 6.0    # zlagodzenie budzetu spawnu na maks. poziomie
+const META_HORDE_BUDGET_MAX: float = 18.0 # dodatek do budzetu wrogow na maks (wiecej wrogow = wiecej punktow)
 
 # --- Leczenie ---
 # Dryfujaca deska (rybak lata nia kadlub): ile HP przywraca i jak czesto sie pojawia.

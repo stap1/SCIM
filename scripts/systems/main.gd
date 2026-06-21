@@ -17,8 +17,8 @@ func _apply_meta_upgrades() -> void:
 	if boat != null and "max_speed" in boat:
 		boat.max_speed += MetaProgress.bonus_boat_speed()
 	var spawner := get_node_or_null("EnemySpawner")
-	if spawner != null and "_spawn_ease" in spawner:
-		spawner._spawn_ease = MetaProgress.spawn_ease()
+	if spawner != null and "_spawn_budget_bonus" in spawner:
+		spawner._spawn_budget_bonus = MetaProgress.enemy_budget_bonus()
 
 enum Outcome { CONTINUE, WIN, LOSS }
 

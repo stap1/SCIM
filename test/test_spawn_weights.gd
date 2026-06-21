@@ -16,10 +16,13 @@ func test_weight_budget_grows_and_caps() -> void:
 	var capped := SpawnerScript.weight_budget(100000.0, 0.0)
 	assert_almost_eq(capped, GameConfig.ENEMY_WEIGHT_BUDGET_MAX, 0.001, "budzet capowany do MAX")
 
-func test_weight_budget_ease_lowers_start() -> void:
+func test_weight_budget_horde_bonus_raises() -> void:
 	var normal := SpawnerScript.weight_budget(0.0, 0.0)
-	var eased := SpawnerScript.weight_budget(0.0, 3.0)
-	assert_true(eased < normal, "ease (meta) obniza budzet startowy")
+	var boosted := SpawnerScript.weight_budget(0.0, 6.0)
+	assert_almost_eq(boosted, normal + 6.0, 0.001, "horda dodaje wrogow ponad budzet")
+	# Dziala takze gdy bazowy budzet jest juz na capie (dodatek ponad MAX - wazne dla late game).
+	var late := SpawnerScript.weight_budget(100000.0, 6.0)
+	assert_almost_eq(late, GameConfig.ENEMY_WEIGHT_BUDGET_MAX + 6.0, 0.001, "horda dodaje tez na capie")
 
 # --- Wazone losowanie ---
 func test_weighted_pick_respects_weights() -> void:

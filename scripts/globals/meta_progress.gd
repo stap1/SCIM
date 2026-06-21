@@ -12,13 +12,13 @@ extends RefCounted
 const PATH := "user://meta.cfg"
 
 const META_UPGRADES := {
-	"spawn":  {"name": "Spokojniejszy start", "max_level": 5, "desc": "Łagodniejszy spawn na starcie"},
-	"boat":   {"name": "Szybsza łódź",        "max_level": 5, "desc": "Wyższa startowa prędkość"},
-	"magnet": {"name": "Zasięg zbierania",    "max_level": 5, "desc": "Większy startowy zasięg XP"},
+	"horde":  {"name": "Większa horda", "max_level": 5, "desc": "Więcej wrogów naraz = więcej punktów"},
+	"boat":   {"name": "Szybsza łódź",  "max_level": 5, "desc": "Wyższa startowa prędkość"},
+	"magnet": {"name": "Zasięg zbierania", "max_level": 5, "desc": "Większy startowy zasięg XP"},
 }
 
 # Kolejnosc realnych ulepszen w UI (deterministyczna).
-const REAL_IDS: Array[String] = ["spawn", "boat", "magnet"]
+const REAL_IDS: Array[String] = ["horde", "boat", "magnet"]
 
 static var _points: int = 0
 static var _levels: Dictionary = {}
@@ -100,8 +100,9 @@ static func bonus_boat_speed() -> float:
 static func bonus_magnet_mult() -> float:
 	return 1.0 + GameConfig.META_MAGNET_MULT_MAX * _curve("magnet")
 
-static func spawn_ease() -> float:
-	return GameConfig.META_SPAWN_EASE_MAX * _curve("spawn")
+# Dodatek do budzetu wrogow na ekranie: wiecej wrogow naraz -> wiecej zabic -> wiecej punktow.
+static func enemy_budget_bonus() -> float:
+	return GameConfig.META_HORDE_BUDGET_MAX * _curve("horde")
 
 # Krzywa wartosci ulepszenia: 0 na poziomie 0, 1.0 na maksie; kwadratowa (ostatnie poziomy znaczace).
 static func _curve(id: String) -> float:

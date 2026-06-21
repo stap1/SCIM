@@ -19,8 +19,9 @@ var _boss_warned: bool = false
 var _boss_spawned: bool = false
 # Waga per scena wroga (zbudowana w _ready z GameConfig.ENEMY_WEIGHT). Do wazonego losowania.
 var _weight_by_scene: Dictionary = {}
-# Ulatwienie startowego spawnu z meta-progresji (R3d ustawi z MetaProgress; tu 0 = brak).
-var _spawn_ease: float = 0.0
+# Dodatek do budzetu wrogow z meta-progresji "horda" (R3d ustawi z MetaProgress; tu 0 = brak).
+# Wiecej wrogow naraz = wiecej zabic = wiecej punktow (risk/reward).
+var _spawn_budget_bonus: float = 0.0
 
 # Balans edytowalny w jednym miejscu - bez dotykania logiki.
 var difficulty_curve := {
@@ -40,7 +41,7 @@ func _ready() -> void:
 		BarracudaScene: int(GameConfig.ENEMY_WEIGHT[1]),
 		SharkScene: int(GameConfig.ENEMY_WEIGHT[2]),
 	}
-	# _spawn_ease laguje start wg meta-progresji - podpinane w R3d (MetaProgress).
+	# _spawn_budget_bonus zwieksza budzet wg meta-progresji "horda" - podpinane w R3d.
 
 	_timer = Timer.new()
 	_timer.wait_time = difficulty_curve[0]["spawn_interval"]
@@ -97,7 +98,7 @@ func _on_timeout() -> void:
 	var w_pick := int(_weight_by_scene.get(picked, 1))
 
 	# Budzet wagi na ekranie rosnie z czasem - to progresywnie zwieksza liczbe wrogow.
-	var budget := weight_budget(GameState.time, _spawn_ease)
+	var budget := weight_budget(GameState.time, _spawn_budget_bonus)
 	var on_screen := current_enemy_weight(enemies)
 	if float(on_screen + w_pick) > budget:
 		return  # budzet wyczerpany w tym ticku
@@ -111,11 +112,12 @@ func current_enemy_weight(enemies: Array) -> int:
 			total += int(GameConfig.ENEMY_WEIGHT.get(e.enemy_type, 1))
 	return total
 
-# Czysta funkcja: budzet wagi na ekranie dla danego czasu. ease (meta) lagodzi start.
-static func weight_budget(time_seconds: float, ease: float) -> float:
+# Czysta funkcja: budzet wagi na ekranie dla danego czasu. bonus (meta "horda") dodaje
+# wrogow PONAD bazowy cap (wiecej wrogow = wiecej punktow).
+static func weight_budget(time_seconds: float, bonus: float) -> float:
 	var b := GameConfig.ENEMY_WEIGHT_BUDGET_BASE + GameConfig.ENEMY_WEIGHT_BUDGET_PER_MIN * (time_seconds / 60.0)
 	b = clampf(b, GameConfig.ENEMY_WEIGHT_BUDGET_BASE, GameConfig.ENEMY_WEIGHT_BUDGET_MAX)
-	return maxf(1.0, b - ease)
+	return b + maxf(0.0, bonus)
 
 # Czysta funkcja: indeks wybrany wg wag i rng_value w [0,1). Pusta/zerowa suma -> -1.
 static func weighted_pick(weights: Array[int], rng_value: float) -> int:
