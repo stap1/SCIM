@@ -91,8 +91,9 @@ func spawn_enemy(scene: PackedScene) -> Node:
 		enemy.died.connect(_on_enemy_died)
 	return enemy
 
-func _on_enemy_died(pos: Vector2, xp_value: int) -> void:
+func _on_enemy_died(pos: Vector2, xp_value: int, type: int) -> void:
 	AudioManager.play_sfx("enemy_death")
+	GameState.register_kill(type)  # licznik per typ + sygnal narracji (B1)
 	var burst := DeathBurstScene.instantiate()
 	get_parent().add_child(burst)
 	burst.global_position = pos
@@ -171,6 +172,7 @@ func _spawn_boss() -> void:
 
 func _on_boss_defeated(pos: Vector2) -> void:
 	GameState.miniboss_defeated = true
+	GameState.register_kill(Enemy.EnemyType.MINIBOSS)  # boss liczony per typ (B1)
 	AudioManager.play_sfx("enemy_death")
 	var burst := DeathBurstScene.instantiate()
 	get_parent().add_child(burst)
