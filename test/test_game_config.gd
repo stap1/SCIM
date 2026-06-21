@@ -48,14 +48,14 @@ func test_enemy_and_miniboss_constants() -> void:
 	assert_eq(GameConfig.ENEMY_MAX_COUNT, 30, "ENEMY_MAX_COUNT 30")
 	assert_almost_eq(GameConfig.MINIBOSS_HP, 300.0, 0.001, "MINIBOSS_HP 300")
 	assert_eq(GameConfig.MINIBOSS_SCORE, 500, "MINIBOSS_SCORE 500")
-	assert_almost_eq(GameConfig.MINIBOSS_SPAWN_TIME, 270.0, 0.001, "MINIBOSS_SPAWN_TIME 270")
+	assert_almost_eq(GameConfig.MINIBOSS_SPAWN_TIME, 210.0, 0.001, "MINIBOSS_SPAWN_TIME 210")
 	assert_almost_eq(GameConfig.MINIBOSS_WARNING, 2.0, 0.001, "MINIBOSS_WARNING 2")
 
 func test_xp_constants() -> void:
 	assert_eq(GameConfig.XP_ORB_VALUE, 1, "XP_ORB_VALUE 1")
 	assert_almost_eq(GameConfig.XP_PICKUP_RADIUS, 30.0, 0.001, "XP_PICKUP_RADIUS 30")
-	assert_almost_eq(GameConfig.XP_MAGNET_SPEED, 250.0, 0.001, "XP_MAGNET_SPEED 250")
-	assert_almost_eq(GameConfig.XP_MAGNET_RANGE, 120.0, 0.001, "XP_MAGNET_RANGE 120")
+	assert_almost_eq(GameConfig.XP_MAGNET_SPEED, 400.0, 0.001, "XP_MAGNET_SPEED 400")
+	assert_almost_eq(GameConfig.XP_MAGNET_RANGE, 180.0, 0.001, "XP_MAGNET_RANGE 180")
 	assert_almost_eq(GameConfig.XP_ORB_LIFETIME, 12.0, 0.001, "XP_ORB_LIFETIME 12")
 
 # --- (3) Single-source: skrypty CZYTAJA z GameConfig ---

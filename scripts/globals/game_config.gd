@@ -68,7 +68,8 @@ const MINIBOSS_TURN_SPEED: float = 6.0
 const MINIBOSS_TELEGRAPH_PULSES: int = 3
 const MINIBOSS_TELEGRAPH_COLOR: Color = Color(1.8, 1.8, 1.8, 1.0)
 # Czas (s) pojawienia bossa i wyprzedzenie ostrzezenia boss_incoming.
-const MINIBOSS_SPAWN_TIME: float = 270.0
+# A2: 210 s (3:30) - rekin wchodzi w min. 2 (120 s), wiec ~90 s walki z pelnym skladem.
+const MINIBOSS_SPAWN_TIME: float = 210.0
 const MINIBOSS_WARNING: float = 2.0
 
 # --- Juice (FAZA 5): animacje "zycia" obiektow (kosmetyka Tweenow, nie balans rozgrywki) ---
@@ -94,8 +95,10 @@ const HEAL_PLANK_SWAY_PERIOD: float = 1.9
 const XP_ORB_VALUE: int = 1
 const XP_ORB_MINIBOSS: int = 10
 const XP_PICKUP_RADIUS: float = 30.0
-const XP_MAGNET_SPEED: float = 250.0
-const XP_MAGNET_RANGE: float = 120.0
+# Magnes: orb dogania gracza nawet gdy ten ucieka na max (PLAYER_MAX_SPEED=200) i lapie
+# wczesniej (A1). Wczesniej 250/120 - orb wypadal poza zasieg przy ucieczce.
+const XP_MAGNET_SPEED: float = 400.0
+const XP_MAGNET_RANGE: float = 180.0
 # Po tylu sekundach aktywnej gry niezebrany orb znika (audyt P0.1).
 const XP_ORB_LIFETIME: float = 12.0
 # Model 1 orb = 1 XP (FAZA 6): wrog zrzuca xp_value orbow po 1 XP, rozrzuconych w promieniu.
