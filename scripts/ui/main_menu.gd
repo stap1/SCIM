@@ -42,7 +42,8 @@ func _on_quick_game() -> void:
 func _on_upgrades() -> void:
 	var popup := get_node_or_null("UpgradesMenu")
 	if popup != null and popup.has_method("open"):
-		popup.open()
+		# Przekaz przycisk ULEPSZENIA - po zamknieciu popupa focus tam wroci (nawigacja klawiatura).
+		popup.open(get_node_or_null("Menu/UpgradesButton"))
 
 func _on_credits() -> void:
 	get_tree().change_scene_to_file(ScenePaths.CREDITS)

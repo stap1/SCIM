@@ -11,13 +11,16 @@ const PIP_LIT := Color(1.0, 0.85, 0.1, 1.0)
 
 var _points_label: Label
 var _rows: Dictionary = {}  # id -> {"button":Button, "cost":Label, "pips":Array}
+# Kontrolka, na ktora wraca focus po zamknieciu popupa (by nawigacja klawiatura dzialala dalej).
+var _return_focus: Control = null
 
 func _ready() -> void:
 	layer = 80
 	_build()
 	visible = false
 
-func open() -> void:
+func open(return_focus: Control = null) -> void:
+	_return_focus = return_focus
 	visible = true
 	_refresh()
 	# Nawigacja klawiatura: focus na pierwszym ulepszeniu.
@@ -27,6 +30,9 @@ func open() -> void:
 
 func _close() -> void:
 	visible = false
+	# Zwroc focus do menu, inaczej nawigacja klawiatura zamiera (focus na ukrytym przycisku).
+	if _return_focus != null and is_instance_valid(_return_focus):
+		_return_focus.grab_focus()
 
 # Czysta funkcja: czy pip o danym indeksie ma byc zapalony (kupiony poziom).
 static func pip_lit(level: int, index: int) -> bool:

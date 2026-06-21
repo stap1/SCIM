@@ -52,6 +52,19 @@ func test_pause_grabs_focus_on_open() -> void:
 		"pauza: focus na Wznow")
 	pm.resume()
 
+func test_upgrades_popup_returns_focus_on_close() -> void:
+	# Regresja: po wyjsciu z ULEPSZEN focus musi wrocic do menu (inaczej nawigacja zamiera).
+	var m = MenuScene.instantiate()
+	add_child_autofree(m)
+	await wait_frames(1)
+	var popup = m.get_node("UpgradesMenu")
+	m._on_upgrades()  # otwiera popup (focus na ulepszeniu)
+	await wait_frames(1)
+	popup._on_exit()  # WYJSCIE
+	await wait_frames(1)
+	assert_eq(get_viewport().gui_get_focus_owner(), m.get_node("Menu/UpgradesButton"),
+		"po wyjsciu z ulepszen focus wraca na ULEPSZENIA (nawigacja dziala)")
+
 func test_game_over_grabs_focus() -> void:
 	var go = GameOverScene.instantiate()
 	add_child_autofree(go)
