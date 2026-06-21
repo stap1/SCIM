@@ -35,13 +35,14 @@ window/size/viewport_height=648
 window/stretch/mode="canvas_items"
 window/stretch/aspect="expand"
 
-[gui]
-
-theme/custom_font="uid://ol68kawq588u"
-
 [editor_plugins]
 
 enabled=PackedStringArray("res://addons/gut/plugin.cfg")
+
+[gui]
+
+theme/custom_font="res://resources/game_font.tres"
+theme/default_font_size=17
 
 [input]
 

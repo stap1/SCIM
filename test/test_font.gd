@@ -16,3 +16,12 @@ func test_game_font_has_polish_glyphs() -> void:
 	}
 	for name in chars:
 		assert_true(f.has_char(chars[name]), "font ma glif '%s'" % name)
+
+func test_global_bold_font_resource() -> void:
+	# Globalny font gry (FontVariation z lekkim boldem) - laduje sie i ma polskie glify.
+	var gv = load("res://resources/game_font.tres")
+	assert_not_null(gv, "game_font.tres laduje sie")
+	if gv == null:
+		return
+	assert_true(gv.has_char(0x0119), "globalny font (bold) ma 'ę'")
+	assert_gt(gv.variation_embolden, 0.0, "font jest pogrubiony (embolden > 0)")

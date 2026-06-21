@@ -45,8 +45,8 @@ const ENEMY_JELLYFISH_SCORE: int = 1
 # Obrazenia kontaktowe zwyklego wroga (baza EnemyBase). Rowne legacy PLAYER_CONTACT_DAMAGE.
 const ENEMY_CONTACT_DAMAGE: float = PLAYER_CONTACT_DAMAGE
 # Twardy cap jednoczesnych wrogow (wydajnosc + Web). Przy lekkich meduzach (waga 1) to
-# wlasnie ten cap - nie budzet - byl realnym ogranicznikiem; podniesiony dla gestszych roi.
-const ENEMY_MAX_COUNT: int = 45
+# wlasnie ten cap - nie budzet - byl realnym ogranicznikiem. Test wydajnosci/feel: max 100.
+const ENEMY_MAX_COUNT: int = 100
 # Karencja startowa: przez tyle sekund od startu sesji spawner nie wypuszcza
 # zwyklych wrogow (onboarding - gracz zdazy sie rozejrzec; fix obrazen na starcie).
 const SPAWN_GRACE_SECONDS: float = 2.0
@@ -58,8 +58,8 @@ const ENEMY_WEIGHT := {0: 1, 1: 2, 2: 3}
 # Podniesione (rebalans): pelniejszy start, wyrazny wzrost z czasem, wyzszy sufit -
 # wiecej meduz wczesniej i pozniej (cap liczby ENEMY_MAX_COUNT chroni FPS).
 const ENEMY_WEIGHT_BUDGET_BASE: float = 14.0
-const ENEMY_WEIGHT_BUDGET_PER_MIN: float = 14.0
-const ENEMY_WEIGHT_BUDGET_MAX: float = 90.0
+const ENEMY_WEIGHT_BUDGET_PER_MIN: float = 18.0
+const ENEMY_WEIGHT_BUDGET_MAX: float = 110.0
 # Skracanie interwalu spawnu z czasem (mnoznik bazowego interwalu z difficulty_curve, capowany).
 const SPAWN_INTERVAL_RAMP: float = 0.08      # spadek mnoznika na minute
 const SPAWN_INTERVAL_MIN_FACTOR: float = 0.45
