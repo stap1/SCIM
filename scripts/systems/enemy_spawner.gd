@@ -17,6 +17,10 @@ const HealPlankScene := preload("res://scenes/heal_plank.tscn")
 
 var _boss_warned: bool = false
 var _boss_spawned: bool = false
+# Waga per scena wroga (zbudowana w _ready z GameConfig.ENEMY_WEIGHT). Do wazonego losowania.
+var _weight_by_scene: Dictionary = {}
+# Ulatwienie startowego spawnu z meta-progresji (R3d ustawi z MetaProgress; tu 0 = brak).
+var _spawn_ease: float = 0.0
 
 # Balans edytowalny w jednym miejscu - bez dotykania logiki.
 var difficulty_curve := {
@@ -30,6 +34,14 @@ var _timer: Timer
 var _heal_timer: Timer
 
 func _ready() -> void:
+	# Mapa scena -> waga (z GameConfig.ENEMY_WEIGHT per typ).
+	_weight_by_scene = {
+		JellyfishScene: int(GameConfig.ENEMY_WEIGHT[0]),
+		BarracudaScene: int(GameConfig.ENEMY_WEIGHT[1]),
+		SharkScene: int(GameConfig.ENEMY_WEIGHT[2]),
+	}
+	# _spawn_ease laguje start wg meta-progresji - podpinane w R3d (MetaProgress).
+
 	_timer = Timer.new()
 	_timer.wait_time = difficulty_curve[0]["spawn_interval"]
 	_timer.autostart = true
@@ -53,17 +65,71 @@ func _on_timeout() -> void:
 	if is_in_grace(GameState.time, GameConfig.SPAWN_GRACE_SECONDS):
 		return
 
-	if get_tree().get_nodes_in_group("enemies").size() >= max_enemies:
+	var enemies := get_tree().get_nodes_in_group("enemies")
+	# Twardy cap liczby (ochrona FPS/Web) - niezalezny od budzetu wagi.
+	if enemies.size() >= max_enemies:
 		return
 
 	var tier := current_tier(GameState.time, _curve_keys())
 	var entry: Dictionary = difficulty_curve[tier]
-	_timer.wait_time = entry["spawn_interval"]
+	# Interwal spawnu skraca sie z czasem (wieksza czestotliwosc fal).
+	_timer.wait_time = spawn_interval_for(GameState.time, entry["spawn_interval"])
 
 	var allowed: Array = entry["enemies"]
 	if allowed.is_empty():
 		return
-	spawn_enemy(allowed[randi() % allowed.size()])
+
+	# Wazone losowanie typu (silniejsi rzadziej) sposrod dozwolonych w tierze.
+	var weights: Array[int] = []
+	for scene in allowed:
+		weights.append(int(_weight_by_scene.get(scene, 1)))
+	var idx := weighted_pick(weights, randf())
+	if idx == -1:
+		return
+	var picked: PackedScene = allowed[idx]
+	var w_pick := int(_weight_by_scene.get(picked, 1))
+
+	# Budzet wagi na ekranie rosnie z czasem - to progresywnie zwieksza liczbe wrogow.
+	var budget := weight_budget(GameState.time, _spawn_ease)
+	var on_screen := current_enemy_weight(enemies)
+	if float(on_screen + w_pick) > budget:
+		return  # budzet wyczerpany w tym ticku
+	spawn_enemy(picked)
+
+# Suma wag zywych zwyklych wrogow na ekranie (boss nie ma enemy_type - poza budzetem).
+func current_enemy_weight(enemies: Array) -> int:
+	var total := 0
+	for e in enemies:
+		if is_instance_valid(e) and "enemy_type" in e:
+			total += int(GameConfig.ENEMY_WEIGHT.get(e.enemy_type, 1))
+	return total
+
+# Czysta funkcja: budzet wagi na ekranie dla danego czasu. ease (meta) lagodzi start.
+static func weight_budget(time_seconds: float, ease: float) -> float:
+	var b := GameConfig.ENEMY_WEIGHT_BUDGET_BASE + GameConfig.ENEMY_WEIGHT_BUDGET_PER_MIN * (time_seconds / 60.0)
+	b = clampf(b, GameConfig.ENEMY_WEIGHT_BUDGET_BASE, GameConfig.ENEMY_WEIGHT_BUDGET_MAX)
+	return maxf(1.0, b - ease)
+
+# Czysta funkcja: indeks wybrany wg wag i rng_value w [0,1). Pusta/zerowa suma -> -1.
+static func weighted_pick(weights: Array[int], rng_value: float) -> int:
+	var total := 0
+	for w in weights:
+		total += w
+	if total <= 0:
+		return -1
+	var r := clampf(rng_value, 0.0, 0.999999) * float(total)
+	var acc := 0.0
+	for i in weights.size():
+		acc += float(weights[i])
+		if r < acc:
+			return i
+	return weights.size() - 1
+
+# Czysta funkcja: interwal spawnu skrocony wg czasu (mnoznik capowany do MIN_FACTOR).
+static func spawn_interval_for(time_seconds: float, base: float) -> float:
+	var factor := clampf(1.0 - (time_seconds / 60.0) * GameConfig.SPAWN_INTERVAL_RAMP,
+		GameConfig.SPAWN_INTERVAL_MIN_FACTOR, 1.0)
+	return base * factor
 
 func _curve_keys() -> Array[int]:
 	var keys: Array[int] = []
@@ -98,8 +164,8 @@ func _on_enemy_died(pos: Vector2, xp_value: int, type: int) -> void:
 	get_parent().add_child(burst)
 	burst.global_position = pos
 
-	# Model 1 orb = 1 XP: wrog wart xp_value zrzuca xp_value orbow po 1 XP, rozrzuconych.
-	_spawn_orbs(pos, xp_value, 1)
+	# Model 1 orb = 1 XP, zrzut x2 (R5b): wrog wart xp_value zrzuca 2*xp_value orbow po 1 XP.
+	_spawn_orbs(pos, xp_value * GameConfig.XP_ORB_DROP_MULT, 1)
 
 # Spawnuje 'count' orbow po 'value_each' XP, rozrzuconych w promieniu wokol center.
 # Cap (XP_ORB_MAX_ON_SCREEN) chroni FPS: nadmiar oddaje XP wprost, nie tworzac wezla.
@@ -178,8 +244,8 @@ func _on_boss_defeated(pos: Vector2) -> void:
 	get_parent().add_child(burst)
 	burst.global_position = pos
 
-	# Boss zrzuca kilka grubych orbow (hybryda count x value), oprocz gwarantowanego awansu nizej.
-	_spawn_orbs(pos, GameConfig.XP_ORB_BOSS_COUNT, GameConfig.XP_ORB_BOSS_VALUE)
+	# Boss zrzuca grube orby (hybryda count x value), liczba x2 (R5b), oprocz awansu nizej.
+	_spawn_orbs(pos, GameConfig.XP_ORB_BOSS_COUNT * GameConfig.XP_ORB_DROP_MULT, GameConfig.XP_ORB_BOSS_VALUE)
 
 	# Gwarantowany awans (nagroda) - pokazuje ekran wyboru ulepszenia.
 	GameState.grant_level_up()

@@ -50,6 +50,19 @@ const ENEMY_MAX_COUNT: int = 30
 # zwyklych wrogow (onboarding - gracz zdazy sie rozejrzec; fix obrazen na starcie).
 const SPAWN_GRACE_SECONDS: float = 2.0
 
+# --- Spawn wagowy (R5): presja rosnie z czasem przez budzet wagi na ekranie ---
+# Wagi per typ (Enemy.EnemyType jako int): meduza(0)=1, barakuda(1)=2, rekin(2)=3.
+const ENEMY_WEIGHT := {0: 1, 1: 2, 2: 3}
+# Budzet sumy wag zywych wrogow na ekranie: BASE na starcie, rosnie PER_MIN, cap MAX.
+const ENEMY_WEIGHT_BUDGET_BASE: float = 8.0
+const ENEMY_WEIGHT_BUDGET_PER_MIN: float = 7.0
+const ENEMY_WEIGHT_BUDGET_MAX: float = 42.0
+# Skracanie interwalu spawnu z czasem (mnoznik bazowego interwalu z difficulty_curve, capowany).
+const SPAWN_INTERVAL_RAMP: float = 0.08      # spadek mnoznika na minute
+const SPAWN_INTERVAL_MIN_FACTOR: float = 0.45
+# Mnoznik liczby zrzucanych orbow XP (R5b): kazdy wrog zrzuca x2 orbow (x2 XP).
+const XP_ORB_DROP_MULT: int = 2
+
 # --- Mini-boss (MotorBoat) ---
 const MINIBOSS_HP: float = 300.0
 const MINIBOSS_SCORE: int = 500
