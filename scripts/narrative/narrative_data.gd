@@ -9,7 +9,13 @@ extends RefCounted
 # wolno ich tak oznaczac. Charakterystyka: pierwsza osoba, krotkie zdania, ton zmeczonej
 # determinacji; motywy samotnosci, godnosci, walki; bez patosu i archaizmow.
 
-# Kwestia otwierajaca (ekran intro Santiago).
+# Okrzyk na koniec odliczania intro (przejscie na wode).
+const INTRO_SHOUT := "NA MORZE!"
+
+# Pierwsza kwestia protagonisty - pojawia sie JUZ W GRZE (z efektem maszyny), nie na intro.
+const FIRST_LINE := "Tym razem nie wrócę z morza z pustymi rękami."
+
+# Kwestia otwierajaca (zapas; aktualnie intro pokazuje samo odliczanie).
 const INTRO := "Osiemdziesiąt cztery dni bez połowu. Dziś morze odda mi to, co moje."
 
 # Progi liczby zabitych meduz -> kwestia (jedna na osiagniety prog).

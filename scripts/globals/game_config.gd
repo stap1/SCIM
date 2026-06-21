@@ -133,7 +133,7 @@ const HEAL_PLANK_LIFETIME: float = 15.0
 const DEATH_BURST_LIFETIME: float = 1.5
 
 # --- Narracja: efekt maszyny do pisania (dialogi B4 + ostrzezenie o bossie) ---
-const TYPEWRITER_CPS: float = 32.0          # znaki/s ujawniania; szybko, ale czytelnie
+const TYPEWRITER_CPS: float = 16.0          # znaki/s ujawniania; wolno, by mlodszy gracz zdazyl przeczytac
 const TYPEWRITER_KEY_EVERY: int = 2         # dzwiek klawisza co N ujawnionych nie-bialych znakow
 const TYPEWRITER_KEY_PITCH_JITTER: float = 0.12  # +/- losowy pitch klawisza (naturalnosc)
 

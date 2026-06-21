@@ -15,12 +15,17 @@ var _busy: bool = false
 var _last_jelly: int = 0
 
 func _ready() -> void:
+	add_to_group("dialogue_banner")  # intro woła play_first_line() przez grupę (luźne powiązanie)
 	if panel:
 		panel.modulate.a = 0.0
 	GameState.enemy_killed.connect(_on_enemy_killed)
 	GameState.boss_incoming.connect(_on_boss_incoming)
 	if typer:
 		typer.finished.connect(_on_typing_finished)
+
+# Pierwsza kwestia protagonisty po zakonczeniu intro (start wlasciwej gry) - z maszyna do pisania.
+func play_first_line() -> void:
+	enqueue(NarrativeData.FIRST_LINE)
 
 func _on_enemy_killed(type: int, count: int) -> void:
 	var r := resolve_kill_line(type, count, _last_jelly)

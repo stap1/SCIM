@@ -15,7 +15,6 @@ signal intro_finished
 @onready var page: Control = get_node_or_null("Page")
 @onready var portrait: TextureRect = get_node_or_null("Page/Portrait")
 @onready var countdown_label: Label = get_node_or_null("Page/Countdown")
-@onready var line_label: Label = get_node_or_null("Page/Line")
 
 var _finished: bool = false
 # Redukcja migotania (dostepnosc): bez efektownego obracania strony - lagodny fade.
@@ -24,8 +23,6 @@ var _reduce: bool = false
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	_load_random_portrait()
-	if line_label:
-		line_label.text = NarrativeData.INTRO
 	_start_intro()
 
 # --- Losowanie portretu ---
@@ -56,22 +53,43 @@ func _start_intro() -> void:
 	get_tree().paused = true
 	_reduce = not SettingsStore.should_flash(SettingsStore.reduce_flashing)
 	_set_page(0.0)
-	_set_countdown(3)
+	if countdown_label:
+		countdown_label.modulate.a = 0.0
+	var step: float = GameConfig.INTRO_COUNTDOWN_STEP
 	var tw := create_tween()
+	# Wejscie: przewrocenie strony odslania portret.
 	tw.tween_method(_set_page, 0.0, 1.0, GameConfig.INTRO_PAGE_TURN_TIME)
-	tw.tween_interval(GameConfig.INTRO_COUNTDOWN_STEP)
-	tw.tween_callback(_set_countdown.bind(2))
-	tw.tween_interval(GameConfig.INTRO_COUNTDOWN_STEP)
-	tw.tween_callback(_set_countdown.bind(1))
-	tw.tween_interval(GameConfig.INTRO_COUNTDOWN_STEP)
-	# Koniec odliczania: syrena portowa + przewrocenie strony odslaniajace rozgrywke.
+	# Odliczanie: kazda duza cyfra pojawia sie, kurczy i znika; potem okrzyk.
+	tw.tween_callback(_show_token.bind("3"))
+	tw.tween_interval(step)
+	tw.tween_callback(_show_token.bind("2"))
+	tw.tween_interval(step)
+	tw.tween_callback(_show_token.bind("1"))
+	tw.tween_interval(step)
+	tw.tween_callback(_show_token.bind(NarrativeData.INTRO_SHOUT))
+	tw.tween_interval(step)
+	# Przejscie na wode: syrena + przewrocenie strony odslaniajace rozgrywke.
 	tw.tween_callback(func() -> void: AudioManager.play_sfx("port_siren"))
 	tw.tween_method(_set_page_out, 0.0, 1.0, GameConfig.INTRO_PAGE_TURN_TIME)
 	tw.tween_callback(_finish)
 
-func _set_countdown(n: int) -> void:
-	if countdown_label:
-		countdown_label.text = str(n)
+# Pokazuje token odliczania (cyfra lub okrzyk): duzy, potem kurczy sie i znika.
+# Sub-Tween gra mimo pauzy (overlay = ALWAYS). reduce_flashing -> tylko fade, bez skali.
+func _show_token(text_value: String) -> void:
+	if countdown_label == null:
+		return
+	countdown_label.text = text_value
+	countdown_label.pivot_offset = countdown_label.size * 0.5
+	countdown_label.modulate.a = 1.0
+	var step: float = GameConfig.INTRO_COUNTDOWN_STEP
+	var t := create_tween()
+	if _reduce:
+		countdown_label.scale = Vector2.ONE
+		t.tween_property(countdown_label, "modulate:a", 0.0, step)
+	else:
+		countdown_label.scale = Vector2(1.6, 1.6)
+		t.tween_property(countdown_label, "scale", Vector2(0.5, 0.5), step).set_trans(Tween.TRANS_QUAD)
+		t.parallel().tween_property(countdown_label, "modulate:a", 0.0, step)
 
 # Page-turn IN (0->1): strona "kladzie sie" od grzbietu (lewa krawedz).
 func _set_page(t: float) -> void:
@@ -103,8 +121,16 @@ func _finish() -> void:
 		return
 	_finished = true
 	get_tree().paused = false
+	_trigger_first_line()
 	intro_finished.emit()
 	queue_free()
+
+# Po zdjeciu pauzy: pierwsza kwestia protagonisty W GRZE (z maszyna do pisania).
+# Luzne powiazanie - baner przez grupe, bez twardej sciezki.
+func _trigger_first_line() -> void:
+	var db := get_tree().get_first_node_in_group("dialogue_banner")
+	if db != null and db.has_method("play_first_line"):
+		db.play_first_line()
 
 # Bezpiecznik: jesli overlay znika przed koncem intro (zmiana sceny / restart / test),
 # nie zostawiaj gry zapauzowanej.
