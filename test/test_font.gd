@@ -25,3 +25,13 @@ func test_global_bold_font_resource() -> void:
 		return
 	assert_true(gv.has_char(0x0119), "globalny font (bold) ma 'ę'")
 	assert_gt(gv.variation_embolden, 0.0, "font jest pogrubiony (embolden > 0)")
+
+func test_global_theme() -> void:
+	# Globalny motyw (project.godot gui/theme/custom): font + rozmiar + styl focus do nawigacji.
+	var th = load("res://resources/game_theme.tres")
+	assert_not_null(th, "global theme laduje sie")
+	if th == null:
+		return
+	assert_not_null(th.default_font, "theme ma default_font")
+	assert_eq(th.default_font_size, 17, "default_font_size 17")
+	assert_true(th.has_stylebox("focus", "Button"), "theme ma styl focus dla Button (podswietlenie aktywnego)")

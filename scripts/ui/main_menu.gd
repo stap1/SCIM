@@ -12,6 +12,10 @@ func _ready() -> void:
 	_connect_button("Menu/CreditsButton", _on_credits)
 	_connect_button("Menu/QuitButton", _on_quit)
 	_animate_waves()
+	# Nawigacja klawiatura: focus na pierwszej aktywnej pozycji (strzalki/enter/spacja dzialaja).
+	var first := get_node_or_null("Menu/QuickGameButton")
+	if first:
+		first.grab_focus()
 
 func _connect_button(path: String, handler: Callable) -> void:
 	var b := get_node_or_null(path)

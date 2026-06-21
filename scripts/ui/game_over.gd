@@ -68,6 +68,9 @@ func _on_game_over() -> void:
 		panel.show()
 	get_tree().paused = true
 	_count_up_score()
+	# Nawigacja klawiatura: focus na "Sprobuj ponownie".
+	if restart_button:
+		restart_button.grab_focus()
 
 func _count_up_score() -> void:
 	if final_score_label == null:

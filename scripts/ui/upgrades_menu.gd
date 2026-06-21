@@ -20,6 +20,10 @@ func _ready() -> void:
 func open() -> void:
 	visible = true
 	_refresh()
+	# Nawigacja klawiatura: focus na pierwszym ulepszeniu.
+	var first_id: String = MetaProgress.REAL_IDS[0]
+	if _rows.has(first_id):
+		_rows[first_id]["button"].grab_focus()
 
 func _close() -> void:
 	visible = false

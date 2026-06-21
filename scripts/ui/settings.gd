@@ -66,6 +66,12 @@ func _ready() -> void:
 	SettingsStore.reduce_shake = bool(s["reduce_shake"])
 	SettingsStore.reduce_flashing = bool(s["reduce_flashing"])
 
+	# Nawigacja klawiatura: focus na pierwszej kontrolce.
+	if music_slider:
+		music_slider.grab_focus()
+	elif back_button:
+		back_button.grab_focus()
+
 func _on_music_changed(v: float) -> void:
 	SettingsStore.apply_bus("Music", v)
 	_save()

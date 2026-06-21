@@ -42,8 +42,7 @@ enabled=PackedStringArray("res://addons/gut/plugin.cfg")
 
 [gui]
 
-theme/custom_font="res://resources/game_font.tres"
-theme/default_font_size=17
+theme/custom="res://resources/game_theme.tres"
 
 [input]
 

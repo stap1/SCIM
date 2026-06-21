@@ -37,6 +37,9 @@ func _on_level_up(new_level: int) -> void:
 		panel.show()
 	get_tree().paused = true
 	_flash()
+	# Nawigacja klawiatura: focus na pierwszej karcie (strzalki przechodza miedzy kartami).
+	if not cards.is_empty() and cards[0] != null:
+		cards[0].grab_focus()
 
 ## Dobiera oferte kart dla danego poziomu. Na poziomach milestone (co
 ## GameConfig.MILESTONE_LEVEL_INTERVAL) zwraca WYLACZNIE pule milestone, w przeciwnym

@@ -11,6 +11,7 @@ func _ready() -> void:
 	_show_scores()
 	if back_button:
 		back_button.pressed.connect(_on_back)
+		back_button.grab_focus()  # nawigacja klawiatura
 
 func _show_scores() -> void:
 	if list_label == null:
