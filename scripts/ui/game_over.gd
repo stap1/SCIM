@@ -33,7 +33,10 @@ func _on_game_over() -> void:
 	if time_label:
 		time_label.text = "Czas: " + TimeFormat.mmss(GameState.time)
 	if kills_label:
-		kills_label.text = "Zatopione: " + str(GameState.enemies_killed)
+		var j: int = int(GameState.kills_by_type.get(Enemy.EnemyType.JELLYFISH, 0))
+		var b: int = int(GameState.kills_by_type.get(Enemy.EnemyType.BARRACUDA, 0))
+		var s: int = int(GameState.kills_by_type.get(Enemy.EnemyType.SHARK, 0))
+		kills_label.text = kills_breakdown_text(GameState.enemies_killed, j, b, s)
 	if boss_label:
 		boss_label.text = "Kłusownik pokonany: " + ("TAK" if GameState.miniboss_defeated else "nie")
 	if best_label:
@@ -53,6 +56,11 @@ func _count_up_score() -> void:
 func _set_score_text(v: float) -> void:
 	if final_score_label:
 		final_score_label.text = "Wynik: " + str(int(v))
+
+# Czysta funkcja: tekst statystyki zatopien - suma + rozbicie per typ (B5).
+# Suma (enemies_killed) zostaje wiodaca (zgodnosc highscores); rozbicie z kills_by_type.
+static func kills_breakdown_text(total: int, jelly: int, barracuda: int, shark: int) -> String:
+	return "Zatopione: %d (meduzy %d / barakudy %d / rekiny %d)" % [total, jelly, barracuda, shark]
 
 static func is_new_record(score: int, best: int) -> bool:
 	return score > 0 and score >= best
