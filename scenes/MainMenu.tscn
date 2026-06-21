@@ -1,8 +1,9 @@
-[gd_scene load_steps=4 format=3 uid="uid://cduhwog23coy7"]
+[gd_scene load_steps=5 format=3 uid="uid://cduhwog23coy7"]
 
 [ext_resource type="Script" uid="uid://b12oqh3mydlaw" path="res://scripts/ui/main_menu.gd" id="1_mm"]
 [ext_resource type="Texture2D" uid="uid://c7qf6i78wkkpo" path="res://assets/main_menu_background.png" id="2_bg"]
 [ext_resource type="Theme" path="res://resources/main_menu_theme.tres" id="3_theme"]
+[ext_resource type="Script" path="res://scripts/ui/upgrades_menu.gd" id="4_upg"]
 
 [node name="MainMenu" type="Control"]
 layout_mode = 3
@@ -75,3 +76,6 @@ text = "CREDITS"
 [node name="QuitButton" type="Button" parent="Menu"]
 layout_mode = 2
 text = "WYJŚCIE Z GRY"
+
+[node name="UpgradesMenu" type="CanvasLayer" parent="."]
+script = ExtResource("4_upg")

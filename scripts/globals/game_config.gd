@@ -134,6 +134,13 @@ const MAX_LEVEL: int = 61
 # Co tyle poziomow zamiast zwyklej karty pojawia sie specjalny power-up (harpun/przebijanie).
 const MILESTONE_LEVEL_INTERVAL: int = 5
 
+# --- Meta-progresja (R3): trwale ulepszenia kupowane miedzy sesjami ---
+const META_POINTS_PER_SCORE: int = 10     # tyle wyniku = 1 punkt meta
+const META_COST_BASE: int = 50            # koszt poziomu L = BASE*(L+1)
+const META_BOAT_SPEED_MAX: float = 80.0   # bonus startowej predkosci lodzi na maks. poziomie
+const META_MAGNET_MULT_MAX: float = 1.0   # dodatek mnoznika zasiegu zbierania na maks (1.0 -> x2)
+const META_SPAWN_EASE_MAX: float = 6.0    # zlagodzenie budzetu spawnu na maks. poziomie
+
 # --- Leczenie ---
 # Dryfujaca deska (rybak lata nia kadlub): ile HP przywraca i jak czesto sie pojawia.
 const HEAL_PLANK_AMOUNT: float = 25.0
