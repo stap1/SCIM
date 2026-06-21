@@ -58,8 +58,12 @@ const ENEMY_WEIGHT := {0: 1, 1: 2, 2: 3}
 # Podniesione (rebalans): pelniejszy start, wyrazny wzrost z czasem, wyzszy sufit -
 # wiecej meduz wczesniej i pozniej (cap liczby ENEMY_MAX_COUNT chroni FPS).
 const ENEMY_WEIGHT_BUDGET_BASE: float = 14.0
-const ENEMY_WEIGHT_BUDGET_PER_MIN: float = 18.0
-const ENEMY_WEIGHT_BUDGET_MAX: float = 110.0
+# Stromy wzrost, by twardy cap ENEMY_MAX_COUNT (500) byl realnie osiagalny pod koniec sesji.
+const ENEMY_WEIGHT_BUDGET_PER_MIN: float = 100.0
+const ENEMY_WEIGHT_BUDGET_MAX: float = 520.0
+# Eventowe hordy (np. rojenie meduz) wypelniaja tylko ten ulamek budzetu - reszta zostaje
+# na zwykly spawn (event nie zapycha calego pola).
+const EVENT_FILL_FRACTION: float = 0.6
 # Skracanie interwalu spawnu z czasem (mnoznik bazowego interwalu z difficulty_curve, capowany).
 const SPAWN_INTERVAL_RAMP: float = 0.08      # spadek mnoznika na minute
 const SPAWN_INTERVAL_MIN_FACTOR: float = 0.45
@@ -71,9 +75,12 @@ const MINIBOSS_HP: float = 300.0
 const MINIBOSS_SCORE: int = 500
 # Mini-boss rani gracza na kontakt mocniej niz zwykly wrog.
 const MINIBOSS_CONTACT_DAMAGE: float = 25.0
-const MINIBOSS_TRACK_SPEED: float = 60.0
+const MINIBOSS_TRACK_SPEED: float = 85.0
 const MINIBOSS_CHARGE_INTERVAL: float = 3.0
-const MINIBOSS_CHARGE_DURATION: float = 0.45
+const MINIBOSS_CHARGE_DURATION: float = 0.55
+# Dystans szarzy: boss natiera w linii o ta dlugosc w kierunku gracza, PRZELATUJAC obok
+# (a nie zatrzymujac sie przed nim) - dzieki temu odslania bok do ostrzelania.
+const MINIBOSS_CHARGE_DISTANCE: float = 520.0
 # Wind-up (telegraf) przed szarza - czas, ktory gracz ma na reakcje/unik.
 const MINIBOSS_TELEGRAPH_DURATION: float = 0.6
 # Szybkosc wygladzania obrotu bossa ku celowi (waga lerp_angle skalowana czasem klatki).

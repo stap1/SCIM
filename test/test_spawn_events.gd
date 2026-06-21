@@ -52,6 +52,24 @@ func test_jelly_swarm_fills_budget_on_30_kills() -> void:
 	assert_gt(n, 3, "rojenie meduz zapelnilo budzet (kilka meduz)")
 	assert_lte(n, spawner.max_enemies, "nie przekracza twardego capu liczby")
 
+func test_event_leaves_budget_headroom() -> void:
+	# Event nie zapycha calego budzetu - zostawia zapas na zwykly spawn (EVENT_FILL_FRACTION).
+	var parent := Node2D.new()
+	add_child_autofree(parent)
+	var spawner = SpawnerScript.new()
+	parent.add_child(spawner)
+	await wait_physics_frames(1)
+	GameState.reset()
+	spawner.stop_spawning()
+	_clear_enemies()
+	await wait_physics_frames(1)
+	GameState.enemy_killed.emit(Enemy.EnemyType.JELLYFISH, 30)
+	await wait_physics_frames(1)
+	var budget := SpawnerScript.weight_budget(GameState.time, 0.0)
+	var n := _enemies_under(parent)  # meduzy waga 1 -> liczba == waga
+	assert_gt(n, 0, "rojenie cos zespawnowalo")
+	assert_lt(float(n), budget, "rojenie zostawia zapas budzetu (n < pelny budzet)")
+
 func test_jelly_swarm_fires_once() -> void:
 	var parent := Node2D.new()
 	add_child_autofree(parent)

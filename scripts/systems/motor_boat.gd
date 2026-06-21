@@ -103,9 +103,13 @@ func _on_charge() -> void:
 # Faza TELEGRAPH: boss zatrzymuje sie, ZABLOKOWuje cel i sygnalizuje szarze (czas na unik).
 func _begin_telegraph() -> void:
 	phase = Phase.TELEGRAPH
-	# Zablokuj cel juz teraz: aim (obrot) i szarza ida w to samo miejsce, a gracz moze uciec.
+	# Zablokuj kierunek juz teraz: boss natiera w LINII (overshoot o MINIBOSS_CHARGE_DISTANCE),
+	# przelatujac obok gracza i odslaniajac bok. Gracz, ktory odejdzie, unika trafienia.
 	if target != null and is_instance_valid(target):
-		_charge_target = target.global_position
+		var dir := (target.global_position - global_position).normalized()
+		if dir.is_zero_approx():
+			dir = Vector2.UP
+		_charge_target = global_position + dir * GameConfig.MINIBOSS_CHARGE_DISTANCE
 	charge_telegraph.emit(telegraph_duration)
 	_flash_telegraph()
 	_show_telegraph(telegraph_duration)

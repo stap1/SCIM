@@ -137,16 +137,17 @@ func _run_event(ev: Dictionary) -> void:
 	else:
 		_fill_budget_with(scene, enemy_type)
 
-# Spawnuje wrogow danego typu az do zapelnienia budzetu wagi (lub twardego capu liczby).
+# Spawnuje wrogow danego typu az do EVENT_FILL_FRACTION budzetu (reszta zostaje na zwykly
+# spawn - event nie zapycha calego pola) lub do twardego capu liczby.
 func _fill_budget_with(scene: PackedScene, enemy_type: int) -> void:
 	var w := int(GameConfig.ENEMY_WEIGHT.get(enemy_type, 1))
-	var budget := weight_budget(GameState.time, _spawn_budget_bonus)
+	var target_budget := weight_budget(GameState.time, _spawn_budget_bonus) * GameConfig.EVENT_FILL_FRACTION
 	var guard := 0
 	while guard < max_enemies:
 		var enemies := get_tree().get_nodes_in_group("enemies")
 		if enemies.size() >= max_enemies:
 			break
-		if float(current_enemy_weight(enemies) + w) > budget:
+		if float(current_enemy_weight(enemies) + w) > target_budget:
 			break
 		spawn_enemy(scene)
 		guard += 1
