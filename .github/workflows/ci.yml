@@ -22,7 +22,13 @@ jobs:
           chmod +x godot
 
       - name: Import zasobow
-        run: ./godot --headless --import 2>&1 | tee import.log || true
+        # Dwa przebiegi: na swiezym checkoucie brak cache .godot/imported (gitignore),
+        # wiec silnik przy starcie laduje custom theme (game_theme -> game_font -> Jersey25.ttf)
+        # ZANIM import wygeneruje .fontdata -> przejsciowe "Parse Error" w logu. Pierwszy przebieg
+        # generuje cache; drugi bootuje juz z cache i jest czysty - to jego log skanujemy nizej.
+        run: |
+          ./godot --headless --import 2>&1 | tee import_pass1.log || true
+          ./godot --headless --import 2>&1 | tee import.log || true
 
       - name: Testy GUT
         run: |
