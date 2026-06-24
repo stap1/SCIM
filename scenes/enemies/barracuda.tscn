@@ -3,7 +3,7 @@
 [ext_resource type="Script" uid="uid://dfe0lpyyf6k0f" path="res://scripts/systems/enemy.gd" id="1_enemy"]
 [ext_resource type="Texture2D" uid="uid://b5ui4mt6dmwt8" path="res://assets/enemy_barracuda.png" id="2_tex"]
 [ext_resource type="AudioStream" uid="uid://kebj4lxu75wb" path="res://audio/sfx/enemy_spawn.ogg" id="3_spawn"]
-[ext_resource type="Script" path="res://scripts/systems/enemy_idle.gd" id="4_idle"]
+[ext_resource type="Script" uid="uid://dgab6v7mlpsj3" path="res://scripts/systems/enemy_idle.gd" id="4_idle"]
 [ext_resource type="Material" path="res://resources/fish_swim.tres" id="5_swim"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_body"]
@@ -16,9 +16,9 @@ script = ExtResource("1_enemy")
 enemy_type = 1
 speed = 160.0
 xp_value = 2
+face_target = true
 max_health = 8.0
 kill_score = 2
-face_target = true
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=1156857949]
 material = ExtResource("5_swim")
@@ -33,6 +33,5 @@ stream = ExtResource("3_spawn")
 volume_db = 5.0
 bus = &"SFX"
 
-[node name="EnemyIdle" type="Node" parent="."]
+[node name="EnemyIdle" type="Node" parent="." unique_id=1304270070]
 script = ExtResource("4_idle")
-profile = "barracuda"

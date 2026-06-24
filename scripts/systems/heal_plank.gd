@@ -12,6 +12,7 @@ var _age: float = 0.0
 func _ready() -> void:
 	body_entered.connect(_on_body_entered)
 	_start_drift()
+	AudioManager.play_sfx("heal_spawn") # TUTAJ POPRAWIONO WYWOŁANIE
 
 # Dryf: dwa Tweeny o roznych okresach (bob pionowy + sway obrotu) na Sprite2D - nieregularne
 # kolysanie deski na wodzie. Wszystkie wlasnosci Sprite'a wolne (deska statyczna).

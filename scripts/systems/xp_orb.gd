@@ -55,6 +55,11 @@ func _collect() -> void:
 	if is_collected:
 		return
 	is_collected = true              # natychmiast - guard przed podwojnym zebraniem
+	
+	# Odpalamy dźwięk standardowo. 
+	# Stasiek docelowo zamieni to na play_sfx_pitched("xp_pickup", wartosc_combo)
+	AudioManager.play_sfx("xp_pickup")
+	
 	GameState.add_xp(xp_value)       # nagroda od razu (bez ryzyka utraty XP w trakcie animacji)
 	var aura := get_node_or_null("GoldenAura")
 	if aura != null and aura.has_method("stop"):

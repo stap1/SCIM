@@ -1,24 +1,26 @@
-[gd_scene load_steps=5 format=3 uid="uid://cduhwog23coy7"]
+[gd_scene format=3 uid="uid://cduhwog23coy7"]
 
 [ext_resource type="Script" uid="uid://b12oqh3mydlaw" path="res://scripts/ui/main_menu.gd" id="1_mm"]
 [ext_resource type="Texture2D" uid="uid://c7qf6i78wkkpo" path="res://assets/main_menu_background.png" id="2_bg"]
-[ext_resource type="Theme" path="res://resources/main_menu_theme.tres" id="3_theme"]
-[ext_resource type="Script" path="res://scripts/ui/upgrades_menu.gd" id="4_upg"]
+[ext_resource type="Theme" uid="uid://8wow17fns0ne" path="res://resources/main_menu_theme.tres" id="3_theme"]
+[ext_resource type="Script" uid="uid://bg87n3ygumrvo" path="res://scripts/ui/upgrades_menu.gd" id="4_upg"]
 
-[node name="MainMenu" type="Control"]
+[node name="MainMenu" type="Control" unique_id=407450707]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 script = ExtResource("1_mm")
 
-[node name="Background" type="ColorRect" parent="."]
+[node name="Background" type="ColorRect" parent="." unique_id=252360009]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
 color = Color(0.05, 0.05, 0.07, 1)
 
-[node name="BackgroundImage" type="TextureRect" parent="."]
+[node name="BackgroundImage" type="TextureRect" parent="." unique_id=1409465840]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -26,7 +28,7 @@ texture = ExtResource("2_bg")
 expand_mode = 1
 stretch_mode = 6
 
-[node name="Title" type="Label" parent="."]
+[node name="Title" type="Label" parent="." unique_id=917825298]
 layout_mode = 0
 offset_left = 48.0
 offset_top = 40.0
@@ -39,7 +41,7 @@ theme_override_font_sizes/font_size = 32
 text = "Stary człowiek i morze"
 horizontal_alignment = 1
 
-[node name="Menu" type="VBoxContainer" parent="."]
+[node name="Menu" type="VBoxContainer" parent="." unique_id=39756132]
 layout_mode = 0
 offset_left = 64.0
 offset_top = 168.0
@@ -48,34 +50,34 @@ offset_bottom = 600.0
 theme = ExtResource("3_theme")
 theme_override_constants/separation = 12
 
-[node name="QuickGameButton" type="Button" parent="Menu"]
+[node name="QuickGameButton" type="Button" parent="Menu" unique_id=1251683076]
 layout_mode = 2
 text = "SZYBKA GRA (5 minut)"
 
-[node name="NewGameButton" type="Button" parent="Menu"]
+[node name="NewGameButton" type="Button" parent="Menu" unique_id=1866556034]
 layout_mode = 2
 disabled = true
 text = "NOWA GRA"
 
-[node name="UpgradesButton" type="Button" parent="Menu"]
+[node name="UpgradesButton" type="Button" parent="Menu" unique_id=818658603]
 layout_mode = 2
 text = "ULEPSZENIA"
 
-[node name="SettingsButton" type="Button" parent="Menu"]
+[node name="SettingsButton" type="Button" parent="Menu" unique_id=1139462863]
 layout_mode = 2
 text = "USTAWIENIA"
 
-[node name="ScoresButton" type="Button" parent="Menu"]
+[node name="ScoresButton" type="Button" parent="Menu" unique_id=1057585312]
 layout_mode = 2
 text = "WYNIKI"
 
-[node name="CreditsButton" type="Button" parent="Menu"]
+[node name="CreditsButton" type="Button" parent="Menu" unique_id=1998822844]
 layout_mode = 2
 text = "CREDITS"
 
-[node name="QuitButton" type="Button" parent="Menu"]
+[node name="QuitButton" type="Button" parent="Menu" unique_id=636110324]
 layout_mode = 2
 text = "WYJŚCIE Z GRY"
 
-[node name="UpgradesMenu" type="CanvasLayer" parent="."]
+[node name="UpgradesMenu" type="CanvasLayer" parent="." unique_id=1167630744]
 script = ExtResource("4_upg")
