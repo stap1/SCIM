@@ -29,6 +29,22 @@ const MUSIC := {
 const AMBIENT_PATH := "res://audio/ambient/ambient_sea.ogg"
 const MUSIC_CROSSFADE := 1.5
 
+# --- STROJENIE DZWIEKU XP (combo pitch + throttling) ---
+# Po tylu ms ciszy combo resetuje sie do bazowego tonu.
+const XP_COMBO_RESET_MS := 1000
+# Dzwieki gestsze niz to sa tlumione (nie graja), by uniknac przesterowan.
+const XP_THROTTLE_MS := 50
+# Przyrost tonu przy stlumionym (niegranym) zbiorze.
+const XP_THROTTLE_PITCH_STEP := 0.02
+# Przyrost tonu przy zagranym zbiorze.
+const XP_PLAY_PITCH_STEP := 0.05
+# Gorny limit tonu combo.
+const XP_PITCH_MAX := 1.5
+# Zakres tonu (1.0 .. 1.0 + SPAN) mapowany na kompensacje glosnosci.
+const XP_PITCH_SPAN := 0.5
+# Docelowe tlumienie przy maksymalnym tonie (kompensacja wysokich czestotliwosci).
+const XP_VOLUME_MIN_DB := -6.0
+
 var _sfx_streams := {}
 var _sfx_players: Array[AudioStreamPlayer] = []
 var _sfx_index := 0
@@ -112,18 +128,13 @@ func play_sfx(sfx_name: String) -> void:
 		player.bus = _bus_or_master("SFX") 
 	
 	if sfx_name == "xp_pickup":
-		var now := Time.get_ticks_msec()
-		if now - _last_xp_time > 1000: 
-			_current_xp_pitch = 1.0 
-		
-		if now - _last_xp_time < 50: 
-			_current_xp_pitch = minf(_current_xp_pitch + 0.02, 1.5)
-			return 
-			
-		_last_xp_time = now
-		player.pitch_scale = _current_xp_pitch
-		player.volume_db = fade_volume_db((_current_xp_pitch - 1.0) / 0.5, 0.0, -6.0) 
-		_current_xp_pitch = minf(_current_xp_pitch + 0.05, 1.5)
+		var step := compute_xp_playback(Time.get_ticks_msec(), _last_xp_time, _current_xp_pitch)
+		_current_xp_pitch = step["next_pitch"]
+		_last_xp_time = step["next_last_ms"]
+		if not step["play"]:
+			return
+		player.pitch_scale = step["pitch"]
+		player.volume_db = step["volume_db"]
 	else:
 		player.pitch_scale = 1.0 
 		player.volume_db = 0.0
@@ -213,6 +224,33 @@ func _bus_or_master(bus_name: String) -> String:
 
 static func fade_volume_db(t: float, from_db: float, to_db: float) -> float:
 	return from_db + (to_db - from_db) * t
+
+# Czysta logika combo XP: bez zaleznosci od drzewa scen (pure function extraction).
+# Na podstawie czasu teraz/ostatniego zagrania i biezacego tonu liczy, czy zagrac
+# dzwiek, z jakim tonem i glosnoscia oraz jaki ma byc nastepny stan (ton + znacznik czasu).
+#   - elapsed > XP_COMBO_RESET_MS  -> reset tonu do 1.0 (po ciszy combo wygasa),
+#   - elapsed < XP_THROTTLE_MS     -> tlumienie: nie gramy, podbijamy ton, czas bez zmian,
+#   - w przeciwnym razie           -> gramy z kompensacja glosnosci i podbijamy ton.
+static func compute_xp_playback(now_ms: int, last_ms: int, current_pitch: float) -> Dictionary:
+	var pitch: float = current_pitch
+	var elapsed: int = now_ms - last_ms
+	if elapsed > XP_COMBO_RESET_MS:
+		pitch = 1.0
+	if elapsed < XP_THROTTLE_MS:
+		return {
+			"play": false,
+			"pitch": pitch,
+			"volume_db": 0.0,
+			"next_pitch": minf(pitch + XP_THROTTLE_PITCH_STEP, XP_PITCH_MAX),
+			"next_last_ms": last_ms,
+		}
+	return {
+		"play": true,
+		"pitch": pitch,
+		"volume_db": fade_volume_db((pitch - 1.0) / XP_PITCH_SPAN, 0.0, XP_VOLUME_MIN_DB),
+		"next_pitch": minf(pitch + XP_PLAY_PITCH_STEP, XP_PITCH_MAX),
+		"next_last_ms": now_ms,
+	}
 
 # =====================================================================
 # SYSTEM AUTOMATYCZNEGO GENEROWANIA MIKSERA NA EKRANIE GRY (Z ZAPISEM)
