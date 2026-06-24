@@ -3,7 +3,7 @@ extends Node
 const SFX_PATHS := {
 	"harpoon_shot": "res://audio/sfx/harpoon_shot.ogg",
 	"hit": "res://audio/sfx/hit.ogg",
-	"enemy_death": "res://audio/sfx/enemy_death.wav",
+	"enemy_death": "res://audio/sfx/enemy_death.ogg",
 	"boss_spawn": "res://audio/sfx/boss_spawn.ogg",
 	"player_hit": "res://audio/sfx/player_hit.ogg",
 	"level_up": "res://audio/sfx/level_up.ogg",
@@ -27,22 +27,16 @@ const MUSIC := {
 }
 
 const AMBIENT_PATH := "res://audio/ambient/ambient_sea.ogg"
+const AMBIENT_STORM_PATH := "res://audio/ambient/ambient_storm.ogg"
 const MUSIC_CROSSFADE := 1.5
 
 # --- STROJENIE DZWIEKU XP (combo pitch + throttling) ---
-# Po tylu ms ciszy combo resetuje sie do bazowego tonu.
 const XP_COMBO_RESET_MS := 1000
-# Dzwieki gestsze niz to sa tlumione (nie graja), by uniknac przesterowan.
-const XP_THROTTLE_MS := 50
-# Przyrost tonu przy stlumionym (niegranym) zbiorze.
-const XP_THROTTLE_PITCH_STEP := 0.02
-# Przyrost tonu przy zagranym zbiorze.
-const XP_PLAY_PITCH_STEP := 0.05
-# Gorny limit tonu combo.
-const XP_PITCH_MAX := 1.5
-# Zakres tonu (1.0 .. 1.0 + SPAN) mapowany na kompensacje glosnosci.
+const XP_THROTTLE_MS := 150
+const XP_THROTTLE_PITCH_STEP := 0.0  # <-- WYZEROWANE
+const XP_PLAY_PITCH_STEP := 0.0      # <-- WYZEROWANE
+const XP_PITCH_MAX := 1.0            # <-- ZABLOKOWANE NA DOMYŚLNYM TONIE
 const XP_PITCH_SPAN := 0.5
-# Docelowe tlumienie przy maksymalnym tonie (kompensacja wysokich czestotliwosci).
 const XP_VOLUME_MIN_DB := -6.0
 
 var _sfx_streams := {}
@@ -50,14 +44,12 @@ var _sfx_players: Array[AudioStreamPlayer] = []
 var _sfx_index := 0
 var _music_player: AudioStreamPlayer
 var _ambient_player: AudioStreamPlayer
+var _ambient_storm_player: AudioStreamPlayer
 var _typewriter_player: AudioStreamPlayer
 var current_music_track: String = ""
 
 # --- ZMIENNE DO NAKŁADKI MIKSERA ---
 var _debug_layer: CanvasLayer = null
-# Mikser F1 i jego zapis (ResourceSaver na res://) dzialaja TYLKO w buildach debug.
-# W release/web res:// jest read-only, a dev-mikser nie moze trafic do gracza.
-# Ustawiane w _ready z OS.has_feature("debug"); testy wstrzykuja wartosc.
 var _dev_mixer_enabled: bool = false
 
 # --- ZMIENNE DO TŁUMIKA XP ---
@@ -88,6 +80,14 @@ func _ready() -> void:
 	_ambient_player = AudioStreamPlayer.new()
 	_ambient_player.bus = _bus_or_master("Ambient")
 	add_child(_ambient_player)
+	
+	_ambient_storm_player = AudioStreamPlayer.new()
+	_ambient_storm_player.bus = _bus_or_master("ambient_storm")
+	add_child(_ambient_storm_player)
+	
+	if ResourceLoader.exists(AMBIENT_STORM_PATH):
+		_ambient_storm_player.stream = load(AMBIENT_STORM_PATH)
+		_ambient_storm_player.volume_db = -2.0
 
 	_typewriter_player = AudioStreamPlayer.new()
 	_typewriter_player.bus = _bus_or_master("SFX")
@@ -105,8 +105,6 @@ func _ready() -> void:
 	await get_tree().process_frame
 	play_music(MUSIC["menu"])
 
-# Obsługa klawisza F1 do włączania i wyłączania mikseru na ekranie.
-# Bramka: w buildach release/web (bez cechy "debug") mikser jest niedostepny.
 func _unhandled_input(event: InputEvent) -> void:
 	if not _dev_mixer_enabled:
 		return
@@ -210,11 +208,23 @@ func play_music(track: String) -> void:
 		_music_player.bus = _bus_or_master(assigned_bus)
 		_music_player.play()
 	
-	if _ambient_player != null and _ambient_player.stream != null:
+	# ZARZĄDZANIE AMBIENTEM (Zamiana: Morze w menu, Burza w grze)
+	if _ambient_player != null and _ambient_storm_player != null:
+		# W menu - gra tylko morze
 		if track == MUSIC["menu"]:
 			if not _ambient_player.playing: _ambient_player.play()
+			if _ambient_storm_player.playing: _ambient_storm_player.stop()
+		
+		# Właściwa gra i boss - morze cichnie, wchodzi sama burza
+		elif track == MUSIC["gameplay"] or track == MUSIC["boss"]:
+			if _ambient_player.playing: _ambient_player.stop()
+			if not _ambient_storm_player.playing and _ambient_storm_player.stream != null: 
+				_ambient_storm_player.play()
+		
+		# Ekrany końcowe - całkowita cisza
 		else:
 			if _ambient_player.playing: _ambient_player.stop()
+			if _ambient_storm_player.playing: _ambient_storm_player.stop()
 
 func crossfade_to(track: String, duration: float) -> void:
 	current_music_track = track
@@ -233,12 +243,6 @@ func _bus_or_master(bus_name: String) -> String:
 static func fade_volume_db(t: float, from_db: float, to_db: float) -> float:
 	return from_db + (to_db - from_db) * t
 
-# Czysta logika combo XP: bez zaleznosci od drzewa scen (pure function extraction).
-# Na podstawie czasu teraz/ostatniego zagrania i biezacego tonu liczy, czy zagrac
-# dzwiek, z jakim tonem i glosnoscia oraz jaki ma byc nastepny stan (ton + znacznik czasu).
-#   - elapsed > XP_COMBO_RESET_MS  -> reset tonu do 1.0 (po ciszy combo wygasa),
-#   - elapsed < XP_THROTTLE_MS     -> tlumienie: nie gramy, podbijamy ton, czas bez zmian,
-#   - w przeciwnym razie           -> gramy z kompensacja glosnosci i podbijamy ton.
 static func compute_xp_playback(now_ms: int, last_ms: int, current_pitch: float) -> Dictionary:
 	var pitch: float = current_pitch
 	var elapsed: int = now_ms - last_ms
@@ -283,7 +287,6 @@ func _build_screen_mixer() -> void:
 	title.text = "--- MIKSER DEWELOPERSKI (F1) ---"
 	vbox_main.add_child(title)
 	
-	# ZIELONY PRZYCISK TRWAŁEGO ZAPISU DO PLIKÓW PROJEKTU
 	var save_btn := Button.new()
 	save_btn.text = "ZAPISZ ZMIANY NA STAŁE DO PROJEKTU"
 	save_btn.modulate = Color(0.2, 1.0, 0.2) 

@@ -15,10 +15,6 @@ run/main_scene="res://scenes/MainMenu.tscn"
 config/features=PackedStringArray("4.6", "GL Compatibility")
 config/icon="res://icon.svg"
 
-[audio]
-
-buses/default_bus_layout="uid://bbqct2t8sk1ek"
-
 [autoload]
 
 GameConfig="*res://scripts/globals/game_config.gd"
@@ -30,11 +26,8 @@ PickupFx="*res://scripts/systems/pickup_fx.gd"
 
 [display]
 
-window/size/viewport_width=1152
-window/size/viewport_height=648
 window/stretch/mode="canvas_items"
 window/stretch/aspect="expand"
-window/vsync/vsync_mode=1
 
 [editor_plugins]
 
