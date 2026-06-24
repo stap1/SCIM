@@ -79,6 +79,45 @@ func test_play_sfx_xp_pickup_burst_does_not_crash() -> void:
 		AudioManager.play_sfx("xp_pickup")
 	pass_test("seria xp_pickup nie crashuje")
 
+# --- Mikser deweloperski F1: bramka dev/debug (dodana 24.06.2026) ---
+
+func _f1_event() -> InputEventKey:
+	var ev := InputEventKey.new()
+	ev.keycode = KEY_F1
+	ev.pressed = true
+	return ev
+
+func test_dev_mixer_flag_matches_debug_feature() -> void:
+	# Flaga musi odzwierciedlac realny typ buildu - mikser tylko w buildach debug.
+	assert_eq(AudioManager._dev_mixer_enabled, OS.has_feature("debug"),
+		"_dev_mixer_enabled = OS.has_feature('debug')")
+
+func test_dev_mixer_blocked_in_release_build() -> void:
+	# Regresja: w buildzie release/web (bez cechy 'debug') F1 NIE tworzy nakladki
+	# (chroni przed ResourceSaver na read-only res:// i dev-mikserem u gracza).
+	var prev_enabled: bool = AudioManager._dev_mixer_enabled
+	var prev_layer: CanvasLayer = AudioManager._debug_layer
+	AudioManager._debug_layer = null
+	AudioManager._dev_mixer_enabled = false
+	AudioManager._unhandled_input(_f1_event())
+	assert_null(AudioManager._debug_layer, "bez 'debug' F1 nie tworzy miksera")
+	AudioManager._dev_mixer_enabled = prev_enabled
+	AudioManager._debug_layer = prev_layer
+
+func test_dev_mixer_builds_when_enabled() -> void:
+	# Pozytywny tor: w buildzie debug F1 tworzy nakladke miksera.
+	var prev_enabled: bool = AudioManager._dev_mixer_enabled
+	var prev_layer: CanvasLayer = AudioManager._debug_layer
+	AudioManager._debug_layer = null
+	AudioManager._dev_mixer_enabled = true
+	AudioManager._unhandled_input(_f1_event())
+	assert_not_null(AudioManager._debug_layer, "w debug F1 tworzy mikser")
+	# Sprzatanie - nie zostawiamy nakladki globalnemu autoloadowi.
+	if AudioManager._debug_layer != null:
+		AudioManager._debug_layer.free()
+	AudioManager._debug_layer = prev_layer
+	AudioManager._dev_mixer_enabled = prev_enabled
+
 func test_all_declared_audio_paths_exist() -> void:
 	# Regresja: kazda NIEPUSTA sciezka SFX i kazdy utwor MUSIC musi wskazywac istniejacy
 	# zasob (pusty string = swiadomy placeholder). Lapie wiszace sciezki - jak

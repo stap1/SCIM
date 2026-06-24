@@ -55,6 +55,10 @@ var current_music_track: String = ""
 
 # --- ZMIENNE DO NAKŁADKI MIKSERA ---
 var _debug_layer: CanvasLayer = null
+# Mikser F1 i jego zapis (ResourceSaver na res://) dzialaja TYLKO w buildach debug.
+# W release/web res:// jest read-only, a dev-mikser nie moze trafic do gracza.
+# Ustawiane w _ready z OS.has_feature("debug"); testy wstrzykuja wartosc.
+var _dev_mixer_enabled: bool = false
 
 # --- ZMIENNE DO TŁUMIKA XP ---
 var _last_xp_time: int = 0
@@ -62,6 +66,7 @@ var _current_xp_pitch: float = 1.0
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
+	_dev_mixer_enabled = OS.has_feature("debug")
 
 	for sfx_name in SFX_PATHS:
 		var path: String = SFX_PATHS[sfx_name]
@@ -100,8 +105,11 @@ func _ready() -> void:
 	await get_tree().process_frame
 	play_music(MUSIC["menu"])
 
-# Obsługa klawisza F1 do włączania i wyłączania mikseru na ekranie
+# Obsługa klawisza F1 do włączania i wyłączania mikseru na ekranie.
+# Bramka: w buildach release/web (bez cechy "debug") mikser jest niedostepny.
 func _unhandled_input(event: InputEvent) -> void:
+	if not _dev_mixer_enabled:
+		return
 	if event is InputEventKey and event.pressed and event.keycode == KEY_F1:
 		if _debug_layer == null:
 			_build_screen_mixer()
