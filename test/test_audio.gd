@@ -41,19 +41,21 @@ func test_xp_idle_resets_combo_pitch() -> void:
 	assert_almost_eq(s["pitch"], 1.0, 0.001, "combo wygaslo -> reset do 1.0")
 	assert_true(s["play"], "po resecie i tak gramy")
 
-func test_xp_throttle_skips_play_but_bumps_pitch() -> void:
-	# Zbior gestszy niz XP_THROTTLE_MS: nie gramy, ton rosnie o krok throttle,
-	# a znacznik czasu zostaje bez zmian (porownujemy do ostatniego ZAGRANEGO).
-	var s := AudioManager.compute_xp_playback(120, 100, 1.2)
+func test_xp_throttle_skips_play_pitch_stays_flat() -> void:
+	# Zbior gestszy niz XP_THROTTLE_MS: nie gramy, a znacznik czasu zostaje bez
+	# zmian (porownujemy do ostatniego ZAGRANEGO). Krok tonu wyzerowany ->
+	# ton pozostaje na bazowym 1.0 (combo pitch wylaczony).
+	var s := AudioManager.compute_xp_playback(120, 100, 1.0)
 	assert_false(s["play"], "za gesto -> nie gramy")
-	assert_almost_eq(s["next_pitch"], 1.22, 0.001, "ton +0.02 (krok throttle)")
+	assert_almost_eq(s["next_pitch"], 1.0, 0.001, "ton bez zmian (krok throttle = 0)")
 	assert_eq(s["next_last_ms"], 100, "czas ostatniego zagrania bez zmian")
 
-func test_xp_normal_play_advances_pitch() -> void:
-	# Zbior poza oknem throttle: gramy i ton rosnie o krok grania.
-	var s := AudioManager.compute_xp_playback(300, 100, 1.2)
+func test_xp_normal_play_keeps_pitch_flat() -> void:
+	# Zbior poza oknem throttle: gramy, ale krok tonu wyzerowany ->
+	# ton pozostaje na bazowym 1.0 (combo pitch wylaczony).
+	var s := AudioManager.compute_xp_playback(300, 100, 1.0)
 	assert_true(s["play"], "poza throttle -> gramy")
-	assert_almost_eq(s["next_pitch"], 1.25, 0.001, "ton +0.05 (krok grania)")
+	assert_almost_eq(s["next_pitch"], 1.0, 0.001, "ton bez zmian (krok grania = 0)")
 	assert_eq(s["next_last_ms"], 300, "czas = teraz")
 
 func test_xp_pitch_caps_at_max() -> void:
@@ -61,12 +63,13 @@ func test_xp_pitch_caps_at_max() -> void:
 	var s := AudioManager.compute_xp_playback(300, 100, 1.49)
 	assert_almost_eq(s["next_pitch"], AudioManager.XP_PITCH_MAX, 0.001, "ton uciety do 1.5")
 
-func test_xp_volume_compensation_endpoints() -> void:
-	# Kompensacja glosnosci: ton bazowy -> 0 dB, ton maksymalny -> XP_VOLUME_MIN_DB.
+func test_xp_volume_compensation_neutral_when_pitch_locked() -> void:
+	# Combo pitch wylaczony (XP_PITCH_MAX = 1.0): system nigdy nie przekracza tonu
+	# bazowego, wiec kompensacja glosnosci jest neutralna (0 dB w calym zakresie).
 	var base := AudioManager.compute_xp_playback(300, 100, 1.0)
-	assert_almost_eq(base["volume_db"], 0.0, 0.001, "ton 1.0 -> 0 dB")
+	assert_almost_eq(base["volume_db"], 0.0, 0.001, "ton bazowy -> 0 dB")
 	var loud := AudioManager.compute_xp_playback(300, 100, AudioManager.XP_PITCH_MAX)
-	assert_almost_eq(loud["volume_db"], AudioManager.XP_VOLUME_MIN_DB, 0.001, "ton 1.5 -> -6 dB")
+	assert_almost_eq(loud["volume_db"], 0.0, 0.001, "ton maksymalny (=1.0) -> 0 dB")
 
 func test_bus_or_master_falls_back_to_master() -> void:
 	# Routing: nieistniejacy bus -> bezpieczny fallback do Master (zob. _bus_or_master).
