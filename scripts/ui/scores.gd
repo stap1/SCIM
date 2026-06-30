@@ -28,10 +28,12 @@ func _on_back() -> void:
 	get_tree().change_scene_to_file(ScenePaths.MAIN_MENU)
 
 # Czysta funkcja: tekst listy wynikow (numerowany, malejaco) lub komunikat gdy pusto.
-static func format_scores(top: Array[int]) -> String:
+# Wpisy to slowniki {"name", "score"}.
+static func format_scores(top: Array) -> String:
 	if top.is_empty():
 		return "Brak wyników"
 	var text := ""
 	for i in top.size():
-		text += "%d.   %d\n" % [i + 1, top[i]]
+		var e = top[i]
+		text += "%d.  %s  -  %d\n" % [i + 1, str(e.get("name", "Anonim")), int(e.get("score", 0))]
 	return text

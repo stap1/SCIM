@@ -19,6 +19,7 @@ func _ready() -> void:
 	_connect_button("Menu/ScoresButton", _on_scores)
 	_connect_button("Menu/CreditsButton", _on_credits)
 	_connect_button("Menu/QuitButton", _on_quit)
+	_setup_version_button()
 	_animate_waves()
 
 	# Nawigacja klawiatura: focus wraca na opcje, z ktorej wrocilismy (lub SZYBKA GRA).
@@ -36,6 +37,19 @@ func _connect_button(path: String, handler: Callable) -> void:
 		b.pressed.connect(handler)
 		# Ta jedna linijka sprawia, ze kazdy zdefiniowany wyzej przycisk wywola Twoj sfx!
 		b.pressed.connect(func(): AudioManager.play_sfx("ui_click"))
+
+# Wersja w prawym dolnym rogu - czytana z ChangelogData (najnowszy wpis). Klik -> historia zmian.
+func _setup_version_button() -> void:
+	var version_btn := get_node_or_null("VersionButton") as Button
+	if version_btn == null:
+		return
+	version_btn.text = "v" + ChangelogData.current_version()
+	version_btn.pressed.connect(_on_changelog)
+	version_btn.pressed.connect(func() -> void: AudioManager.play_sfx("ui_click"))
+
+func _on_changelog() -> void:
+	if ResourceLoader.exists(ScenePaths.CHANGELOG):
+		get_tree().change_scene_to_file(ScenePaths.CHANGELOG)
 
 func _animate_waves() -> void:
 	var boat := get_node_or_null("BoatSprite")

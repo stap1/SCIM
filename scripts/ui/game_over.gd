@@ -1,8 +1,8 @@
 extends CanvasLayer
 
 # Ekran konca gry. Reaguje na sygnal GameState.game_over, pauzuje gre, pokazuje
-# pelne statystyki (czas, zatopienia, boss, wynik, najlepszy) i pozwala zrestartowac
-# lub wrocic do menu. CanvasLayer ma process_mode = ALWAYS (przyciski dzialaja przy pauzie).
+# pelne statystyki (czas, zatopienia, boss, wynik, najlepszy) i pozwala wpisac imie,
+# zapisac wynik, zrestartowac lub wrocic do menu. CanvasLayer ma process_mode = ALWAYS.
 
 const HighScores := preload("res://scripts/systems/highscores.gd")
 
@@ -21,8 +21,13 @@ const LOSS_BG := Color(0.09, 0.09, 0.09, 0.71)
 @onready var kills_label: Label = get_node_or_null("Panel/KillsLabel")
 @onready var boss_label: Label = get_node_or_null("Panel/BossLabel")
 @onready var best_label: Label = get_node_or_null("Panel/BestLabel")
+@onready var name_edit: LineEdit = get_node_or_null("Panel/NameEdit")
+@onready var save_button: Button = get_node_or_null("Panel/SaveScoreButton")
 @onready var restart_button: Button = get_node_or_null("Panel/RestartButton")
 @onready var menu_button: Button = get_node_or_null("Panel/MenuButton")
+
+# Strzeze przed podwojnym zapisem tego samego wyniku (klik + Enter, podwojny klik).
+var _score_saved: bool = false
 
 func _ready() -> void:
 	if panel:
@@ -32,11 +37,17 @@ func _ready() -> void:
 		restart_button.pressed.connect(_on_restart_pressed)
 	if menu_button:
 		menu_button.pressed.connect(_on_menu_pressed)
+	if save_button:
+		save_button.pressed.connect(_on_save_pressed)
+	if name_edit:
+		name_edit.max_length = HighScores.NAME_MAX_LEN
+		name_edit.text_submitted.connect(func(_t: String) -> void: _on_save_pressed())
 
 func _on_game_over() -> void:
-	HighScores.add_score(GameState.score)
+	_score_saved = false
+	# Najlepszy wynik liczony PRZED zapisem biezacego (porownanie z dotychczasowym rekordem).
 	var top := HighScores.get_top(1)
-	var best: int = top[0] if top.size() > 0 else 0
+	var best: int = int(top[0]["score"]) if top.size() > 0 else 0
 	var is_record := is_new_record(GameState.score, best)
 
 	if time_label:
@@ -64,11 +75,36 @@ func _on_game_over() -> void:
 	if meta_label:
 		meta_label.text = "Zdobyte punkty: %d" % pts
 
+	# Pole na imie aktywne ponownie przy kazdym koncu gry.
+	if name_edit:
+		name_edit.editable = true
+	if save_button:
+		save_button.disabled = false
+		save_button.text = "ZAPISZ WYNIK"
+
 	if panel:
 		panel.show()
 	get_tree().paused = true
 	_count_up_score()
-	# Nawigacja klawiatura: focus na "Sprobuj ponownie".
+	# Nawigacja klawiatura: najpierw pole imienia (gracz moze od razu pisac, Enter = zapis).
+	if name_edit:
+		name_edit.grab_focus()
+	elif restart_button:
+		restart_button.grab_focus()
+
+# Zapisuje wynik z wpisanym imieniem do lokalnej tablicy. Idempotentne (guard _score_saved).
+func _on_save_pressed() -> void:
+	if _score_saved:
+		return
+	_score_saved = true
+	AudioManager.play_sfx("ui_click")
+	var player_name: String = name_edit.text if name_edit else ""
+	HighScores.add_score(player_name, GameState.score)
+	if name_edit:
+		name_edit.editable = false
+	if save_button:
+		save_button.disabled = true
+		save_button.text = "ZAPISANO"
 	if restart_button:
 		restart_button.grab_focus()
 
