@@ -8,8 +8,8 @@ na górze tam ORAZ tutaj.
 
 - Pierwsze publiczne wydanie gry.
 - Ikona gry zamiast logo Godota (karta przeglądarki i ekran ładowania).
-- Naprawione skalowanie wersji webowej (rozdzielczość bazowa 1152x648).
-- Lokalne najlepsze wyniki z wpisywaniem imienia (do 20 znaków).
+- Jawnie ustawiona rozdzielczość bazowa 1152x648 i vsync.
+- Lokalne najlepsze wyniki z wpisywaniem pseudonimu (do 20 znaków).
 - Ekran historii zmian oraz numer wersji w rogu menu.
 
 ## v0.9.0 - 2026-06-24

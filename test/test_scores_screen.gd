@@ -5,6 +5,7 @@ extends GutTest
 
 const ScoresScene := preload("res://scenes/Scores.tscn")
 const ScoresScript := preload("res://scripts/ui/scores.gd")
+const HighScores := preload("res://scripts/systems/highscores.gd")
 
 func test_format_scores_empty() -> void:
 	assert_eq(ScoresScript.format_scores([]), "Brak wyników",
@@ -17,6 +18,11 @@ func test_format_scores_numbered_descending() -> void:
 	assert_true(txt.contains("1.") and txt.contains("Ala") and txt.contains("30"), "1. miejsce = Ala 30")
 	assert_true(txt.contains("2.") and txt.contains("Bob") and txt.contains("20"), "2. miejsce = Bob 20")
 	assert_true(txt.contains("3.") and txt.contains("Cy") and txt.contains("10"), "3. miejsce = Cy 10")
+
+func test_format_scores_missing_name_uses_default() -> void:
+	# Fallback nazwy z jednego zrodla (HighScores.DEFAULT_NAME), nie z literalu w scores.gd.
+	var txt := ScoresScript.format_scores([{"score": 7}])
+	assert_true(txt.contains(HighScores.DEFAULT_NAME), "wpis bez klucza name -> DEFAULT_NAME")
 
 func test_scores_smoke_loads() -> void:
 	var s = ScoresScene.instantiate()

@@ -61,7 +61,7 @@ func test_xp_normal_play_keeps_pitch_flat() -> void:
 func test_xp_pitch_caps_at_max() -> void:
 	# Ton nie przekracza XP_PITCH_MAX nawet przy ciaglym narastaniu.
 	var s := AudioManager.compute_xp_playback(300, 100, 1.49)
-	assert_almost_eq(s["next_pitch"], AudioManager.XP_PITCH_MAX, 0.001, "ton uciety do 1.5")
+	assert_almost_eq(s["next_pitch"], AudioManager.XP_PITCH_MAX, 0.001, "ton uciety do XP_PITCH_MAX")
 
 func test_xp_volume_compensation_neutral_when_pitch_locked() -> void:
 	# Combo pitch wylaczony (XP_PITCH_MAX = 1.0): system nigdy nie przekracza tonu

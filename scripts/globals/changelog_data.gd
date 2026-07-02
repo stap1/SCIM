@@ -8,16 +8,17 @@ extends RefCounted
 const FALLBACK_VERSION := "0.0.0"
 
 # Kazdy wpis: {"version": String, "date": String (YYYY-MM-DD), "changes": Array[String]}.
-# Dopisujac nowa wersje - dodaj ja na POCZATKU tej listy.
+# Dopisujac nowa wersje - dodaj ja na POCZATKU tej listy. Teksty zmian sa widoczne
+# w grze - pisz je z polskimi znakami, jak reszte UI.
 const ENTRIES: Array[Dictionary] = [
 	{
 		"version": "1.0.0",
 		"date": "2026-06-30",
 		"changes": [
 			"Pierwsze publiczne wydanie gry.",
-			"Ikona gry zamiast logo Godota (karta przegladarki i ekran ladowania).",
-			"Naprawione skalowanie wersji webowej (rozdzielczosc bazowa 1152x648).",
-			"Lokalne najlepsze wyniki z wpisywaniem imienia (do 20 znakow).",
+			"Ikona gry zamiast logo Godota (karta przeglądarki i ekran ładowania).",
+			"Jawnie ustawiona rozdzielczość bazowa 1152x648 i vsync.",
+			"Lokalne najlepsze wyniki z wpisywaniem pseudonimu (do 20 znaków).",
 			"Ekran historii zmian oraz numer wersji w rogu menu.",
 		],
 	},
@@ -26,17 +27,17 @@ const ENTRIES: Array[Dictionary] = [
 		"date": "2026-06-24",
 		"changes": [
 			"Runda audio: dynamiczny ambient (morze w menu, burza w grze).",
-			"Przestrojony mikser dzwieku i nowe efekty (SFX) oraz muzyka menu.",
+			"Przestrojony mikser dźwięku i nowe efekty (SFX) oraz muzyka menu.",
 		],
 	},
 	{
 		"version": "0.8.0",
 		"date": "2026-06-21",
 		"changes": [
-			"Warstwa narracji Santiago i kwestie reagujace na rozgrywke.",
-			"Meta-progresja: punkty i ulepszenia trwale miedzy sesjami.",
-			"Spawn wagowy wrogow i koniec sesji swiadomy walki z bossem.",
-			"Pelna nawigacja menu klawiatura.",
+			"Warstwa narracji Santiago i kwestie reagujące na rozgrywkę.",
+			"Meta-progresja: punkty i ulepszenia trwałe między sesjami.",
+			"Spawn wagowy wrogów i koniec sesji świadomy walki z bossem.",
+			"Pełna nawigacja menu klawiaturą.",
 		],
 	},
 ]

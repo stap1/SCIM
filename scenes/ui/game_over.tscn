@@ -120,40 +120,48 @@ offset_left = 20.0
 offset_top = 404.0
 offset_right = -20.0
 offset_bottom = 428.0
-text = "Wpisz imię (max 20 znaków):"
+text = "Podaj pseudonim (max 20 znaków):"
 horizontal_alignment = 1
 
 [node name="NameEdit" type="LineEdit" parent="Panel"]
-offset_left = 400.0
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -190.0
 offset_top = 432.0
-offset_right = 780.0
+offset_right = 190.0
 offset_bottom = 468.0
 theme_override_styles/focus = SubResource("StyleBoxFlat_name_focus")
 theme_override_styles/normal = SubResource("StyleBoxFlat_name_normal")
 max_length = 20
-placeholder_text = "Imię i nazwisko"
+placeholder_text = "Podaj pseudonim"
 alignment = 1
 
 [node name="SaveScoreButton" type="Button" parent="Panel"]
-offset_left = 400.0
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -190.0
 offset_top = 474.0
-offset_right = 780.0
+offset_right = 190.0
 offset_bottom = 512.0
 theme_override_font_sizes/font_size = 16
 text = "ZAPISZ WYNIK"
 
 [node name="RestartButton" type="Button" parent="Panel"]
-offset_left = 400.0
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -190.0
 offset_top = 520.0
-offset_right = 780.0
+offset_right = 190.0
 offset_bottom = 560.0
 theme_override_font_sizes/font_size = 16
 text = "SPRÓBUJ PONOWNIE"
 
 [node name="MenuButton" type="Button" parent="Panel"]
-offset_left = 400.0
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -190.0
 offset_top = 568.0
-offset_right = 780.0
+offset_right = 190.0
 offset_bottom = 608.0
 theme_override_font_sizes/font_size = 16
 text = "MENU"

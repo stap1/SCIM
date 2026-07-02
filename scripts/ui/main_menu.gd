@@ -44,11 +44,11 @@ func _setup_version_button() -> void:
 	if version_btn == null:
 		return
 	version_btn.text = "v" + ChangelogData.current_version()
-	version_btn.pressed.connect(_on_changelog)
-	version_btn.pressed.connect(func() -> void: AudioManager.play_sfx("ui_click"))
+	_connect_button("VersionButton", _on_changelog) # wspolne okablowanie handler + sfx
 
 func _on_changelog() -> void:
 	if ResourceLoader.exists(ScenePaths.CHANGELOG):
+		_return_focus = "VersionButton" # focus wraca tu po powrocie (jak w innych podmenu)
 		get_tree().change_scene_to_file(ScenePaths.CHANGELOG)
 
 func _animate_waves() -> void:
