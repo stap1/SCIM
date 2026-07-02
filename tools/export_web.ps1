@@ -16,6 +16,10 @@ $root = Split-Path -Parent $PSScriptRoot  # tools\ -> korzen projektu
 New-Item -ItemType Directory -Force (Join-Path $root "builds\web\d") | Out-Null
 New-Item -ItemType Directory -Force (Join-Path $root "builds\web\m") | Out-Null
 
+# KLUCZOWE: builds\ lezy wewnatrz res:// - bez .gdignore Godot zaimportowalby stare
+# artefakty buildu jako zasoby i ZAPAKOWAL je do kolejnych .pck (build w buildzie).
+Set-Content -Path (Join-Path $root "builds\.gdignore") -Value "" -Encoding ascii
+
 Write-Host "== Eksport: Web (desktop 16:9) =="
 & $godot --headless --path $root --export-release "Web" "builds/web/d/index.html"
 if ($LASTEXITCODE -ne 0) { throw "Eksport 'Web' nie powiodl sie (kod $LASTEXITCODE)." }
@@ -24,7 +28,8 @@ Write-Host "== Eksport: Web Mobile (pion) =="
 & $godot --headless --path $root --export-release "Web Mobile" "builds/web/m/index.html"
 if ($LASTEXITCODE -ne 0) { throw "Eksport 'Web Mobile' nie powiodl sie (kod $LASTEXITCODE)." }
 
-Write-Host "== Detektor urzadzenia =="
+Write-Host "== Detektor urzadzenia + .htaccess =="
 Copy-Item (Join-Path $root "tools\web\index.html") (Join-Path $root "builds\web\index.html") -Force
+Copy-Item (Join-Path $root "tools\web\.htaccess") (Join-Path $root "builds\web\.htaccess") -Force
 
-Write-Host "OK: builds\web\ gotowe (detektor + d + m). Wgraj na https://przystan.tech/scim/"
+Write-Host "OK: builds\web\ gotowe (detektor + .htaccess + d + m). Wgraj na https://przystan.tech/scim/"
