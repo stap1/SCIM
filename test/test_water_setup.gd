@@ -48,6 +48,11 @@ func test_water_textures_wired() -> void:
 	assert_true(tex is Texture2D, "uniform noise_tex to Texture2D")
 	assert_not_null(mat.get_shader_parameter("glint_strength"),
 		"refleks grzbietow (glint_strength) skonfigurowany zamiast normal mapy")
+	# Decyzja art-direction 2026-07-02: woda pasmowa (B1) NA STALE, 3 pasma.
+	assert_almost_eq(float(mat.get_shader_parameter("band_count")), 3.0, 0.001,
+		"band_count = 3 (woda toon - straznik decyzji stylu)")
+	assert_almost_eq(float(mat.get_shader_parameter("glint_strength")), 0.55, 0.001,
+		"stonowany refleks grzbietow (0.55)")
 
 # --- Kolor doby: morze ciemnieje z czasem sesji (czysta funkcja) ---
 

@@ -28,7 +28,8 @@ shader_parameter/scroll_dir_2 = Vector2(-0.5, -0.8)
 shader_parameter/scroll_speed_1 = 0.03
 shader_parameter/scroll_speed_2 = 0.02
 shader_parameter/tex_scale = 3.0
-shader_parameter/glint_strength = 0.7
+shader_parameter/glint_strength = 0.55
+shader_parameter/band_count = 3.0
 
 [node name="Main" type="Node2D" unique_id=1150465566]
 position = Vector2(210, 228)

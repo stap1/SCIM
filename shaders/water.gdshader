@@ -19,6 +19,9 @@ uniform float scroll_speed_2 = 0.012;
 uniform float tex_scale = 2.0;
 // Sila rozjasnienia grzbietow fal (zamiast normal mapy + speculara).
 uniform float glint_strength = 0.7;
+// Woda pasmowa/toon (decyzja art-direction 2026-07-02, wariant B1 z analizy):
+// kwantyzacja do plaskich pasm; 0 przywraca gladki mix (fallback/testy stylu).
+uniform float band_count = 3.0;
 
 varying vec2 v_world;
 
@@ -38,10 +41,18 @@ void fragment() {
 	float h2 = texture(noise_tex, uv2).g;
 	float h = h1 * 0.6 + h2 * 0.4;
 	h = clamp((h - 0.5) * 1.8 + 0.5, 0.0, 1.0);  // wiekszy kontrast grzbietow fal
-	vec3 col = mix(water_color.rgb, wave_color.rgb, h);
+
+	// B1 (toon): kwantyzacja wysokosci do plaskich pasm; galaz po uniformie jest
+	// spojna dla calego ekranu (tania w GL). band_count=0 -> gladki styl bazowy.
+	float mix_t = h;
+	if (band_count >= 1.0) {
+		mix_t = clamp(floor(h * band_count) / max(band_count - 1.0, 1.0), 0.0, 1.0);
+	}
+	vec3 col = mix(water_color.rgb, wave_color.rgb, mix_t);
 
 	// Refleks: waski, jasny pas na samych grzbietach - czytany wprost z wysokosci.
-	float crest = smoothstep(0.78, 0.94, h);
+	// Prog podniesiony (0.82-0.96) i sila stonowana - subtelniejsze grzbiety na pasmach.
+	float crest = smoothstep(0.82, 0.96, h);
 	col += wave_color.rgb * crest * glint_strength;
 
 	COLOR = vec4(col, 1.0);
