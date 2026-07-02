@@ -103,6 +103,17 @@ const FOAM_WAVE_TRAVEL_TIME: float = 6.5
 # Krycie piany fali - subtelniejsze niz kilwater jednostek.
 const FOAM_WAVE_ALPHA: float = 0.4
 
+# --- Woda: kolor doby i rozblyski slonca (water_background.gd) ---
+# Kolory poczatku i konca sesji - morze ciemnieje w miare uplywu czasu (klimat + narracja).
+const WATER_COLOR_DAWN: Color = Color(0.11, 0.22, 0.34, 1.0)
+const WATER_COLOR_DUSK: Color = Color(0.06, 0.13, 0.22, 1.0)
+const WAVE_COLOR_DAWN: Color = Color(0.3, 0.52, 0.7, 1.0)
+const WAVE_COLOR_DUSK: Color = Color(0.2, 0.36, 0.5, 1.0)
+# Rozblyski: maly stempel piany w losowym punkcie kadru co interwal (WakeField).
+const WATER_GLINT_INTERVAL: float = 0.12
+const WATER_GLINT_SCALE_MIN: float = 0.3
+const WATER_GLINT_SCALE_MAX: float = 0.55
+
 # --- Fale przeciwnosci (DangerWave - prad znosi lodz; gameplay) ---
 # Start wraz z rekinami: tier 2 krzywej spawnu = 2. minuta sesji (straznik w testach).
 const DANGER_WAVE_START_TIME: float = 120.0

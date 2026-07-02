@@ -15,7 +15,8 @@ const GAMEPLAY := [
 	"upgrade_extra_harpoon", "upgrade_piercing",
 ]
 
-const WATER := ["water_noise", "water_noise_2", "water_normal"]
+# Po optymalizacji wody: jedna spakowana tekstura R/G (tools/pack_water_noise.gd).
+const WATER := ["water_noise_rg"]
 
 func test_sprites_and_icons_present() -> void:
 	for name in GAMEPLAY:

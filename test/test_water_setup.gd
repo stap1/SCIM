@@ -42,7 +42,43 @@ func test_water_textures_wired() -> void:
 	var mat := w.material as ShaderMaterial
 	if mat == null:
 		return
-	for param in ["noise_tex", "noise_tex_2", "normal_tex"]:
-		var tex = mat.get_shader_parameter(param)
-		assert_not_null(tex, "uniform %s podpiety" % param)
-		assert_true(tex is Texture2D, "uniform %s to Texture2D" % param)
+	# Po optymalizacji: JEDNA tekstura z szumami w kanalach R/G (bez normal mapy).
+	var tex = mat.get_shader_parameter("noise_tex")
+	assert_not_null(tex, "uniform noise_tex podpiety")
+	assert_true(tex is Texture2D, "uniform noise_tex to Texture2D")
+	assert_not_null(mat.get_shader_parameter("glint_strength"),
+		"refleks grzbietow (glint_strength) skonfigurowany zamiast normal mapy")
+
+# --- Kolor doby: morze ciemnieje z czasem sesji (czysta funkcja) ---
+
+func test_water_colors_follow_session_time() -> void:
+	var WaterScript := preload("res://scripts/systems/water_background.gd")
+	var dawn: Dictionary = WaterScript.water_colors_for(0.0, 300.0)
+	assert_eq(dawn["water"], GameConfig.WATER_COLOR_DAWN, "start sesji -> kolory poranka")
+	var dusk: Dictionary = WaterScript.water_colors_for(300.0, 300.0)
+	assert_eq(dusk["wave"], GameConfig.WAVE_COLOR_DUSK, "koniec sesji -> kolory zmierzchu")
+	var mid: Dictionary = WaterScript.water_colors_for(150.0, 300.0)
+	assert_true(mid["water"] != dawn["water"] and mid["water"] != dusk["water"],
+		"w polowie sesji kolor pomiedzy (plynny lerp)")
+	var over: Dictionary = WaterScript.water_colors_for(999.0, 300.0)
+	assert_eq(over["water"], GameConfig.WATER_COLOR_DUSK, "po koncu czasu clamp do zmierzchu")
+
+# --- Rozblyski slonca: stemple w WakeField ---
+
+func test_glints_deposit_into_wake_field() -> void:
+	var field := WakeField.new()
+	add_child_autofree(field)
+	var wb := ColorRect.new()
+	wb.set_script(preload("res://scripts/systems/water_background.gd"))
+	wb.size = Vector2(400, 300)
+	add_child_autofree(wb)
+	await wait_physics_frames(1)
+	GameState.reset()
+	wb._tick_glints(1.0)
+	wb._tick_glints(1.0)
+	var alive := 0
+	for i in field._born_ms.size():
+		if field._born_ms[i] >= 0:
+			alive += 1
+	assert_gt(alive, 0, "rozblyski odkladaja stemple piany w WakeField")
+	get_tree().paused = false
