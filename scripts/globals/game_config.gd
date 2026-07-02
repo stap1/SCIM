@@ -39,7 +39,7 @@ const TOUCH_JOYSTICK_RADIUS_PX: float = 70.0
 # Build pionowy (mobile): kamera lekko oddalona - podobny obszar gry co na desktopie.
 const CAMERA_ZOOM_MOBILE: float = 0.85
 
-# --- Kilwater (WakeTrail - smuga za poruszajacymi sie jednostkami) ---
+# --- Kilwater (WakeTrail - dwa slady w "V" za poruszajacymi sie jednostkami) ---
 # Prog predkosci, od ktorego smuga sie tworzy.
 const WAKE_MIN_SPEED: float = 25.0
 # Zycie czastki smugi (stale): dlugosc sladu = predkosc * zycie, wiec slad jest
@@ -48,11 +48,15 @@ const WAKE_LIFETIME: float = 1.1
 # Rozmiar czastek piany rosnie z predkoscia (subtelne podkreslenie tempa).
 const WAKE_SCALE_SLOW: float = 1.8
 const WAKE_SCALE_FAST: float = 3.4
-# Liczba czastek emitera: gracz gestszy slad, wrogowie oszczedniej (web/perf).
+# LACZNA liczba czastek kilwatera (dzielona na dwie burty): gracz gestszy slad,
+# wrogowie oszczedniej (web/perf).
 const WAKE_AMOUNT_PLAYER: int = 26
 const WAKE_AMOUNT_ENEMY: int = 12
-# Delikatny dryf piany "za rufa" (px/s) - kierunek przeciwny do ruchu.
-const WAKE_DRIFT_SPEED: float = 10.0
+# Dryf piany na zewnatrz jako ulamek predkosci jednostki: atan(0.3) ~ 17 stopni -
+# staly kat rozejscia "V", blisko naturalnego kilwatera (~19.5 stopnia).
+const WAKE_SPREAD_RATIO: float = 0.3
+# Szerokosc zrodla, gdy cialo nie ma CollisionShape2D (rozstaw sladow = szerokosc).
+const WAKE_WIDTH_FALLBACK: float = 24.0
 
 # --- Bron (harpun) ---
 const HARPOON_DAMAGE: float = 5.0
