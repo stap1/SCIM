@@ -49,8 +49,24 @@ func test_spread_velocity_outward_constant_angle() -> void:
 	assert_eq(left, -WakeTrail.spread_velocity(v, 1.0, 0.3), "dryf lustrzany na obie burty")
 
 func test_width_boost_scales_with_body() -> void:
-	assert_almost_eq(WakeTrail.width_boost(14.0, 16.0, 2.5), 1.0, 0.001, "meduza: bez powiekszenia")
-	assert_almost_eq(WakeTrail.width_boost(40.0, 16.0, 2.5), 2.5, 0.001, "boss: piana x2.5")
+	assert_almost_eq(WakeTrail.width_boost(16.0, 16.0, 1.5), 1.0, 0.001, "lodz gracza: bez powiekszenia")
+	assert_almost_eq(WakeTrail.width_boost(40.0, 16.0, 1.5), 1.5, 0.001,
+		"boss: piana umiarkowanie wieksza (cap 1.5 - bez zlanej sciany)")
+	assert_almost_eq(WakeTrail.width_boost(40.0, 16.0, 2.0), 2.0, 0.001,
+		"boss: odstep stempli x2 (WAKE_WIDTH_SPACING_MAX) - dwie czytelne linie")
+
+# --- Wlasciciele kilwatera: tylko LODZIE pienia wode (gracz + motorowka bossa) ---
+
+func test_fish_have_no_wake_boss_has() -> void:
+	var fish = preload("res://scenes/enemies/enemy.tscn").instantiate()
+	add_child_autofree(fish)
+	var boss = preload("res://scenes/enemies/motor_boat.tscn").instantiate()
+	add_child_autofree(boss)
+	await wait_physics_frames(1)
+	var fish_wakes: Array = fish.get_children().filter(func(c): return c is WakeTrail)
+	var boss_wakes: Array = boss.get_children().filter(func(c): return c is WakeTrail)
+	assert_eq(fish_wakes.size(), 0, "ryba NIE zostawia piany (decyzja wizualno-wydajnosciowa)")
+	assert_eq(boss_wakes.size(), 1, "motorowka bossa to lodz - zostawia kilwater jak gracz")
 
 func test_body_half_width_from_shapes_and_fallback() -> void:
 	var body := CharacterBody2D.new()

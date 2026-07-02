@@ -58,6 +58,9 @@ func _ready() -> void:
 	_charge_timer.timeout.connect(_on_charge)
 	add_child(_charge_timer)
 
+	# Kilwater bossa: motorowka to LODZ - jako jedyny wrog zostawia piane (jak gracz).
+	WakeTrail.attach_to(self, track_speed)
+
 func _physics_process(delta: float) -> void:
 	if GameState.is_paused or GameState.is_game_over:
 		return

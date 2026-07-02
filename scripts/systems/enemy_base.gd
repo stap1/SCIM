@@ -30,16 +30,9 @@ func _ready() -> void:
 	body_radius = WakeTrail.body_half_width(self)
 	# Losowa faza odswiezania separacji - stado nie liczy O(n^2) w tej samej klatce.
 	_sep_phase = randi() % maxi(GameConfig.ENEMY_SEPARATION_EVERY, 1)
-	# Subtelny kilwater za plynacym wrogiem - gestosc i szerokosc wynikaja z jednostki.
-	WakeTrail.attach_to(self, _wake_reference_speed())
-
-# Predkosc "pelnej smugi" wroga: jego wlasna predkosc (podklasy maja speed/track_speed).
-func _wake_reference_speed() -> float:
-	if "speed" in self:
-		return maxf(float(get("speed")), 1.0)
-	if "track_speed" in self:
-		return maxf(float(get("track_speed")), 1.0)
-	return GameConfig.PLAYER_MAX_SPEED
+	# UWAGA: zwykli wrogowie (ryby) NIE maja kilwatera - piane zostawiaja tylko LODZIE
+	# (gracz i motorowka bossa). Decyzja wizualno-wydajnosciowa 2026-07-02: dziesiatki
+	# sladow za stadem mulily gre i zasmiecaly ekran.
 
 # --- Status "spowolnienie" (harpun z linka; fundament pod sieci rybackie i bossy) ---
 

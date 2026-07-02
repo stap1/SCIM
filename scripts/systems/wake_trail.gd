@@ -64,9 +64,12 @@ func _physics_process(delta: float) -> void:
 		_field = get_tree().get_first_node_in_group("wake_field") as WakeField
 		if _field == null:
 			return # scena bez pola piany (np. testy jednostkowe lodzi) - brak sladu
-	# W scisku (separacja aktywna) stemple rzadsze - stado nie muruje sciany piany.
+	# W scisku (separacja aktywna) stemple rzadsze; szeroka jednostka (boss) tez ma
+	# proporcjonalnie rzadsze stemple - wiekszej pianie odpowiada wiekszy odstep,
+	# wiec slad czyta sie jako dwie linie, a nie zlana sciana.
 	var spacing := stamp_spacing(GameConfig.WAKE_SPACING_PX, _crowding(body),
-		GameConfig.WAKE_CROWD_SPACING_MULT)
+		GameConfig.WAKE_CROWD_SPACING_MULT) \
+		* width_boost(half_width, GameConfig.WAKE_WIDTH_REF, GameConfig.WAKE_WIDTH_SPACING_MAX)
 	_travel_accum += speed * delta
 	if _travel_accum < spacing:
 		return

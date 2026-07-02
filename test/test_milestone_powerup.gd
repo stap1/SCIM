@@ -21,7 +21,8 @@ func test_is_milestone_level() -> void:
 	assert_false(LevelUpScript.is_milestone_level(0, 5), "0 -> nie")
 
 func test_milestone_interval_config() -> void:
-	assert_eq(GameConfig.MILESTONE_LEVEL_INTERVAL, 5, "co 5 poziomow")
+	# Rebalans 2026-07-02: progowe co 4 poziomy (wiecej multi-target DPS przed 1. bossem).
+	assert_eq(GameConfig.MILESTONE_LEVEL_INTERVAL, 4, "co 4 poziomy")
 
 func test_milestone_ids_are_two() -> void:
 	var ids := Upgrades.milestone_ids()

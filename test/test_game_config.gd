@@ -52,7 +52,8 @@ func test_enemy_and_miniboss_constants() -> void:
 	assert_almost_eq(GameConfig.MINIBOSS_WARNING, 2.0, 0.001, "MINIBOSS_WARNING 2")
 
 func test_xp_constants() -> void:
-	assert_eq(GameConfig.XP_ORB_VALUE, 1, "XP_ORB_VALUE 1")
+	# Rebalans 2026-07-02: baza XP podniesiona (szybsze levelowanie przed 1. bossem).
+	assert_eq(GameConfig.XP_ORB_VALUE, 2, "XP_ORB_VALUE 2")
 	assert_almost_eq(GameConfig.XP_PICKUP_RADIUS, 30.0, 0.001, "XP_PICKUP_RADIUS 30")
 	assert_almost_eq(GameConfig.XP_MAGNET_SPEED, 400.0, 0.001, "XP_MAGNET_SPEED 400")
 	assert_almost_eq(GameConfig.XP_MAGNET_RANGE, 180.0, 0.001, "XP_MAGNET_RANGE 180")

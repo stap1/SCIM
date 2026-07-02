@@ -52,15 +52,19 @@ const WAKE_SCALE_FAST: float = 0.75
 # wiec gestosc jest idealnie stala przestrzennie, niezaleznie od predkosci i FPS.
 const WAKE_SPACING_PX: float = 9.0
 # Twardy globalny limit stempli piany (ring buffer WakeField) - sufit kosztu web.
-const WAKE_MAX_STAMPS: int = 800
+# Kilwater maja tylko LODZIE (gracz + motorowka bossa; ryby nie pienia wody),
+# wiec bufor jest maly.
+const WAKE_MAX_STAMPS: int = 300
 # Margines cullingu stempli poza kadrem (px swiata) - dalszych nie rysujemy.
 const WAKE_CULL_MARGIN_PX: float = 64.0
 # W scisku (separacja aktywna) jednostka odklada stemple rzadziej - stado nie buduje
 # jednolitej sciany piany (mnoznik odstepu przy pelnym zatloczeniu).
 const WAKE_CROWD_SPACING_MULT: float = 2.2
-# Szersze jednostki dostaja wieksza piane (boss): mnoznik = half_width / REF, przyciety.
+# Szersze jednostki (boss): umiarkowanie wieksza piana + PROPORCJONALNIE rzadsze
+# stemple - szeroki slad czyta sie jako dwie linie, nie jako sciana zlanej piany.
 const WAKE_WIDTH_REF: float = 16.0
-const WAKE_WIDTH_BOOST_MAX: float = 2.5
+const WAKE_WIDTH_BOOST_MAX: float = 1.5
+const WAKE_WIDTH_SPACING_MAX: float = 2.0
 # Krycie piany (poczatek zycia czastki; ogon wygasa do zera).
 const WAKE_ALPHA: float = 0.55
 # Rozmiar generowanej radialnej tekstury piany (px).
@@ -209,10 +213,12 @@ const HEAL_PLANK_SWAY_AMOUNT: float = 0.12
 const HEAL_PLANK_SWAY_PERIOD: float = 1.9
 
 # --- XP / orby ---
-# Wartosc bazowa orba (meduza). Mocniejsze typy zrzucaja wiecej: barakuda x2, rekin x5
+# Wartosc bazowa orba (meduza). Mocniejsze typy zrzucaja wiecej: barakuda 3, rekin 7
 # (nadpisane jako xp_value w ich scenach .tscn - jak speed/hp/score), mini-boss = ponizej.
-const XP_ORB_VALUE: int = 1
-const XP_ORB_MINIBOSS: int = 10
+# Rebalans 2026-07-02: wartosci podniesione (~x1.5) - szybsze levelowanie daje wiecej
+# kart (w tym progowych) przed walka z pierwszym bossem.
+const XP_ORB_VALUE: int = 2
+const XP_ORB_MINIBOSS: int = 14
 const XP_PICKUP_RADIUS: float = 30.0
 # Magnes: orb dogania gracza nawet gdy ten ucieka na max (PLAYER_MAX_SPEED=200) i lapie
 # wczesniej (A1). Wczesniej 250/120 - orb wypadal poza zasieg przy ucieczce.
@@ -224,9 +230,9 @@ const XP_ORB_LIFETIME: float = 12.0
 # Cap chroni FPS - po przekroczeniu nadmiar oddaje XP wprost (gracz nie traci nagrody).
 const XP_ORB_SCATTER_RADIUS: float = 28.0
 const XP_ORB_MAX_ON_SCREEN: int = 120
-# Boss: kilka "grubych" orbow (hybryda) - count x value (~12 XP), kazdy wiekszy wizualnie.
+# Boss: kilka "grubych" orbow (hybryda) - count x value (~16 XP), kazdy wiekszy wizualnie.
 const XP_ORB_BOSS_COUNT: int = 4
-const XP_ORB_BOSS_VALUE: int = 3
+const XP_ORB_BOSS_VALUE: int = 4
 const XP_ORB_FAT_SCALE: float = 1.6
 # Zbieranie: czas wsiakania orba do gracza; combo (seria w czasie) -> sila blysku + pitch.
 const XP_ORB_ABSORB_TIME: float = 0.18
@@ -238,7 +244,8 @@ const XP_COMBO_PITCH_STEP: float = 0.04
 # Maksymalny poziom gracza = wiek Ernesta Hemingwaya w chwili smierci.
 const MAX_LEVEL: int = 61
 # Co tyle poziomow zamiast zwyklej karty pojawia sie specjalny power-up (harpun/przebijanie).
-const MILESTONE_LEVEL_INTERVAL: int = 5
+# Rebalans 2026-07-02: 5 -> 4 (multi-target DPS rosnie szybciej - walka z bossem realna).
+const MILESTONE_LEVEL_INTERVAL: int = 4
 
 # --- Meta-progresja (R3): trwale ulepszenia kupowane miedzy sesjami ---
 const META_POINTS_PER_SCORE: int = 10     # tyle wyniku = 1 punkt meta
