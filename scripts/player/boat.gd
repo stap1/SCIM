@@ -16,11 +16,9 @@ var time_since_last_hit: float = 999.0
 # --- ZMIENNA DO ANIMACJI FAL (JUICE) ---
 var wave_time: float = 0.0
 
-# --- Sterowanie (modul wyboru trybu): cel podrozy (klik/dotyk) + kalibracja akcelerometru ---
+# --- Sterowanie (modul wyboru trybu): cel podrozy (klik/dotyk) ---
 var _travel_target: Vector2 = Vector2.ZERO
 var _has_travel_target: bool = false
-var _accel_zero: Vector2 = Vector2.ZERO
-var _accel_calibrated: bool = false
 
 @onready var hurtbox: Area2D = $Hurtbox
 @onready var camera: Camera2D = get_node_or_null("Camera2D")
@@ -36,8 +34,10 @@ func _ready() -> void:
 	# Build pionowy: kamera lekko oddalona - podobny obszar gry co na desktopie.
 	if camera:
 		camera.zoom = Vector2.ONE * Platform.camera_zoom(Platform.is_mobile_build())
-	# Zmiana trybu sterowania w locie (pauza/ustawienia): czysc cel i kalibracje.
+	# Zmiana trybu sterowania w locie (pauza/ustawienia): czysc cel podrozy.
 	SettingsStore.control_mode_changed.connect(_on_control_mode_changed)
+	# Subtelny kilwater za lodzia - dlugosc smugi rosnie z predkoscia.
+	WakeTrail.attach_to(self, GameConfig.WAKE_AMOUNT_PLAYER, max_speed)
 
 func _physics_process(delta: float) -> void:
 	_handle_movement(delta)
@@ -91,14 +91,10 @@ func _screen_to_world(screen_pos: Vector2) -> Vector2:
 
 func _on_control_mode_changed(_mode: String) -> void:
 	_has_travel_target = false
-	_accel_calibrated = false # ponowna kalibracja przy kazdym wejsciu w tryb akcelerometru
 
 # Kierunek ruchu wg trybu z SettingsStore. Wejscia do czystego routera przekazywane jawnie.
 func _movement_direction() -> Vector2:
 	var mode: String = SettingsStore.control_mode
-	# Akcelerometr (mobile, eksperymentalny): przechyl wzgledem punktu kalibracji.
-	if mode == ControlModes.ACCEL:
-		return _accel_direction()
 	var target := _travel_target
 	var has_target := _has_travel_target
 	var deadzone := GameConfig.CONTROL_TARGET_DEADZONE_PX
@@ -119,21 +115,6 @@ func _joystick_vector() -> Vector2:
 	if joy != null and "vector" in joy:
 		return joy.vector
 	return Vector2.ZERO
-
-# Kierunek z akcelerometru: pierwszy odczyt trybu kalibruje zero-point (naturalny chwyt).
-# Brak sensora/zgody -> ZERO (lodz stoi; gracz moze zmienic tryb w pauzie).
-func _accel_direction() -> Vector2:
-	var raw := Input.get_accelerometer()
-	if raw == Vector3.ZERO:
-		return Vector2.ZERO
-	var flat := Vector2(raw.x, raw.y)
-	if not _accel_calibrated:
-		_accel_zero = flat
-		_accel_calibrated = true
-		return Vector2.ZERO
-	var tilt := ControlModes.tilt_from_accel(flat, _accel_zero)
-	return ControlModes.direction_from_accel(tilt,
-		GameConfig.CONTROL_ACCEL_DEADZONE, GameConfig.CONTROL_ACCEL_SENSITIVITY)
 
 # Czysta funkcja: kierunek z 4 stanow wcisniecia. Normalizacja gwarantuje, ze ruch
 # ukosny nie jest szybszy niz prosty; przeciwne kierunki kasuja sie.

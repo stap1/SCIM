@@ -189,10 +189,7 @@ func _on_control_selected(idx: int) -> void:
 	AudioManager.play_sfx("ui_click")
 	if idx < 0 or idx >= _control_modes.size():
 		return
-	var mode := _control_modes[idx]
-	SettingsStore.control_mode = mode
-	if mode == ControlModes.ACCEL:
-		Platform.request_motion_permission() # iOS: zgoda na DeviceMotion po gescie (klik)
+	SettingsStore.control_mode = _control_modes[idx]
 	_save_settings()
 
 # Zapis przez SettingsStore (jedyny wlasciciel trwalosci). Dlugosc sesji bez zmian w pauzie.

@@ -34,13 +34,25 @@ const CONTROL_TARGET_DEADZONE_PX: float = 12.0
 const CONTROL_CURSOR_DEADZONE_PX: float = 24.0
 # Martwa strefa galki joysticka ekranowego [0,1].
 const CONTROL_JOYSTICK_DEADZONE: float = 0.2
-# Akcelerometr: martwa strefa przechylu (m/s^2 po kalibracji) i skala przechyl->kierunek.
-const CONTROL_ACCEL_DEADZONE: float = 0.8
-const CONTROL_ACCEL_SENSITIVITY: float = 0.3
 # Promien bazy joysticka ekranowego (px ekranu).
 const TOUCH_JOYSTICK_RADIUS_PX: float = 70.0
 # Build pionowy (mobile): kamera lekko oddalona - podobny obszar gry co na desktopie.
 const CAMERA_ZOOM_MOBILE: float = 0.85
+
+# --- Kilwater (WakeTrail - smuga za poruszajacymi sie jednostkami) ---
+# Prog predkosci, od ktorego smuga sie tworzy.
+const WAKE_MIN_SPEED: float = 25.0
+# Zycie czastki smugi (stale): dlugosc sladu = predkosc * zycie, wiec slad jest
+# dokladnie o tyle dluzszy, o ile szybsza jest jednostka.
+const WAKE_LIFETIME: float = 1.1
+# Rozmiar czastek piany rosnie z predkoscia (subtelne podkreslenie tempa).
+const WAKE_SCALE_SLOW: float = 1.8
+const WAKE_SCALE_FAST: float = 3.4
+# Liczba czastek emitera: gracz gestszy slad, wrogowie oszczedniej (web/perf).
+const WAKE_AMOUNT_PLAYER: int = 26
+const WAKE_AMOUNT_ENEMY: int = 12
+# Delikatny dryf piany "za rufa" (px/s) - kierunek przeciwny do ruchu.
+const WAKE_DRIFT_SPEED: float = 10.0
 
 # --- Bron (harpun) ---
 const HARPOON_DAMAGE: float = 5.0

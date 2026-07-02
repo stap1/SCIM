@@ -25,6 +25,16 @@ var target: Node2D = null
 func _ready() -> void:
 	health = max_health
 	add_to_group("enemies")
+	# Subtelny kilwater za plynacym wrogiem - jak u lodzi gracza, oszczedniejszy (web/perf).
+	WakeTrail.attach_to(self, GameConfig.WAKE_AMOUNT_ENEMY, _wake_reference_speed())
+
+# Predkosc "pelnej smugi" wroga: jego wlasna predkosc (podklasy maja speed/track_speed).
+func _wake_reference_speed() -> float:
+	if "speed" in self:
+		return maxf(float(get("speed")), 1.0)
+	if "track_speed" in self:
+		return maxf(float(get("track_speed")), 1.0)
+	return GameConfig.PLAYER_MAX_SPEED
 
 func set_target(t: Node2D) -> void:
 	target = t

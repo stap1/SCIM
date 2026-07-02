@@ -9,9 +9,10 @@ func test_allowed_modes_per_platform() -> void:
 		and ControlModes.MOUSE_FOLLOW in desktop, "desktop: klawiatura + dwa tryby myszy")
 	assert_false(ControlModes.TOUCH_JOYSTICK in desktop, "desktop bez trybow dotykowych")
 	var mobile := ControlModes.allowed_modes(true)
-	assert_true(ControlModes.TOUCH_JOYSTICK in mobile and ControlModes.TOUCH_FOLLOW in mobile
-		and ControlModes.ACCEL in mobile, "mobile: joystick + dotyk + akcelerometr (eksperymentalny)")
+	assert_true(ControlModes.TOUCH_JOYSTICK in mobile and ControlModes.TOUCH_FOLLOW in mobile,
+		"mobile: joystick + podazanie za dotykiem")
 	assert_false(ControlModes.KEYBOARD in mobile, "mobile bez klawiatury")
+	assert_false("accel" in mobile, "akcelerometr usuniety - brak trybu accel")
 
 func test_default_mode_per_platform() -> void:
 	assert_eq(ControlModes.default_control_mode(false), ControlModes.KEYBOARD, "desktop -> klawiatura")
@@ -26,6 +27,8 @@ func test_sanitize_mode() -> void:
 		ControlModes.TOUCH_JOYSTICK, "tryb desktopowy na mobile -> default mobile")
 	assert_eq(ControlModes.sanitize_control_mode("", false),
 		ControlModes.KEYBOARD, "pusty zapis -> default platformy")
+	assert_eq(ControlModes.sanitize_control_mode("accel", true),
+		ControlModes.TOUCH_JOYSTICK, "stary zapis 'accel' (tryb usuniety) -> default mobile")
 
 func test_every_mode_has_ui_label() -> void:
 	for m in ControlModes.allowed_modes(false) + ControlModes.allowed_modes(true):
@@ -44,20 +47,6 @@ func test_direction_from_joystick() -> void:
 		Vector2.ZERO, "wychylenie ponizej martwej strefy -> ZERO")
 	assert_eq(ControlModes.direction_from_joystick(Vector2(0, 0.9), 0.2),
 		Vector2.DOWN, "wychylenie -> znormalizowany kierunek (predkosc reguluje lodz)")
-
-func test_tilt_from_accel_relative_to_zero() -> void:
-	# Kalibracja: zero = naturalny chwyt. Przechyl w prawo -> +x; gorna krawedz
-	# od siebie (y roznica dodatnia wzgledem zera) -> ekranowe -y (ruch w gore).
-	var tilt := ControlModes.tilt_from_accel(Vector2(2.0, -8.0), Vector2(0.0, -9.0))
-	assert_almost_eq(tilt.x, 2.0, 0.001, "przechyl w prawo -> +x")
-	assert_almost_eq(tilt.y, -1.0, 0.001, "przechyl od siebie -> -y (w gore ekranu)")
-
-func test_direction_from_accel() -> void:
-	assert_eq(ControlModes.direction_from_accel(Vector2(0.05, 0), 0.15, 2.5),
-		Vector2.ZERO, "drobny przechyl (szum) -> ZERO")
-	var d := ControlModes.direction_from_accel(Vector2(1.0, 0), 0.15, 2.5)
-	assert_almost_eq(d.length(), 1.0, 0.001, "duzy przechyl -> przyciete do pelnej predkosci")
-	assert_true(d.x > 0.0, "kierunek zgodny z przechylem")
 
 func test_dispatch_keyboard_and_unknown_fallback() -> void:
 	var kb := Vector2(1, 0)

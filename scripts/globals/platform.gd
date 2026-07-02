@@ -19,11 +19,3 @@ static func portrait_scale_size(base: Vector2i) -> Vector2i:
 # Czysta funkcja: zoom kamery per build (pion widzi podobny obszar gry - lekkie oddalenie).
 static func camera_zoom(is_mobile: bool) -> float:
 	return GameConfig.CAMERA_ZOOM_MOBILE if is_mobile else 1.0
-
-# iOS 13+: DeviceMotion wymaga zgody wywolanej gestem uzytkownika. Wolane przy wyborze
-# trybu akcelerometru (klik w UI = gest). Poza webem nieszkodliwy no-op.
-func request_motion_permission() -> void:
-	if OS.has_feature("web"):
-		JavaScriptBridge.eval(
-			"if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function') { DeviceMotionEvent.requestPermission().catch(function(){}); }",
-			true)
