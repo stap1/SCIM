@@ -25,6 +25,22 @@ func _ready() -> void:
 		var card = cards[i]
 		if card:
 			card.pressed.connect(_on_card_pressed.bind(i))
+	# Build pionowy: trzy karty obok siebie nie mieszcza sie w 648 px - ustaw w kolumne.
+	if Platform.is_mobile_build():
+		_stack_cards_vertically()
+
+# Pion: karty jedna pod druga, wysrodkowane (desktop zostaje przy ukladzie poziomym).
+func _stack_cards_vertically() -> void:
+	for i in cards.size():
+		var card: Control = cards[i]
+		if card == null:
+			continue
+		card.anchor_left = 0.5
+		card.anchor_right = 0.5
+		card.offset_left = -130.0
+		card.offset_right = 130.0
+		card.offset_top = 220.0 + i * 220.0
+		card.offset_bottom = 420.0 + i * 220.0
 
 func _on_level_up(new_level: int) -> void:
 	_current_ids = _roll_choices(new_level)

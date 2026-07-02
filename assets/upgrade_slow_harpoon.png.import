@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://c0mlq380u4mo0"
-path="res://.godot/imported/water_noise.png-d235efada02bfc595e23ef7859bb349e.ctex"
+uid="uid://th2n0f2tqi5l"
+path="res://.godot/imported/upgrade_slow_harpoon.png-a5a63e728ca06dc469617b2004c7d843.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/water_noise.png"
-dest_files=["res://.godot/imported/water_noise.png-d235efada02bfc595e23ef7859bb349e.ctex"]
+source_file="res://assets/upgrade_slow_harpoon.png"
+dest_files=["res://.godot/imported/upgrade_slow_harpoon.png-a5a63e728ca06dc469617b2004c7d843.ctex"]
 
 [params]
 

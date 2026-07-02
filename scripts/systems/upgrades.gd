@@ -10,10 +10,10 @@ const UPGRADES := {
 		"description": "Atak co 10% krócej",
 		"max_level": 3,
 	},
-	"longer_range": {
-		"id": "longer_range",
-		"name": "Dłuższy zasięg",
-		"description": "Zasięg ataku +15%",
+	"slow_harpoon": {
+		"id": "slow_harpoon",
+		"name": "Harpun z linką",
+		"description": "Trafienie spowalnia wroga (25/35/45%)",
 		"max_level": 3,
 	},
 	"tougher_hull": {
@@ -34,11 +34,11 @@ const UPGRADES := {
 		"description": "Zasięg zbierania XP +25%",
 		"max_level": 3,
 	},
-	"double_harpoon": {
-		"id": "double_harpoon",
-		"name": "Podwójny harpun",
-		"description": "Atakuj 2 najbliższych wrogów",
-		"max_level": 1,
+	"sharper_harpoon": {
+		"id": "sharper_harpoon",
+		"name": "Ostrzejszy grot",
+		"description": "Obrażenia harpuna +2",
+		"max_level": 3,
 	},
 }
 
@@ -72,11 +72,11 @@ func _ready() -> void:
 func _build_effects() -> void:
 	_effects = {
 		"faster_attack": _effect_faster_attack,
-		"longer_range": _effect_longer_range,
+		"slow_harpoon": _effect_slow_harpoon,
 		"tougher_hull": _effect_tougher_hull,
 		"faster_boat": _effect_faster_boat,
 		"resource_magnet": _effect_resource_magnet,
-		"double_harpoon": _effect_double_harpoon,
+		"sharper_harpoon": _effect_sharper_harpoon,
 		"extra_harpoon": _effect_extra_harpoon,
 		"piercing": _effect_piercing,
 	}
@@ -126,8 +126,23 @@ func info(id: String) -> Dictionary:
 static func apply_faster_attack(interval: float) -> float:
 	return interval * 0.90
 
-static func apply_longer_range(attack_range: float) -> float:
-	return attack_range * 1.15
+# Ostrzejszy grot: plaski przyrost obrazen (kontrolowane breakpointy TTK -
+# straznik w test_damage_progression.gd).
+static func apply_sharper_harpoon(damage: float) -> float:
+	return damage + GameConfig.HARPOON_DAMAGE_PER_LEVEL
+
+# Harpun z linka: procent spowolnienia dla poziomu karty (poziom 1..3; 0 = brak).
+static func slow_strength_for_level(level: int) -> float:
+	var pct := GameConfig.HARPOON_SLOW_PCT_PER_LEVEL
+	if level <= 0 or pct.is_empty():
+		return 0.0
+	return float(pct[clampi(level, 1, pct.size()) - 1])
+
+# Czysta funkcja modelu progresji: ile strzalow zdejmuje dany zapas HP.
+static func shots_to_kill(hp: float, damage: float) -> int:
+	if damage <= 0.0:
+		return 0
+	return ceili(hp / damage)
 
 static func apply_tougher_hull(value: float) -> float:
 	return value + 20.0
@@ -137,9 +152,6 @@ static func apply_faster_boat(speed: float) -> float:
 
 static func apply_resource_magnet(mult: float) -> float:
 	return mult * 1.25
-
-static func apply_double_harpoon() -> int:
-	return 2
 
 # --- Aplikacja efektu do wezlow gry (dispatch po rejestrze, luzne powiazanie przez grupy) ---
 func apply(id: String) -> void:
@@ -157,10 +169,10 @@ func _effect_faster_attack() -> void:
 	if aa:
 		aa.set_attack_interval(apply_faster_attack(aa.attack_interval))
 
-func _effect_longer_range() -> void:
+func _effect_slow_harpoon() -> void:
 	var aa := _auto_attacker()
 	if aa:
-		aa.attack_range = apply_longer_range(aa.attack_range)
+		aa.slow_strength = slow_strength_for_level(level_of("slow_harpoon"))
 
 func _effect_tougher_hull() -> void:
 	GameState.max_health = apply_tougher_hull(GameState.max_health)
@@ -175,11 +187,10 @@ func _effect_faster_boat() -> void:
 func _effect_resource_magnet() -> void:
 	GameState.magnet_range_mult = apply_resource_magnet(GameState.magnet_range_mult)
 
-func _effect_double_harpoon() -> void:
+func _effect_sharper_harpoon() -> void:
 	var aa := _auto_attacker()
 	if aa:
-		# maxi - nie cofa stackow z power-upow milestone (extra_harpoon).
-		aa.projectiles_per_attack = maxi(aa.projectiles_per_attack, apply_double_harpoon())
+		aa.damage = apply_sharper_harpoon(aa.damage)
 
 func _effect_extra_harpoon() -> void:
 	var aa := _auto_attacker()

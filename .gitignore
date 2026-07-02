@@ -26,3 +26,5 @@ moje_zmiany.txt
 # Build output (later)
 builds/
 exports/
+# Zrzuty narzedzia tools/screenshots.gd (generowane, nie commitowac)
+shots/

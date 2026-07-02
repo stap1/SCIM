@@ -1,19 +1,16 @@
-extends Control
+extends MenuScreen
 
 # Ekran CREDITS: autorzy, zrodla assetow i ich autorzy, podziekowania, wzmianka o AI.
-# Tresc w RichTextLabel (scena). Przycisk powrotu wraca do menu glownego.
+# Tresc w RichTextLabel (scena). Powrot/ESC: baza MenuScreen.
 
 func _ready() -> void:
-	var back := get_node_or_null("Panel/BackButton")
-	if back:
-		back.pressed.connect(_on_back)
-		back.grab_focus()  # nawigacja klawiatura
-
-func _unhandled_input(event: InputEvent) -> void:
-	if event.is_action_pressed("ui_cancel"):  # ESC -> powrot do menu
-		_on_back()
-		get_viewport().set_input_as_handled()
-
-func _on_back() -> void:
-	AudioManager.play_sfx("ui_click")
-	get_tree().change_scene_to_file(ScenePaths.MAIN_MENU)
+	super()
+	# Build pionowy: zwez panel i tresc do szerokosci ekranu (desktop zostaje szeroki).
+	if Platform.is_mobile_build():
+		var panel := get_node_or_null("Panel") as Control
+		if panel:
+			panel.offset_left = -280.0
+			panel.offset_right = 280.0
+		var body := get_node_or_null("Panel/Body") as Control
+		if body:
+			body.custom_minimum_size = Vector2(560, 400)

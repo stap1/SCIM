@@ -9,26 +9,27 @@
 [ext_resource type="PackedScene" path="res://scenes/ui/level_up.tscn" id="8_levelup"]
 [ext_resource type="Shader" uid="uid://pv7vg0vu2tid" path="res://shaders/water.gdshader" id="9_water"]
 [ext_resource type="PackedScene" path="res://scenes/ui/pause_menu.tscn" id="10_pause"]
-[ext_resource type="Texture2D" uid="uid://c0mlq380u4mo0" path="res://assets/water_noise.png" id="11_wnoise"]
-[ext_resource type="Texture2D" uid="uid://cj2jcwuo6y4bw" path="res://assets/water_noise_2.png" id="12_wnoise2"]
-[ext_resource type="Texture2D" uid="uid://0ukss2dgy3ce" path="res://assets/water_normal.png" id="13_wnormal"]
+[ext_resource type="Texture2D" path="res://assets/water_noise_rg.png" id="11_wnoise"]
 [ext_resource type="Script" uid="uid://d1jd2go3t5ljc" path="res://scripts/systems/water_background.gd" id="14_waterbg"]
 [ext_resource type="PackedScene" path="res://scenes/ui/dialogue_banner.tscn" id="15_dlgbanner"]
 [ext_resource type="PackedScene" path="res://scenes/ui/santiago_intro.tscn" id="16_intro"]
+[ext_resource type="PackedScene" path="res://scenes/ui/touch_joystick.tscn" id="17_joy"]
+[ext_resource type="Script" path="res://scripts/systems/foam_wave_spawner.gd" id="18_waves"]
+[ext_resource type="Script" path="res://scripts/systems/danger_wave_spawner.gd" id="19_dwaves"]
+[ext_resource type="Script" path="res://scripts/systems/wake_field.gd" id="20_wfield"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_water"]
 shader = ExtResource("9_water")
 shader_parameter/water_color = Color(0.11, 0.22, 0.34, 1)
 shader_parameter/wave_color = Color(0.3, 0.52, 0.7, 1)
 shader_parameter/noise_tex = ExtResource("11_wnoise")
-shader_parameter/noise_tex_2 = ExtResource("12_wnoise2")
-shader_parameter/normal_tex = ExtResource("13_wnormal")
 shader_parameter/scroll_dir_1 = Vector2(1, 0.3)
 shader_parameter/scroll_dir_2 = Vector2(-0.5, -0.8)
 shader_parameter/scroll_speed_1 = 0.03
 shader_parameter/scroll_speed_2 = 0.02
 shader_parameter/tex_scale = 3.0
-shader_parameter/normal_strength = 1.3
+shader_parameter/glint_strength = 0.55
+shader_parameter/band_count = 3.0
 
 [node name="Main" type="Node2D" unique_id=1150465566]
 position = Vector2(210, 228)
@@ -44,6 +45,15 @@ offset_bottom = 1600.0
 mouse_filter = 2
 color = Color(0.16470589, 0.2901961, 0.41960785, 1)
 script = ExtResource("14_waterbg")
+
+[node name="WakeField" type="Node2D" parent="."]
+script = ExtResource("20_wfield")
+
+[node name="FoamWaves" type="Node" parent="."]
+script = ExtResource("18_waves")
+
+[node name="DangerWaves" type="Node" parent="."]
+script = ExtResource("19_dwaves")
 
 [node name="Boat" parent="." unique_id=1889304063 instance=ExtResource("3_sugp2")]
 
@@ -64,3 +74,5 @@ script = ExtResource("7_pool")
 [node name="DialogueBanner" parent="." unique_id=1025637091 instance=ExtResource("15_dlgbanner")]
 
 [node name="SantiagoIntro" parent="." unique_id=1915646384 instance=ExtResource("16_intro")]
+
+[node name="TouchJoystick" parent="." instance=ExtResource("17_joy")]

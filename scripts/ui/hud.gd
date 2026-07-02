@@ -26,6 +26,10 @@ func _ready() -> void:
 	if boss_warning:
 		boss_warning.hide()
 
+	# Build pionowy: zwez oba bloki HUD, by nie nachodzily na siebie przy szerokosci 648.
+	if Platform.is_mobile_build():
+		_apply_portrait_layout()
+
 	# Pasek HP gracza: ilustracja kadluba ze shaderem (blend klatek + desaturacja + zapelnienie).
 	_hull_sprite = get_node_or_null("HullSprite")
 
@@ -44,6 +48,18 @@ func _ready() -> void:
 	if pool and pool.has_signal("ammo_changed"):
 		pool.ammo_changed.connect(_on_ammo_changed)
 		_on_ammo_changed(pool.available_count(), pool.total_count())
+
+# Pion (648 px szerokosci): lewy blok konczy sie na 240, prawy zaczyna od -252 -
+# bloki nie zachodza na siebie (na 16:9 zostaje oryginalny, szerszy layout).
+func _apply_portrait_layout() -> void:
+	for left_node in [time_label, score_label, ammo_label]:
+		if left_node:
+			left_node.offset_right = 240.0
+	for right_path in ["HealthBar", "HullSprite", "LevelLabel", "XPBar"]:
+		var n := get_node_or_null(right_path) as Control
+		if n:
+			n.offset_left = -252.0
+			n.offset_right = -12.0
 
 func _on_ammo_changed(available: int, total: int) -> void:
 	if ammo_label:

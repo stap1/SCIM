@@ -21,7 +21,11 @@ extends CanvasLayer
 @onready var _sfx_slider: HSlider = $Dimmer/Center/SettingsPanel/SFXSlider
 @onready var _reduce_shake_check: CheckButton = $Dimmer/Center/SettingsPanel/ReduceShakeCheck
 @onready var _reduce_flash_check: CheckButton = $Dimmer/Center/SettingsPanel/ReduceFlashCheck
+@onready var _control_option: OptionButton = get_node_or_null("Dimmer/Center/SettingsPanel/ControlOption")
 @onready var _settings_back: Button = $Dimmer/Center/SettingsPanel/BackButton
+
+# Tryby sterowania widoczne w OptionButton pauzy (kolejnosc = indeksy pozycji).
+var _control_modes: Array[String] = []
 
 ## Czy to menu jest aktualnym wlascicielem pauzy. Chroni przed "przejeciem" pauzy
 ## zalozonej przez inny ekran (np. wznowienie gry w trakcie wyboru ulepszenia).
@@ -139,6 +143,11 @@ func _close_settings() -> void:
 	_settings_button.grab_focus()
 
 func _init_settings_controls() -> void:
+	if _control_option:
+		_control_modes = ControlModes.allowed_modes(Platform.is_mobile_build())
+		for m in _control_modes:
+			_control_option.add_item(str(ControlModes.MODE_LABELS.get(m, m)))
+		_control_option.item_selected.connect(_on_control_selected)
 	_refresh_settings_values()
 	_music_slider.value_changed.connect(_on_music_changed)
 	_sfx_slider.value_changed.connect(_on_sfx_changed)
@@ -152,6 +161,11 @@ func _refresh_settings_values() -> void:
 	_sfx_slider.set_value_no_signal(float(s["sfx_vol"]))
 	_reduce_shake_check.set_pressed_no_signal(bool(s["reduce_shake"]))
 	_reduce_flash_check.set_pressed_no_signal(bool(s["reduce_flashing"]))
+	if _control_option:
+		# Tryb czytany z zywego SettingsStore (juz zsanityzowany), nie z surowego pliku.
+		var midx := _control_modes.find(SettingsStore.control_mode)
+		if midx != -1:
+			_control_option.selected = midx
 
 func _on_music_changed(v: float) -> void:
 	SettingsStore.apply_bus("Music", v)
@@ -171,7 +185,15 @@ func _on_reduce_flash_toggled(pressed: bool) -> void:
 	SettingsStore.reduce_flashing = pressed
 	_save_settings()
 
+func _on_control_selected(idx: int) -> void:
+	AudioManager.play_sfx("ui_click")
+	if idx < 0 or idx >= _control_modes.size():
+		return
+	SettingsStore.control_mode = _control_modes[idx]
+	_save_settings()
+
 # Zapis przez SettingsStore (jedyny wlasciciel trwalosci). Dlugosc sesji bez zmian w pauzie.
 func _save_settings() -> void:
 	SettingsStore.save_settings(SettingsStore.SETTINGS_PATH, _music_slider.value, _sfx_slider.value,
-		SettingsStore.session_length_min, _reduce_shake_check.button_pressed, _reduce_flash_check.button_pressed)
+		SettingsStore.session_length_min, _reduce_shake_check.button_pressed,
+		_reduce_flash_check.button_pressed, SettingsStore.control_mode)

@@ -12,11 +12,21 @@ const SESSION_ENABLED := 5
 @onready var music_slider: HSlider = get_node_or_null("Panel/MusicSlider")
 @onready var sfx_slider: HSlider = get_node_or_null("Panel/SFXSlider")
 @onready var session_option: OptionButton = get_node_or_null("Panel/SessionOption")
+@onready var control_option: OptionButton = get_node_or_null("Panel/ControlOption")
 @onready var reduce_shake_check: CheckButton = get_node_or_null("Panel/ReduceShakeCheck")
 @onready var reduce_flash_check: CheckButton = get_node_or_null("Panel/ReduceFlashCheck")
 @onready var back_button: Button = get_node_or_null("Panel/BackButton")
 
+# Tryby sterowania widoczne w OptionButton (kolejnosc = indeksy pozycji).
+var _control_modes: Array[String] = []
+
 func _ready() -> void:
+	# Build pionowy: zwez panel do szerokosci ekranu (desktop zostaje szeroki).
+	if Platform.is_mobile_build():
+		var panel := get_node_or_null("Panel") as Control
+		if panel:
+			panel.offset_left = -300.0
+			panel.offset_right = 300.0
 	if session_option:
 		for i in SESSION_LENGTHS.size():
 			session_option.add_item("%d min" % SESSION_LENGTHS[i])
@@ -54,6 +64,15 @@ func _ready() -> void:
 		session_option.selected = idx if idx != -1 else 0
 		session_option.item_selected.connect(_on_session_selected)
 
+	if control_option:
+		# Tryby per platforma; biezacy z SettingsStore (juz zsanityzowany w apply_saved).
+		_control_modes = ControlModes.allowed_modes(Platform.is_mobile_build())
+		for m in _control_modes:
+			control_option.add_item(str(ControlModes.MODE_LABELS.get(m, m)))
+		var midx := _control_modes.find(SettingsStore.control_mode)
+		control_option.selected = midx if midx != -1 else 0
+		control_option.item_selected.connect(_on_control_selected)
+
 	if reduce_shake_check:
 		reduce_shake_check.button_pressed = bool(s["reduce_shake"])
 		reduce_shake_check.toggled.connect(_on_reduce_shake_toggled)
@@ -90,6 +109,13 @@ func _on_session_selected(idx: int) -> void:
 	SettingsStore.session_length_min = SESSION_LENGTHS[idx]
 	_save()
 
+func _on_control_selected(idx: int) -> void:
+	AudioManager.play_sfx("ui_click")
+	if idx < 0 or idx >= _control_modes.size():
+		return
+	SettingsStore.control_mode = _control_modes[idx]
+	_save()
+
 func _on_reduce_shake_toggled(pressed: bool) -> void:
 	AudioManager.play_sfx("ui_click")
 	SettingsStore.reduce_shake = pressed
@@ -114,4 +140,4 @@ func _save() -> void:
 	var mv: float = music_slider.value if music_slider else 1.0
 	var sv: float = sfx_slider.value if sfx_slider else 1.0
 	SettingsStore.save_settings(SettingsStore.SETTINGS_PATH, mv, sv, SettingsStore.session_length_min,
-		SettingsStore.reduce_shake, SettingsStore.reduce_flashing)
+		SettingsStore.reduce_shake, SettingsStore.reduce_flashing, SettingsStore.control_mode)

@@ -251,9 +251,18 @@ func _curve_keys() -> Array[int]:
 		keys.append(k)
 	return keys
 
+# Widoczny obszar SWIATA: rozmiar viewportu podzielony przez zoom kamery (kamera
+# oddalona na buildzie mobilnym widzi wiecej - spawn musi zostac poza kadrem).
+func _visible_world_size() -> Vector2:
+	var vp_size := get_viewport().get_visible_rect().size
+	var cam := get_viewport().get_camera_2d()
+	if cam != null and cam.zoom.x > 0.0 and cam.zoom.y > 0.0:
+		vp_size /= cam.zoom
+	return vp_size
+
 func spawn_enemy(scene: PackedScene) -> Node:
 	var player := get_tree().get_first_node_in_group("player")
-	var vp_size := get_viewport().get_visible_rect().size
+	var vp_size := _visible_world_size()
 	var pos := spawn_position_for_edge(randi() % 4, vp_size)
 
 	# Spawn wzgledem widoku gracza (kamera sledzi lodz).
@@ -342,7 +351,9 @@ func _spawn_boss() -> void:
 	var player := get_tree().get_first_node_in_group("player")
 	var boss := MotorBoatScene.instantiate()
 	if player != null:
-		boss.position = get_parent().to_local(player.global_position + Vector2(0, -350))
+		# Tuz nad gorna krawedzia kadru (niezaleznie od zoomu/orientacji kamery).
+		var spawn_up := _visible_world_size().y * 0.5 + 50.0
+		boss.position = get_parent().to_local(player.global_position + Vector2(0, -spawn_up))
 	get_parent().add_child(boss)
 	if player != null:
 		if boss.has_method("set_target"):

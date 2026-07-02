@@ -29,6 +29,9 @@ const JELLYFISH_LINES := {
 const FIRST_BARRACUDA := "Coś smukłego i szybkiego przecięło wodę. Drapieżnik - jak ja."
 const FIRST_SHARK := "Rekin. Tego się obawiałem najbardziej. Przyszedł po to, co zdobyłem. Będę walczył, choćby bez nadziei."
 
+# Pierwsza fala przeciwnosci (DangerWave) - trudy morza; prad mozna ograc w obie strony.
+const FIRST_DANGER_WAVE := "Morze się burzy. Fala nie pyta, dokąd płyniesz - mądry rybak nie walczy z nią, tylko pozwala się nieść."
+
 # Zapowiedz bossa (klusownik) i kwestia po jego pokonaniu.
 const BOSS_INCOMING := "Silnik na horyzoncie. Człowiek gorszy od rekina - przypływa ukraść mój połów."
 const BOSS_DEFEATED := "Obroniłem to, co moje. Morze jeszcze nie powiedziało ostatniego słowa."

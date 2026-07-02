@@ -34,10 +34,13 @@ func _ready() -> void:
 func _physics_process(delta: float) -> void:
 	if GameState.is_paused or GameState.is_game_over:
 		return
+	tick_slow(delta) # status spowolnienia (harpun z linka) wygasa z czasem
 	if not acquire_target():
 		return
 	var dir := (target.global_position - global_position).normalized()
-	velocity = dir * speed
+	# Separacja: nachodzacy wrogowie rozpychaja sie (do polowy rozmiaru moga sie
+	# nakladac) - koniec stackowania cial i kilwaterow jeden na drugim.
+	velocity = dir * speed * slow_multiplier() + separation_push() * GameConfig.ENEMY_SEPARATION_PUSH
 	move_and_slide()
 	# Obrot ciala paszcza ku graczowi (tekstura wskazuje gore -> +PI/2, jak boss/gracz).
 	if face_target and not dir.is_zero_approx():

@@ -13,6 +13,8 @@ var active: bool = false
 var lifetime: float = 0.0
 # Przebijanie: przez ilu DODATKOWYCH wrogow harpun przelatuje zanim zniknie (0 = jak dotad).
 var pierce: int = 0
+# Spowolnienie nakladane na trafionego wroga (0 = brak; karta "Harpun z linka").
+var slow_strength: float = 0.0
 # Wrogowie juz trafieni w tym locie - anty-podwojne trafienie tego samego celu.
 var _hit_ids: Array[int] = []
 
@@ -37,13 +39,19 @@ func _physics_process(delta: float) -> void:
 		deactivate()
 
 # --- Wybudzenie z puli ---
-func fire(start_pos: Vector2, shoot_dir: Vector2, pierce_count: int = 0) -> void:
+# damage_value/slow_value przychodza od AutoAttackera (rosna z kartami level-up);
+# 0 = zostaw wartosci domyslne (testy/stare wywolania).
+func fire(start_pos: Vector2, shoot_dir: Vector2, pierce_count: int = 0,
+		damage_value: float = 0.0, slow_value: float = 0.0) -> void:
 	global_position = start_pos
 	direction = shoot_dir
 	rotation = direction.angle() + PI / 2
 
 	lifetime = 0.0
 	pierce = pierce_count
+	if damage_value > 0.0:
+		damage = damage_value
+	slow_strength = slow_value
 	_hit_ids.clear()
 	active = true
 	visible = true
@@ -80,6 +88,9 @@ func _on_any_collision(something: Node) -> void:
 		_hit_ids.append(eid)
 		AudioManager.play_sfx("hit")
 		enemy_node.take_damage(damage)
+		# Harpun z linka: trafienie spowalnia wroga (status w EnemyBase).
+		if slow_strength > 0.0 and enemy_node.has_method("apply_slow"):
+			enemy_node.apply_slow(1.0 - slow_strength, GameConfig.HARPOON_SLOW_DURATION)
 		# Przebijanie: leci dalej dopoki ma zapas przebic, inaczej zasypia.
 		if pierce > 0:
 			pierce -= 1

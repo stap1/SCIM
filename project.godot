@@ -11,14 +11,18 @@ config_version=5
 [application]
 
 config/name="SCIM"
+config/version="1.0.0"
 run/main_scene="res://scenes/MainMenu.tscn"
 config/features=PackedStringArray("4.6", "GL Compatibility")
-config/icon="res://icon.svg"
+boot_splash/bg_color=Color(0.043, 0.094, 0.145, 1)
+boot_splash/image="res://assets/app_icon.png"
+config/icon="res://assets/app_icon.png"
 
 [autoload]
 
 GameConfig="*res://scripts/globals/game_config.gd"
 GameState="*uid://kguqub804fro"
+Platform="*res://scripts/globals/platform.gd"
 SettingsStore="*res://scripts/globals/settings_store.gd"
 Upgrades="*res://scripts/systems/upgrades.gd"
 AudioManager="*res://scripts/systems/audio_manager.gd"
@@ -85,3 +89,4 @@ pause={
 
 renderer/rendering_method="gl_compatibility"
 renderer/rendering_method.mobile="gl_compatibility"
+textures/vram_compression/import_etc2_astc=true

@@ -8,12 +8,15 @@ const GAMEPLAY := [
 	"boat", "enemy_jellyfish", "enemy_barracuda", "enemy_shark", "miniboss_motorboat",
 	"xp_orb", "harpoon", "heal_plank", "hud_ammo_icon", "app_icon",
 	"hull_hp_0", "hull_hp_1", "hull_hp_2", "hull_hp_3", "hull_hp_4",
-	"upgrade_faster_attack", "upgrade_longer_range", "upgrade_tougher_hull",
-	"upgrade_faster_boat", "upgrade_resource_magnet", "upgrade_double_harpoon",
+	# Rebalans kart: longer_range/double_harpoon zastapione slow_harpoon/sharper_harpoon;
+	# ikony nowych kart TODO w pipeline GFX (karta ma graceful fallback tekstowy).
+	"upgrade_faster_attack", "upgrade_tougher_hull",
+	"upgrade_faster_boat", "upgrade_resource_magnet",
 	"upgrade_extra_harpoon", "upgrade_piercing",
 ]
 
-const WATER := ["water_noise", "water_noise_2", "water_normal"]
+# Po optymalizacji wody: jedna spakowana tekstura R/G (tools/pack_water_noise.gd).
+const WATER := ["water_noise_rg"]
 
 func test_sprites_and_icons_present() -> void:
 	for name in GAMEPLAY:
