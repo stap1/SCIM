@@ -70,6 +70,15 @@ func test_water_colors_follow_session_time() -> void:
 
 # --- Rozblyski slonca: stemple w WakeField ---
 
+func test_glint_scale_with_platform_boost() -> void:
+	var WaterScript := preload("res://scripts/systems/water_background.gd")
+	assert_almost_eq(WaterScript.glint_scale(0.0, 0.3, 0.55, 1.0), 0.3, 0.001,
+		"desktop: dolna granica bez boostu")
+	assert_almost_eq(WaterScript.glint_scale(1.0, 0.3, 0.55, 1.35), 0.7425, 0.001,
+		"mobile: gorna granica x1.35 (ten sam mnoznik co stemple kilwatera)")
+	assert_almost_eq(WaterScript.glint_scale(0.5, 0.3, 0.55, 1.0), 0.425, 0.001,
+		"posrednio liniowo w widelkach")
+
 func test_glints_deposit_into_wake_field() -> void:
 	var field := WakeField.new()
 	add_child_autofree(field)

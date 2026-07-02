@@ -11,6 +11,10 @@ extends ColorRect
 
 var _glint_timer: float = 0.0
 var _field: WakeField = null
+# Mobile: kamera oddalona (zoom 0.85) - rozblyski dostaja TEN SAM boost rozmiaru
+# co stemple kilwatera (WAKE_MOBILE_SCALE_BOOST), inaczej gina na malym ekranie.
+@onready var _glint_boost: float = \
+	GameConfig.WAKE_MOBILE_SCALE_BOOST if Platform.is_mobile_build() else 1.0
 
 func _process(delta: float) -> void:
 	var cam := get_viewport().get_camera_2d()
@@ -51,5 +55,11 @@ func _tick_glints(delta: float) -> void:
 		if _field == null:
 			return
 	var pos := global_position + Vector2(randf() * size.x, randf() * size.y)
-	_field.deposit(pos, Vector2.ZERO,
-		randf_range(GameConfig.WATER_GLINT_SCALE_MIN, GameConfig.WATER_GLINT_SCALE_MAX))
+	_field.deposit(pos, Vector2.ZERO, glint_scale(randf(),
+		GameConfig.WATER_GLINT_SCALE_MIN, GameConfig.WATER_GLINT_SCALE_MAX, _glint_boost))
+
+# Czysta funkcja: rozmiar rozblysku - losowo w widelkach, przemnozony przez boost
+# platformy (mobile x1.35, desktop x1.0).
+static func glint_scale(rng_value: float, scale_min: float, scale_max: float,
+		boost: float) -> float:
+	return lerpf(scale_min, scale_max, clampf(rng_value, 0.0, 1.0)) * boost
