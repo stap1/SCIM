@@ -16,6 +16,9 @@
 [ext_resource type="PackedScene" path="res://scenes/ui/dialogue_banner.tscn" id="15_dlgbanner"]
 [ext_resource type="PackedScene" path="res://scenes/ui/santiago_intro.tscn" id="16_intro"]
 [ext_resource type="PackedScene" path="res://scenes/ui/touch_joystick.tscn" id="17_joy"]
+[ext_resource type="Script" path="res://scripts/systems/foam_wave_spawner.gd" id="18_waves"]
+[ext_resource type="Script" path="res://scripts/systems/danger_wave_spawner.gd" id="19_dwaves"]
+[ext_resource type="Script" path="res://scripts/systems/wake_field.gd" id="20_wfield"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_water"]
 shader = ExtResource("9_water")
@@ -45,6 +48,15 @@ offset_bottom = 1600.0
 mouse_filter = 2
 color = Color(0.16470589, 0.2901961, 0.41960785, 1)
 script = ExtResource("14_waterbg")
+
+[node name="WakeField" type="Node2D" parent="."]
+script = ExtResource("20_wfield")
+
+[node name="FoamWaves" type="Node" parent="."]
+script = ExtResource("18_waves")
+
+[node name="DangerWaves" type="Node" parent="."]
+script = ExtResource("19_dwaves")
 
 [node name="Boat" parent="." unique_id=1889304063 instance=ExtResource("3_sugp2")]
 

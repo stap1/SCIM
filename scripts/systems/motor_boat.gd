@@ -61,6 +61,7 @@ func _ready() -> void:
 func _physics_process(delta: float) -> void:
 	if GameState.is_paused or GameState.is_game_over:
 		return
+	tick_slow(delta) # status spowolnienia dziala na sledzenie (szarza-Tween zostaje skokiem)
 	_face_aim(delta) # obrot dziala w KAZDEJ fazie (sledzenie i szarza)
 	if _bar_anchor != null:
 		_bar_anchor.global_rotation = 0.0  # pasek HP poziomo, nie obraca sie z bossem
@@ -69,7 +70,7 @@ func _physics_process(delta: float) -> void:
 		return
 	if not acquire_target():
 		return
-	velocity = (target.global_position - global_position).normalized() * track_speed
+	velocity = (target.global_position - global_position).normalized() * track_speed * slow_multiplier()
 	move_and_slide()
 
 ## Plynnie obraca bossa ku aktualnemu celowi. Tekstura lodzi wskazuje gore, stad +PI/2

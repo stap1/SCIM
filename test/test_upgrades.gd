@@ -16,8 +16,8 @@ func test_six_upgrades_have_fields() -> void:
 func test_apply_faster_attack_pure() -> void:
 	assert_almost_eq(Upgrades.apply_faster_attack(0.8), 0.72, 0.001, "0.8 * 0.90 = 0.72")
 
-func test_apply_double_harpoon_pure() -> void:
-	assert_eq(Upgrades.apply_double_harpoon(), 2, "double_harpoon ustawia 2 pociski")
+func test_apply_sharper_harpoon_pure() -> void:
+	assert_almost_eq(Upgrades.apply_sharper_harpoon(5.0), 7.0, 0.001, "sharper_harpoon: obrazenia +2")
 
 func test_apply_tougher_hull_increases_max_health() -> void:
 	var before: float = GameState.max_health

@@ -45,18 +45,83 @@ const WAKE_MIN_SPEED: float = 25.0
 # Zycie czastki smugi (stale): dlugosc sladu = predkosc * zycie, wiec slad jest
 # dokladnie o tyle dluzszy, o ile szybsza jest jednostka.
 const WAKE_LIFETIME: float = 1.1
-# Rozmiar czastek piany rosnie z predkoscia (subtelne podkreslenie tempa).
-const WAKE_SCALE_SLOW: float = 1.8
-const WAKE_SCALE_FAST: float = 3.4
-# LACZNA liczba czastek kilwatera (dzielona na dwie burty): gracz gestszy slad,
-# wrogowie oszczedniej (web/perf).
-const WAKE_AMOUNT_PLAYER: int = 26
-const WAKE_AMOUNT_ENEMY: int = 12
+# Skala miekkiej tekstury piany (WAKE_TEXTURE_SIZE px); rosnie z predkoscia.
+const WAKE_SCALE_SLOW: float = 0.35
+const WAKE_SCALE_FAST: float = 0.75
+# Docelowy odstep stempli piany WZDLUZ sladu (px) - odkladane co tyle PRZEBYTEJ DROGI,
+# wiec gestosc jest idealnie stala przestrzennie, niezaleznie od predkosci i FPS.
+const WAKE_SPACING_PX: float = 9.0
+# Twardy globalny limit stempli piany (ring buffer WakeField) - sufit kosztu web.
+const WAKE_MAX_STAMPS: int = 800
+# Margines cullingu stempli poza kadrem (px swiata) - dalszych nie rysujemy.
+const WAKE_CULL_MARGIN_PX: float = 64.0
+# W scisku (separacja aktywna) jednostka odklada stemple rzadziej - stado nie buduje
+# jednolitej sciany piany (mnoznik odstepu przy pelnym zatloczeniu).
+const WAKE_CROWD_SPACING_MULT: float = 2.2
+# Szersze jednostki dostaja wieksza piane (boss): mnoznik = half_width / REF, przyciety.
+const WAKE_WIDTH_REF: float = 16.0
+const WAKE_WIDTH_BOOST_MAX: float = 2.5
+# Krycie piany (poczatek zycia czastki; ogon wygasa do zera).
+const WAKE_ALPHA: float = 0.55
+# Rozmiar generowanej radialnej tekstury piany (px).
+const WAKE_TEXTURE_SIZE: int = 32
+# Build mobilny: kamera oddalona (0.85) + maly fizyczny ekran - piana odrobine wieksza.
+const WAKE_MOBILE_SCALE_BOOST: float = 1.35
 # Dryf piany na zewnatrz jako ulamek predkosci jednostki: atan(0.3) ~ 17 stopni -
 # staly kat rozejscia "V", blisko naturalnego kilwatera (~19.5 stopnia).
 const WAKE_SPREAD_RATIO: float = 0.3
 # Szerokosc zrodla, gdy cialo nie ma CollisionShape2D (rozstaw sladow = szerokosc).
 const WAKE_WIDTH_FALLBACK: float = 24.0
+
+# --- Separacja wrogow (zapobiega pelnemu nakladaniu sie cial i kilwaterow) ---
+# Prog odpychania jako ulamek sumy promieni: 0.5 = "kolizja na pol rozmiaru" -
+# wrogowie moga nachodzic na siebie do polowy, potem sie rozpychaja.
+const ENEMY_SEPARATION_FACTOR: float = 0.5
+# Maksymalna predkosc rozpychania (px/s) przy pelnym nalozeniu.
+const ENEMY_SEPARATION_PUSH: float = 90.0
+# Odswiezanie separacji co tyle klatek fizyki (fazy rozlozone losowo per wrog) -
+# tnie koszt O(n^2) przy stadzie; miedzy odswiezeniami dziala zapamietane pchniecie.
+const ENEMY_SEPARATION_EVERY: int = 3
+
+# --- Spienione fale ambientowe (FoamWave - luk piany wedrujacy po wodzie) ---
+# Odstep miedzy falami (losowo w widelkach) i pierwsza fala po starcie sesji.
+const FOAM_WAVE_INTERVAL_MIN: float = 9.0
+const FOAM_WAVE_INTERVAL_MAX: float = 20.0
+# Ruch i geometria luku fali.
+const FOAM_WAVE_SPEED_MIN: float = 35.0
+const FOAM_WAVE_SPEED_MAX: float = 60.0
+const FOAM_WAVE_RADIUS_MIN: float = 90.0
+const FOAM_WAVE_RADIUS_MAX: float = 150.0
+const FOAM_WAVE_SPAN_DEG: float = 110.0
+const FOAM_WAVE_ARC_POINTS: int = 24
+# Czas zycia frontu fali (emisja piany), potem ogon dogasa i wezel znika sam.
+const FOAM_WAVE_TRAVEL_TIME: float = 6.5
+# Krycie piany fali - subtelniejsze niz kilwater jednostek.
+const FOAM_WAVE_ALPHA: float = 0.4
+
+# --- Fale przeciwnosci (DangerWave - prad znosi lodz; gameplay) ---
+# Start wraz z rekinami: tier 2 krzywej spawnu = 2. minuta sesji (straznik w testach).
+const DANGER_WAVE_START_TIME: float = 120.0
+const DANGER_WAVE_INTERVAL_MIN: float = 18.0
+const DANGER_WAVE_INTERVAL_MAX: float = 30.0
+const DANGER_WAVE_SPEED: float = 70.0
+# "Lekko wieksza" od fali ambientowej (90-150).
+const DANGER_WAVE_RADIUS_MIN: float = 130.0
+const DANGER_WAVE_RADIUS_MAX: float = 200.0
+# Grubosc pasa dzialania pradu wokol luku piany (latwa do uniknieci wstega).
+const DANGER_WAVE_BAND_PX: float = 28.0
+# Prad: z fala +20% predkosci, pod fale -25% ("delikatne" - do ogrania w obie strony).
+const DANGER_WAVE_BOOST_WITH: float = 0.20
+const DANGER_WAVE_SLOW_AGAINST: float = 0.25
+# Fala gameplayowa wyrazniejsza od ambientowej.
+const DANGER_WAVE_ALPHA: float = 0.5
+
+# --- Harpun: progresja obrazen i spowolnienie (rebalans kart level-up) ---
+# "Ostrzejszy grot": +2 obrazen na poziom (breakpointy TTK - zob. test_damage_progression).
+const HARPOON_DAMAGE_PER_LEVEL: float = 2.0
+# "Harpun z linka": procent spowolnienia trafionego wroga per poziom karty.
+const HARPOON_SLOW_PCT_PER_LEVEL: Array[float] = [0.25, 0.35, 0.45]
+const HARPOON_SLOW_DURATION: float = 1.5
 
 # --- Bron (harpun) ---
 const HARPOON_DAMAGE: float = 5.0

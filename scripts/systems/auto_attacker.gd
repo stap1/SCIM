@@ -2,7 +2,7 @@ extends Node
 
 # Auto-celowanie: co attack_interval znajduje najblizszych wrogow w zasiegu,
 # pobiera harpuny z HarpoonPool i strzela z pozycji lodzi. Liczba pociskow na atak
-# (1 lub 2 po double_harpoon) okresla, ilu najblizszych wrogow zostanie ostrzelanych.
+# (1+ po milestone extra_harpoon) okresla, ilu najblizszych wrogow zostanie ostrzelanych.
 
 # Wartosci startowe z GameConfig (jedyne zrodlo balansu).
 @export var attack_interval: float = GameConfig.HARPOON_BASE_INTERVAL
@@ -10,6 +10,10 @@ extends Node
 var projectiles_per_attack: int = 1
 # Przebijanie z power-upow milestone: przez ilu dodatkowych wrogow przelatuje kazdy harpun.
 var pierce_bonus: int = 0
+# Obrazenia harpuna - rosna z karta "Ostrzejszy grot" (model progresji obrazen).
+var damage: float = GameConfig.HARPOON_DAMAGE
+# Spowolnienie z karty "Harpun z linka" (0 = wylaczone).
+var slow_strength: float = 0.0
 
 var _timer: Timer
 
@@ -56,7 +60,7 @@ func _on_timeout() -> void:
 		if harpoon == null:
 			break
 		var dir: Vector2 = (target.global_position - player.global_position).normalized()
-		harpoon.fire(player.global_position, dir, pierce_bonus)
+		harpoon.fire(player.global_position, dir, pierce_bonus, damage, slow_strength)
 		if player.has_method("play_shoot_sound"):
 			player.play_shoot_sound()
 		remaining[idx] = Vector2(INF, INF) # wyklucz tego wroga z kolejnego strzalu

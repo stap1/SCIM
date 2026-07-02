@@ -36,8 +36,8 @@ func _ready() -> void:
 		camera.zoom = Vector2.ONE * Platform.camera_zoom(Platform.is_mobile_build())
 	# Zmiana trybu sterowania w locie (pauza/ustawienia): czysc cel podrozy.
 	SettingsStore.control_mode_changed.connect(_on_control_mode_changed)
-	# Subtelny kilwater za lodzia - dlugosc smugi rosnie z predkoscia.
-	WakeTrail.attach_to(self, GameConfig.WAKE_AMOUNT_PLAYER, max_speed)
+	# Subtelny kilwater za lodzia - dlugosc i gestosc smugi wynikaja z predkosci.
+	WakeTrail.attach_to(self, max_speed)
 
 func _physics_process(delta: float) -> void:
 	_handle_movement(delta)
@@ -101,8 +101,10 @@ func _movement_direction() -> Vector2:
 	if mode == ControlModes.MOUSE_FOLLOW:
 		target = get_global_mouse_position()
 		deadzone = GameConfig.CONTROL_CURSOR_DEADZONE_PX
+	# Lookup joysticka tylko w jego trybie - desktop nie placi za skan grupy co klatke.
+	var stick := _joystick_vector() if mode == ControlModes.TOUCH_JOYSTICK else Vector2.ZERO
 	var dir := ControlModes.dispatch_direction(mode, get_input_direction(), global_position,
-		target, has_target, deadzone, _joystick_vector(), GameConfig.CONTROL_JOYSTICK_DEADZONE)
+		target, has_target, deadzone, stick, GameConfig.CONTROL_JOYSTICK_DEADZONE)
 	# Cel podrozy osiagniety -> wyczysc (lodz stoi do nastepnego klikniecia/dotyku).
 	if (mode == ControlModes.MOUSE_CLICK or mode == ControlModes.TOUCH_FOLLOW) \
 			and _has_travel_target and dir == Vector2.ZERO:
@@ -138,9 +140,22 @@ static func compute_velocity(direction: Vector2, speed: float) -> Vector2:
 func _handle_movement(delta: float) -> void:
 	var input_dir := _movement_direction()
 	if input_dir.length() > 0:
-		velocity = velocity.move_toward(input_dir * max_speed, acceleration * delta)
+		# Prad fali przeciwnosci: z fala szybciej, pod fale delikatnie wolniej.
+		var target_speed := max_speed * _water_current_multiplier(input_dir)
+		velocity = velocity.move_toward(input_dir * target_speed, acceleration * delta)
 	else:
 		velocity = velocity.move_toward(Vector2.ZERO, friction * delta)
+
+# Mnoznik pradu z fali przeciwnosci (DangerWave) obejmujacej lodz; 1.0 poza falami.
+# Regula wspolnego kierunku fal gwarantuje, ze pierwsza trafiona fala wystarczy.
+func _water_current_multiplier(move_dir: Vector2) -> float:
+	if move_dir == Vector2.ZERO:
+		return 1.0
+	for w in get_tree().get_nodes_in_group("danger_waves"):
+		if is_instance_valid(w) and w.has_method("covers_point") and w.covers_point(global_position):
+			return DangerWave.current_multiplier(move_dir, w.move_dir(),
+				GameConfig.DANGER_WAVE_BOOST_WITH, GameConfig.DANGER_WAVE_SLOW_AGAINST)
+	return 1.0
 
 # Czysta funkcja: czy minelo dosc czasu od ostatniego trafienia (i-frames).
 static func can_take_hit(time_since_last: float, cooldown: float) -> bool:
