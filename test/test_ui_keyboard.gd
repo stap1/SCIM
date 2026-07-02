@@ -102,8 +102,8 @@ func test_game_over_grabs_focus() -> void:
 	var go = GameOverScene.instantiate()
 	add_child_autofree(go)
 	await wait_frames(1)
-	GameState.trigger_game_over(false)  # -> ekran konca pokazany, focus na Ponow
+	GameState.trigger_game_over(false)  # -> ekran konca pokazany, focus na pole imienia
 	await wait_frames(1)
-	assert_eq(get_viewport().gui_get_focus_owner(), go.get_node("Panel/RestartButton"),
-		"ekran konca: focus na Sprobuj ponownie")
+	assert_eq(get_viewport().gui_get_focus_owner(), go.get_node("Panel/NameEdit"),
+		"ekran konca: focus na pole wpisania imienia (gracz moze od razu pisac)")
 	get_tree().paused = false
