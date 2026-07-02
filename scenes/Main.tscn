@@ -15,6 +15,7 @@
 [ext_resource type="Script" uid="uid://d1jd2go3t5ljc" path="res://scripts/systems/water_background.gd" id="14_waterbg"]
 [ext_resource type="PackedScene" path="res://scenes/ui/dialogue_banner.tscn" id="15_dlgbanner"]
 [ext_resource type="PackedScene" path="res://scenes/ui/santiago_intro.tscn" id="16_intro"]
+[ext_resource type="PackedScene" path="res://scenes/ui/touch_joystick.tscn" id="17_joy"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_water"]
 shader = ExtResource("9_water")
@@ -64,3 +65,5 @@ script = ExtResource("7_pool")
 [node name="DialogueBanner" parent="." unique_id=1025637091 instance=ExtResource("15_dlgbanner")]
 
 [node name="SantiagoIntro" parent="." unique_id=1915646384 instance=ExtResource("16_intro")]
+
+[node name="TouchJoystick" parent="." instance=ExtResource("17_joy")]

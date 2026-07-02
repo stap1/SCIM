@@ -16,6 +16,12 @@ var time_since_last_hit: float = 999.0
 # --- ZMIENNA DO ANIMACJI FAL (JUICE) ---
 var wave_time: float = 0.0
 
+# --- Sterowanie (modul wyboru trybu): cel podrozy (klik/dotyk) + kalibracja akcelerometru ---
+var _travel_target: Vector2 = Vector2.ZERO
+var _has_travel_target: bool = false
+var _accel_zero: Vector2 = Vector2.ZERO
+var _accel_calibrated: bool = false
+
 @onready var hurtbox: Area2D = $Hurtbox
 @onready var camera: Camera2D = get_node_or_null("Camera2D")
 
@@ -26,6 +32,12 @@ func _ready() -> void:
 	# Pasek zycia pokazuje HUD (read-only przez sygnal health_changed) - lodz go nie dotyka.
 	GameState.health = GameState.max_health
 	GameState.health_changed.connect(_on_health_changed)
+
+	# Build pionowy: kamera lekko oddalona - podobny obszar gry co na desktopie.
+	if camera:
+		camera.zoom = Vector2.ONE * Platform.camera_zoom(Platform.is_mobile_build())
+	# Zmiana trybu sterowania w locie (pauza/ustawienia): czysc cel i kalibracje.
+	SettingsStore.control_mode_changed.connect(_on_control_mode_changed)
 
 func _physics_process(delta: float) -> void:
 	_handle_movement(delta)
@@ -52,6 +64,77 @@ func get_input_direction() -> Vector2:
 		Input.is_action_pressed("move_down"),
 		Input.is_action_pressed("move_up"))
 
+# --- Sterowanie: cele podrozy (klik/dotyk) i kierunek wg wybranego trybu ---
+
+func _unhandled_input(event: InputEvent) -> void:
+	var mode: String = SettingsStore.control_mode
+	# Click-to-follow: LPM ustawia cel podrozy (klikniecia w UI konsumuje wczesniej GUI).
+	if mode == ControlModes.MOUSE_CLICK and event is InputEventMouseButton:
+		var mb := event as InputEventMouseButton
+		if mb.button_index == MOUSE_BUTTON_LEFT and mb.pressed:
+			_set_travel_target(get_global_mouse_position())
+	# Podazanie za dotykiem: palec = cel (przeciaganie aktualizuje); puszczenie palca
+	# NIE kasuje celu - lodz doplywa do ostatniego punktu i staje.
+	elif mode == ControlModes.TOUCH_FOLLOW:
+		if event is InputEventScreenDrag:
+			_set_travel_target(_screen_to_world((event as InputEventScreenDrag).position))
+		elif event is InputEventScreenTouch and (event as InputEventScreenTouch).pressed:
+			_set_travel_target(_screen_to_world((event as InputEventScreenTouch).position))
+
+func _set_travel_target(world_pos: Vector2) -> void:
+	_travel_target = world_pos
+	_has_travel_target = true
+
+# Pozycja ekranowa zdarzenia dotyku -> wspolrzedne swiata (przez transformacje canvasu).
+func _screen_to_world(screen_pos: Vector2) -> Vector2:
+	return get_canvas_transform().affine_inverse() * screen_pos
+
+func _on_control_mode_changed(_mode: String) -> void:
+	_has_travel_target = false
+	_accel_calibrated = false # ponowna kalibracja przy kazdym wejsciu w tryb akcelerometru
+
+# Kierunek ruchu wg trybu z SettingsStore. Wejscia do czystego routera przekazywane jawnie.
+func _movement_direction() -> Vector2:
+	var mode: String = SettingsStore.control_mode
+	# Akcelerometr (mobile, eksperymentalny): przechyl wzgledem punktu kalibracji.
+	if mode == ControlModes.ACCEL:
+		return _accel_direction()
+	var target := _travel_target
+	var has_target := _has_travel_target
+	var deadzone := GameConfig.CONTROL_TARGET_DEADZONE_PX
+	if mode == ControlModes.MOUSE_FOLLOW:
+		target = get_global_mouse_position()
+		deadzone = GameConfig.CONTROL_CURSOR_DEADZONE_PX
+	var dir := ControlModes.dispatch_direction(mode, get_input_direction(), global_position,
+		target, has_target, deadzone, _joystick_vector(), GameConfig.CONTROL_JOYSTICK_DEADZONE)
+	# Cel podrozy osiagniety -> wyczysc (lodz stoi do nastepnego klikniecia/dotyku).
+	if (mode == ControlModes.MOUSE_CLICK or mode == ControlModes.TOUCH_FOLLOW) \
+			and _has_travel_target and dir == Vector2.ZERO:
+		_has_travel_target = false
+	return dir
+
+# Wektor galki joysticka ekranowego (grupa "touch_joystick" - luzne powiazanie scen).
+func _joystick_vector() -> Vector2:
+	var joy := get_tree().get_first_node_in_group("touch_joystick")
+	if joy != null and "vector" in joy:
+		return joy.vector
+	return Vector2.ZERO
+
+# Kierunek z akcelerometru: pierwszy odczyt trybu kalibruje zero-point (naturalny chwyt).
+# Brak sensora/zgody -> ZERO (lodz stoi; gracz moze zmienic tryb w pauzie).
+func _accel_direction() -> Vector2:
+	var raw := Input.get_accelerometer()
+	if raw == Vector3.ZERO:
+		return Vector2.ZERO
+	var flat := Vector2(raw.x, raw.y)
+	if not _accel_calibrated:
+		_accel_zero = flat
+		_accel_calibrated = true
+		return Vector2.ZERO
+	var tilt := ControlModes.tilt_from_accel(flat, _accel_zero)
+	return ControlModes.direction_from_accel(tilt,
+		GameConfig.CONTROL_ACCEL_DEADZONE, GameConfig.CONTROL_ACCEL_SENSITIVITY)
+
 # Czysta funkcja: kierunek z 4 stanow wcisniecia. Normalizacja gwarantuje, ze ruch
 # ukosny nie jest szybszy niz prosty; przeciwne kierunki kasuja sie.
 static func direction_from_input(right: bool, left: bool, down: bool, up: bool) -> Vector2:
@@ -72,7 +155,7 @@ static func compute_velocity(direction: Vector2, speed: float) -> Vector2:
 	return direction.normalized() * speed
 
 func _handle_movement(delta: float) -> void:
-	var input_dir := get_input_direction()
+	var input_dir := _movement_direction()
 	if input_dir.length() > 0:
 		velocity = velocity.move_toward(input_dir * max_speed, acceleration * delta)
 	else:

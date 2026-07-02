@@ -57,6 +57,11 @@ theme_override_colors/font_color = Color(0.7, 0.72, 0.78, 1)
 theme_override_font_sizes/font_size = 12
 text = "Dłuższe czasy gry dostępne w późniejszym etapie rozwoju gry."
 
+[node name="ControlLabel" type="Label" parent="Panel"]
+text = "Sterowanie"
+
+[node name="ControlOption" type="OptionButton" parent="Panel"]
+
 [node name="ReduceShakeCheck" type="CheckButton" parent="Panel"]
 text = "Ogranicz trzęsienie ekranu"
 

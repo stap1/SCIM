@@ -27,6 +27,21 @@ const PLAYER_CONTACT_DAMAGE: float = 10.0
 # i-frames: minimalny odstep miedzy kolejnymi trafieniami gracza.
 const PLAYER_HIT_COOLDOWN: float = 0.5
 
+# --- Sterowanie (tryby i router w ControlModes; tu wylacznie liczby) ---
+# Martwa strefa celu podrozy (click-to-follow / follow-touch): lodz staje przy celu.
+const CONTROL_TARGET_DEADZONE_PX: float = 12.0
+# Martwa strefa follow-cursor - wieksza, by lodz nie wibrowala pod kursorem.
+const CONTROL_CURSOR_DEADZONE_PX: float = 24.0
+# Martwa strefa galki joysticka ekranowego [0,1].
+const CONTROL_JOYSTICK_DEADZONE: float = 0.2
+# Akcelerometr: martwa strefa przechylu (m/s^2 po kalibracji) i skala przechyl->kierunek.
+const CONTROL_ACCEL_DEADZONE: float = 0.8
+const CONTROL_ACCEL_SENSITIVITY: float = 0.3
+# Promien bazy joysticka ekranowego (px ekranu).
+const TOUCH_JOYSTICK_RADIUS_PX: float = 70.0
+# Build pionowy (mobile): kamera lekko oddalona - podobny obszar gry co na desktopie.
+const CAMERA_ZOOM_MOBILE: float = 0.85
+
 # --- Bron (harpun) ---
 const HARPOON_DAMAGE: float = 5.0
 const HARPOON_SPEED: float = 400.0

@@ -36,6 +36,24 @@ func test_load_missing_returns_defaults() -> void:
 	assert_almost_eq(s["music_vol"], 1.0, 0.001, "domyslna glosnosc 1.0")
 	assert_eq(int(s["session_length"]), 5, "domyslna sesja 5")
 	assert_false(bool(s["reduce_shake"]), "domyslnie bez redukcji shake")
+	assert_eq(str(s["control_mode"]), "", "brak zapisu trybu -> pusty (sanityzacja da default platformy)")
+
+func test_control_mode_round_trip() -> void:
+	var path := "user://test_settings_store_ctrl.cfg"
+	SettingsStore.save_settings(path, 1.0, 1.0, 5, false, false, ControlModes.MOUSE_FOLLOW)
+	var s := SettingsStore.load_settings(path)
+	assert_eq(str(s["control_mode"]), ControlModes.MOUSE_FOLLOW, "tryb sterowania round-trip")
+
+func test_control_mode_live_setter_emits_signal() -> void:
+	var got: Array[String] = []
+	var cb := func(m: String) -> void: got.append(m)
+	SettingsStore.control_mode_changed.connect(cb)
+	var prev: String = SettingsStore.control_mode
+	SettingsStore.control_mode = ControlModes.MOUSE_CLICK
+	SettingsStore.control_mode = prev # przywroc stan (testy nie moga zostawiac smieci)
+	SettingsStore.control_mode_changed.disconnect(cb)
+	assert_true(ControlModes.MOUSE_CLICK in got,
+		"zmiana trybu emituje control_mode_changed (joystick/UI reaguja na zywo)")
 
 # apply_saved zapisuje ustawienia do SettingsStore - patrz test_state_separation.gd (P1.6).
 

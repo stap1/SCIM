@@ -22,6 +22,7 @@ boot_splash/image="res://assets/app_icon.png"
 
 GameConfig="*res://scripts/globals/game_config.gd"
 GameState="*uid://kguqub804fro"
+Platform="*res://scripts/globals/platform.gd"
 SettingsStore="*res://scripts/globals/settings_store.gd"
 Upgrades="*res://scripts/systems/upgrades.gd"
 AudioManager="*res://scripts/systems/audio_manager.gd"

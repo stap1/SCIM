@@ -74,6 +74,11 @@ text = "Ogranicz trzęsienie ekranu"
 [node name="ReduceFlashCheck" type="CheckButton" parent="Dimmer/Center/SettingsPanel"]
 text = "Ogranicz miganie"
 
+[node name="ControlLabel" type="Label" parent="Dimmer/Center/SettingsPanel"]
+text = "Sterowanie"
+
+[node name="ControlOption" type="OptionButton" parent="Dimmer/Center/SettingsPanel"]
+
 [node name="BackButton" type="Button" parent="Dimmer/Center/SettingsPanel"]
 custom_minimum_size = Vector2(260, 44)
 text = "Powrót"
